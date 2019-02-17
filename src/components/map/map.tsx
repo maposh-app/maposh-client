@@ -1,3 +1,4 @@
+import "mapbox-gl/dist/mapbox-gl.css";
 import * as React from "react";
 import ReactMapGL, { NavigationControl } from "react-map-gl";
 
@@ -5,8 +6,8 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_API_KEY || "";
 const initialState = {
   viewport: {
     height: 400,
-    latitude: 37.776021,
-    longitude: -122.4171949,
+    latitude: 55.7558,
+    longitude: 37.6173,
     width: 400,
     zoom: 14
   }
