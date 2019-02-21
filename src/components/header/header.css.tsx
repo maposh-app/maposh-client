@@ -1,18 +1,18 @@
 import styled from "styled-components";
 
 export const Menu = styled.ul`
-  flex-shrink: 0;
-  flex-basis: auto;
-  width: 100% !important;
-  margin: 0;
+  align-items: center !important;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
   display: flex !important;
-  align-items: center !important;
+  flex-basis: auto;
+  flex-shrink: 0;
   justify-content: center !important;
+  margin: 0;
+  width: 100% !important;
 `;
 
 export const MenuItem = styled.li`
   flex: 1;
-  padding: 0.7em;
   margin: 0;
+  padding: 0.7em;
 `;

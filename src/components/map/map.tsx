@@ -7,8 +7,6 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_API_KEY || "";
 
 const initialState = {
   viewport: {
-    height: 400,
-    width: 400,
     latitude: 55.7558,
     longitude: 37.6173,
     zoom: 14
@@ -16,51 +14,34 @@ const initialState = {
 };
 
 type State = typeof initialState;
-type Viewport = typeof initialState.viewport;
+interface IViewport {
+  height: number;
+  latitude: number;
+  longitude: number;
+  width: number;
+  zoom: number;
+}
 
 export default class Map extends React.Component<{}, State> {
   public state: State = initialState;
-  public mapWidgetElement: HTMLDivElement;
 
-  public componentDidMount() {
-    window.addEventListener("resize", this.resize);
-    this.resize();
-  }
-
-  public componentWillUnmount() {
-    window.removeEventListener("resize", this.resize);
-  }
-
-  public updateViewport = (viewport: Viewport) => {
-    this.setState(prevState => ({
-      viewport: { ...prevState.viewport, ...viewport }
-    }));
-  };
-
-  public resize = () => {
-    this.setState(prevState => ({
-      viewport: {
-        ...prevState.viewport,
-        height: this.mapWidgetElement.clientHeight,
-        width: this.mapWidgetElement.clientWidth
-      }
-    }));
+  public updateViewport = (viewport: IViewport) => {
+    const { width, height, ...etc } = viewport;
+    this.setState({ viewport: etc });
   };
 
   public render() {
     const { viewport } = this.state;
     return (
-      <MapBox
-        ref={(mapWidgetElement: HTMLDivElement) =>
-          (this.mapWidgetElement = mapWidgetElement)
-        }
-      >
+      <MapBox>
         <ReactMapGL
+          width="100%"
+          height="100%"
           {...viewport}
           mapboxApiAccessToken={MAPBOX_TOKEN}
-          onViewportChange={(v: Viewport) => this.updateViewport(v)}
+          onViewportChange={(v: IViewport) => this.updateViewport(v)}
         >
-          <div style={{ position: "absolute", right: 30, bottom: 30 }}>
+          <div style={{ position: "absolute", right: 0 }}>
             <NavigationControl onViewportChange={this.updateViewport} />
           </div>
         </ReactMapGL>
