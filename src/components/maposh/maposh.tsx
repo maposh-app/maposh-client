@@ -1,17 +1,20 @@
+import "normalize.css";
+import { Suspense } from "react";
 import * as React from "react";
-
-import 'normalize.css';
-import Container from "../container/container";
-import { Header } from "../header/header";
-import Map from "../map/map";
+import Spinner from "react-spinkit";
+import Container from "../container";
+import { Header } from "../header";
+import Map from "../map";
 
 class Maposh extends React.Component {
   public render() {
     return (
-      <Container>
-        <Header />
-        <Map />
-      </Container>
+      <Suspense fallback={<Spinner name="rotating-plane" />}>
+        <Container>
+          <Header />
+          <Map />
+        </Container>
+      </Suspense>
     );
   }
 }

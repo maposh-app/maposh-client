@@ -1,0 +1,22 @@
+{
+  "theme": {
+    "colorPrimary": "#ff5700",
+    "colorComplementaryPure": "#fff3e0",
+    "colorLink": "#1d2120",
+    "colorPure": "#e1f5fe",
+    "colorTender": "#546e7a",
+    "colorVisitedLink": "#5a5c51"
+  },
+  "locale": {
+    "default": "en",
+    "supported": { "en": "English", "ru": "Русский" },
+    "selector": {
+      "size": 1.3
+    }
+  },
+  "map": {
+    "latitude": 55.7558,
+    "longitude": 37.6173,
+    "zoom": 14
+  }
+}
