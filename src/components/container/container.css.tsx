@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "../../theme/styled-components";
 
 export const Box = styled.div`
   width: 100% !important;

@@ -1,6 +1,7 @@
 import Typography from "typography";
-import { colorLink } from "../constants/theme";
+import config from "../config";
 
+const theme: { [setting: string]: string } = config.theme;
 const Typographer = new Typography({
   baseFontSize: "20px",
   scaleRatio: 1.1,
@@ -16,7 +17,7 @@ const Typographer = new Typography({
     "Segoe UI Symbol"
   ],
   overrideStyles: (fonts, options, styles) => ({
-    a: { color: colorLink, textDecoration: "none" }
+    a: { color: theme.colorLink, textDecoration: "none" }
   })
 });
 
