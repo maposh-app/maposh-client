@@ -1,21 +1,23 @@
 import i18n from "i18next";
 import LngDetector from "i18next-browser-languagedetector";
-import Backend from "i18next-xhr-backend";
+import Backend from "i18next-chained-backend";
+import LocalStorageBackend from "i18next-localstorage-backend";
+import XHR from "i18next-xhr-backend";
 import { initReactI18next } from "react-i18next";
 import config from "../config";
 
 i18n
-  .use(LngDetector)
   // load translation using xhr -> see /public/locales
   // learn more: https://github.com/i18next/i18next-xhr-backend
   .use(Backend)
   // pass the i18n instance to react-i18next.
+  .use(LngDetector)
   .use(initReactI18next)
   // init i18next
   // for all options read: https://www.i18next.com/overview/configuration-options
   .init({
     fallbackLng: config.locale.default,
-    lng: config.locale.default,
+    load: "languageOnly",
     debug: true,
     ns: ["common"],
     defaultNS: "common",
@@ -23,8 +25,40 @@ i18n
       escapeValue: false // not needed for react as it escapes by default
     },
     backend: {
-      // for all available options read the backend's repository readme file
-      loadPath: "/locales/{{lng}}/{{ns}}.json"
+      backends: [LocalStorageBackend, XHR],
+      backendOptions: [
+        {
+          prefix: "i18next_res_",
+
+          // expiration
+          expirationTime: 7 * 24 * 60 * 60 * 1000,
+
+          // language versions
+          versions: {},
+
+          // can be either window.localStorage or window.sessionStorage. Default: window.localStorage
+          store: window.localStorage
+        },
+        {
+          loadPath: "/locales/{{lng}}/{{ns}}.json"
+        }
+      ]
+    },
+    detection: {
+      order: [
+        "path",
+        "querystring",
+        "cookie",
+        "localStorage",
+        "navigator",
+        "htmlTag",
+        "path",
+        "subdomain"
+      ],
+      caches: ["cookie", "localStorage"],
+      cookieMinutes: 160,
+      lookupQuerystring: "lang",
+      lookupFromPathIndex: 0
     }
   });
 

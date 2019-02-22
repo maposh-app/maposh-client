@@ -65,13 +65,14 @@ export default class LanguageSelector extends React.Component<
   public wrapperRef: HTMLDivElement;
   public constructor(props: ISelectorProps) {
     super(props);
+    const language = i18next.language.split("-")[0];
     this.state = {
       lang: {
-        id: locale["default"],
-        name: locale["supported"][locale["default"]]
+        id: language,
+        name: locale["supported"][language]
       },
       isOpen: false,
-      languages: [locale["default"]]
+      languages: [language]
     };
     this.toggleSelector = this.toggleSelector.bind(this);
     this.closeSelector = this.closeSelector.bind(this);
