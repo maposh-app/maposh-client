@@ -1,8 +1,12 @@
 import i18next from "i18next";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import config from "../../config";
-import { ILanguage } from "../../model/language";
+import { connect } from "react-redux";
+import config from "src/config";
+import { ILanguage } from "src/model/language";
+import { MaposhState } from "src/store";
+import { updateSession } from "src/store/system/actions";
+import { ISystemState } from "src/store/system/types";
 import {
   Flag,
   LanguageBox,
@@ -16,25 +20,16 @@ const locale: {
   selector: { [prop: string]: any };
 } = config.locale;
 
-interface ISelectorState {
-  lang: ILanguage;
-  isOpen: boolean;
-  languages: [string];
-}
-
-interface ISelectorProps {
-  size: number;
-}
-
 interface ILanguageComponent {
   size: number;
-  lang: ILanguage;
+  language: ILanguage;
   onClick?: (i18n: i18next.i18n) => () => void;
   onKeyUp?: (i18n: i18next.i18n) => (event: React.KeyboardEvent) => void;
 }
 
 export const Language: React.SFC<ILanguageComponent> = props => {
   const { i18n } = useTranslation();
+  const flagImage = require(`../../assets/flags/${props.language.id.toLowerCase()}.svg`);
   return (
     <LanguageBox
       onClick={props.onClick ? props.onClick(i18n) : () => true}
@@ -48,31 +43,34 @@ export const Language: React.SFC<ILanguageComponent> = props => {
         style={{
           width: `${props.size}em`,
           height: `${props.size}em`,
-          backgroundImage: `url(${require(`../../assets/flags/${props.lang.id.toLowerCase()}.svg`)})`
+          backgroundImage: `url(${flagImage})`
         }}
-        aria-label={`Language: ${props.lang.name}`}
+        aria-label={`Language: ${props.language.name}`}
       />
     </LanguageBox>
   );
 };
 
-export default class LanguageSelector extends React.Component<
-  ISelectorProps,
-  ISelectorState
-> {
-  public static defaultProps: ISelectorProps = { size: locale.selector.size };
+interface ISelectorState {
+  isOpen: boolean;
+  languages: [string];
+  size: number;
+}
 
+interface ISelectorProps {
+  system: ISystemState;
+  updateSession: typeof updateSession;
+}
+
+class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
   public wrapperRef: HTMLDivElement;
   public constructor(props: ISelectorProps) {
     super(props);
     const language = i18next.language.split("-")[0];
     this.state = {
-      lang: {
-        id: language,
-        name: locale["supported"][language]
-      },
       isOpen: false,
-      languages: [language]
+      languages: [language],
+      size: config.locale.selector.size
     };
     this.toggleSelector = this.toggleSelector.bind(this);
     this.closeSelector = this.closeSelector.bind(this);
@@ -114,8 +112,8 @@ export default class LanguageSelector extends React.Component<
   };
 
   public onSelect = (id: string, translator: i18next.i18n) => {
-    this.setState({
-      lang: { id, name: locale["supported"]["id"] }
+    this.props.updateSession({
+      language: this.getLanguage(id)
     });
     translator.changeLanguage(id);
   };
@@ -152,23 +150,26 @@ export default class LanguageSelector extends React.Component<
     return (
       <SelectorBox
         ref={this.setWrapperRef}
-        style={{ fontSize: `${this.props.size}em` }}
+        style={{ fontSize: `${this.state.size}em` }}
         onClick={this.toggleSelector}
         onKeyUp={(event: React.KeyboardEvent) =>
           this.toggleSelectorWithKeyboard(event)
         }
       >
-        <Language size={this.props.size} lang={this.state.lang} />
+        <Language
+          size={this.state.size}
+          language={this.props.system.language}
+        />
         <OptionsBox>
           {this.state.isOpen &&
             this.state.languages.reduce((filtered: any, id: string) => {
-              if (id !== this.state.lang.id) {
+              if (id !== this.props.system.language.id) {
                 const language = this.getLanguage(id);
                 filtered.push(
                   <Language
                     key={id}
-                    size={this.props.size}
-                    lang={language}
+                    size={this.state.size}
+                    language={language}
                     onClick={translator => () => this.onSelect(id, translator)}
                     onKeyUp={translator => (event: React.KeyboardEvent) =>
                       this.onSelectWithKeyboard(event, id, translator)}
@@ -186,3 +187,12 @@ export default class LanguageSelector extends React.Component<
     return { id, name: locale["supported"]["id"] };
   }
 }
+
+const mapStateToProps = (state: MaposhState) => ({
+  system: state.system
+});
+
+export default connect(
+  mapStateToProps,
+  { updateSession }
+)(LanguageSelector);

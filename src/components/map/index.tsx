@@ -4,15 +4,16 @@ import ReactMapGL, { NavigationControl } from "react-map-gl";
 import config from "../../config";
 import { MapBox } from "./map.css";
 
-const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_API_KEY || "";
+const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
+const MAPBOX_STYLE: string = process.env.REACT_APP_MAPBOX_STYLE || "";
 
-const map = config.map;
+const mapConfig = config.map;
 
 const initialState = {
   viewport: {
-    latitude: map.latitude,
-    longitude: map.longitude,
-    zoom: map.zoom
+    latitude: mapConfig.latitude,
+    longitude: mapConfig.longitude,
+    zoom: mapConfig.zoom
   }
 };
 
@@ -42,6 +43,7 @@ export default class Map extends React.Component<{}, State> {
           height="100%"
           {...viewport}
           mapboxApiAccessToken={MAPBOX_TOKEN}
+          mapStyle={MAPBOX_STYLE}
           onViewportChange={(v: IViewport) => this.updateViewport(v)}
         >
           <div style={{ position: "absolute", right: 0 }}>

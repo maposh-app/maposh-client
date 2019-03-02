@@ -3,6 +3,7 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../language-selector/language-selector";
 import { Menu, MenuItem, MenuList } from "./header.css";
+
 export const Header: React.FunctionComponent = () => {
   const { t } = useTranslation();
   return (
