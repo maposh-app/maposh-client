@@ -9,6 +9,7 @@ import { Header } from "../header";
 import Map from "../map";
 
 const store = configureStore();
+
 class Maposh extends React.Component {
   public render() {
     return (

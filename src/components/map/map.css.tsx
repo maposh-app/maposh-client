@@ -5,3 +5,9 @@ export const MapBox = styled.div`
   flex-shrink: 0;
   height: 80%;
 `;
+
+export const NavigationBox = styled.div`
+  position: fixed;
+  bottom: 3em;
+  right: 0.5em;
+`;

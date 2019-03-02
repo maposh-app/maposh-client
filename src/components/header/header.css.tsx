@@ -3,6 +3,7 @@ import styled from "../../theme/styled-components";
 export const Menu = styled.div`
   flex-basis: auto;
   flex-shrink: 0;
+  margin-bottom: 3px;
   width: 100% !important;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 `;

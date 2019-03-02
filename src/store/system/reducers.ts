@@ -1,11 +1,9 @@
 import config from "../../config";
+import { whichLanguage } from "../../config";
 import { ISystemState, SystemActionType, UPDATE_SESSION } from "./types";
 
-export const initialSystemState: ISystemState = {
-  language: {
-    id: config.locale.default,
-    name: config.locale.supported[config.locale.default]
-  }
+const initialSystemState: ISystemState = {
+  language: whichLanguage(config.locale.default)
 };
 
 export function systemReducer(

@@ -3,6 +3,7 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import config from "src/config";
+import { whichLanguage, whichLanguages } from "src/config";
 import { ILanguage } from "src/model/language";
 import { MaposhState } from "src/store";
 import { updateSession } from "src/store/system/actions";
@@ -13,12 +14,6 @@ import {
   OptionsBox,
   SelectorBox
 } from "./language-selector.css";
-
-const locale: {
-  default: string;
-  supported: { [id: string]: string };
-  selector: { [prop: string]: any };
-} = config.locale;
 
 interface ILanguageComponent {
   size: number;
@@ -67,6 +62,9 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
   public constructor(props: ISelectorProps) {
     super(props);
     const language = i18next.language.split("-")[0];
+    this.props.updateSession({
+      language: whichLanguage(language)
+    });
     this.state = {
       isOpen: false,
       languages: [language],
@@ -113,7 +111,7 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
 
   public onSelect = (id: string, translator: i18next.i18n) => {
     this.props.updateSession({
-      language: this.getLanguage(id)
+      language: whichLanguage(id)
     });
     translator.changeLanguage(id);
   };
@@ -134,7 +132,7 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
   };
 
   public setLanguages = () => {
-    this.setState({ languages: Object.keys(locale["supported"]) as [string] });
+    this.setState({ languages: Object.keys(whichLanguages()) as [string] });
   };
 
   public componentDidMount() {
@@ -164,7 +162,7 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
           {this.state.isOpen &&
             this.state.languages.reduce((filtered: any, id: string) => {
               if (id !== this.props.system.language.id) {
-                const language = this.getLanguage(id);
+                const language = whichLanguage(id);
                 filtered.push(
                   <Language
                     key={id}
@@ -181,10 +179,6 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
         </OptionsBox>
       </SelectorBox>
     );
-  }
-
-  private getLanguage(id: string): ILanguage {
-    return { id, name: locale["supported"]["id"] };
   }
 }
 
