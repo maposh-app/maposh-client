@@ -1,7 +1,7 @@
 import { Link } from "@reach/router";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import LanguageSelector from "../language-selector/language-selector";
+import LanguageSelector from "../language-selector";
 import { Menu, MenuItem, MenuList } from "./header.css";
 
 export const Header: React.FunctionComponent = () => {

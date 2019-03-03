@@ -1,9 +1,12 @@
-import config from "../../config";
-import { whichLanguage } from "../../config";
-import { ISystemState, SystemActionType, UPDATE_SESSION } from "./types";
+import config, { whichLanguage } from "../../config";
+import {
+  ISystemState,
+  SystemActionType,
+  UPDATE_SESSION,
+} from "./types";
 
 const initialSystemState: ISystemState = {
-  language: whichLanguage(config.locale.default)
+  language: whichLanguage(config.locale.default),
 };
 
 export function systemReducer(
@@ -21,3 +24,4 @@ export function systemReducer(
       return state;
   }
 }
+

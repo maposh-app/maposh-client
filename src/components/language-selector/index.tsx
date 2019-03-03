@@ -6,7 +6,7 @@ import config from "src/config";
 import { whichLanguage, whichLanguages } from "src/config";
 import { ILanguage } from "src/model/language";
 import { MaposhState } from "src/store";
-import { updateSession } from "src/store/system/actions";
+import { updateLanguage } from "src/store/system/actions";
 import { ISystemState } from "src/store/system/types";
 import {
   Flag,
@@ -54,7 +54,7 @@ interface ISelectorState {
 
 interface ISelectorProps {
   system: ISystemState;
-  updateSession: typeof updateSession;
+  updateLanguage: typeof updateLanguage;
 }
 
 class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
@@ -62,7 +62,7 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
   public constructor(props: ISelectorProps) {
     super(props);
     const language = i18next.language.split("-")[0];
-    this.props.updateSession({
+    this.props.updateLanguage({
       language: whichLanguage(language)
     });
     this.state = {
@@ -110,7 +110,7 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
   };
 
   public onSelect = (id: string, translator: i18next.i18n) => {
-    this.props.updateSession({
+    this.props.updateLanguage({
       language: whichLanguage(id)
     });
     translator.changeLanguage(id);
@@ -188,5 +188,5 @@ const mapStateToProps = (state: MaposhState) => ({
 
 export default connect(
   mapStateToProps,
-  { updateSession }
+  { updateLanguage }
 )(LanguageSelector);

@@ -1,8 +1,10 @@
 import { ILanguage } from "src/model/language";
 
-export interface ISystemState {
+export interface ILanguageState {
   language: ILanguage;
 }
+
+export type ISystemState = ILanguageState;
 
 export const UPDATE_SESSION = "UPDATE_SESSION";
 
@@ -11,4 +13,5 @@ interface IUpdateSessionAction {
   payload: ISystemState;
 }
 
-export type SystemActionType = IUpdateSessionAction;
+
+export type SystemActionType = IUpdateSessionAction
