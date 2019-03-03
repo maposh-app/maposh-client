@@ -38,6 +38,10 @@ class Map extends React.Component<IMapProps> {
     });
   };
 
+  public componentDidMount() {
+    this.locate();
+  }
+
   public componentDidUpdate() {
     if (this.map && this.map.current) {
       const map = this.map.current.getMap();
@@ -100,6 +104,19 @@ class Map extends React.Component<IMapProps> {
           `name_${this.props.system.language.id}`
         ]);
       }
+    }
+  }
+  private locate() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.props.updateMap({
+          viewport: {
+            ...this.props.map.viewport,
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude
+          }
+        });
+      });
     }
   }
 }
