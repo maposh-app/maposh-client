@@ -18,5 +18,6 @@ export const MenuList = styled.ul`
 
 export const MenuItem = styled.li`
   margin: 0;
+  display: inline-block;
   padding: 0.7em;
 `;

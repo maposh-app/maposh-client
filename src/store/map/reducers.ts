@@ -1,7 +1,7 @@
-import { getBoundary, getViewport, whichCity } from "../../config";
+import { getBoundary, getDefaultCity, getViewport } from "../../config";
 import { IMapState, MapActionType, UPDATE_MAP } from "./types";
 
-const defaultCity = whichCity();
+const defaultCity = getDefaultCity();
 const initialSystemState: IMapState = {
   viewport: getViewport(),
   location: { city: defaultCity, boundingBox: getBoundary(defaultCity) }

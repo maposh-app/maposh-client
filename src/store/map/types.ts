@@ -1,5 +1,5 @@
-import { ILocation } from "src/model/location";
-import { IViewport } from "src/model/viewport";
+import { ILocation } from "../../model/location";
+import { IViewport } from "../../model/viewport";
 
 export interface IViewportState {
   viewport: IViewport;

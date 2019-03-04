@@ -1,19 +1,6 @@
-import { ILanguage } from "src/model/language";
-import { IBoundingBox, ICity } from "src/model/location.js";
-import { IViewport } from "src/model/viewport.js";
+import { IBoundingBox, ICity, ILocation } from "../model/location.js";
+import { IViewport } from "../model/viewport.js";
 import config from "./default.json";
-
-export function whichLanguage(id: string): ILanguage {
-  const language: ILanguage = {
-    id,
-    name: config.locale.supported[id]
-  };
-  return language;
-}
-
-export function whichLanguages() {
-  return config.locale.supported;
-}
 
 export function getViewport(): IViewport {
   return {
@@ -23,16 +10,32 @@ export function getViewport(): IViewport {
   };
 }
 
-export function whichCity(): ICity {
-  return config.map.locations.default;
+export function getLanguages(): { [language: string]: string } {
+  return config.locale.language;
 }
 
-export function whichCities() {
+function getCities(): { [city: string]: number[] } {
   return config.map.locations.cities;
 }
 
+export function getLocations(): ILocation[] {
+  const cities = getCities();
+  const locations = [];
+  for (const city of Object.keys(cities)) {
+    locations.push({
+      city: city as ICity,
+      boundingBox: cities[city] as IBoundingBox
+    });
+  }
+  return locations;
+}
+
 export function getBoundary(city: string): IBoundingBox {
-  return config.map.locations.cities[city];
+  return getCities()[city] as IBoundingBox;
+}
+
+export function getDefaultCity(): ICity {
+  return config.map.locations.default;
 }
 
 export default config;

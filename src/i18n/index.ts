@@ -1,6 +1,7 @@
 import i18n from "i18next";
-import LngDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-chained-backend";
+
+import LngDetector from "i18next-browser-languagedetector";
 import LocalStorageBackend from "i18next-localstorage-backend";
 import XHR from "i18next-xhr-backend";
 import { initReactI18next } from "react-i18next";
@@ -16,10 +17,13 @@ i18n
   // init i18next
   // for all options read: https://www.i18next.com/overview/configuration-options
   .init({
-    fallbackLng: config.locale.default,
+    fallbackLng: {
+      default: [config.locale.default]
+    },
     load: "languageOnly",
     debug: true,
     ns: ["common"],
+    keySeparator: ".",
     defaultNS: "common",
     interpolation: {
       escapeValue: false // not needed for react as it escapes by default
@@ -40,7 +44,7 @@ i18n
           store: window.localStorage
         },
         {
-          loadPath: "/locales/{{lng}}/{{ns}}.json"
+          loadPath: `${process.env.PUBLIC_URL}/locales/{{lng}}/{{ns}}.json`
         }
       ]
     },

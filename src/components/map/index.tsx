@@ -1,13 +1,12 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import * as React from "react";
-import ReactMapGL, { NavigationControl } from "react-map-gl";
+import ReactMapGL, { NavigationControl, ViewState } from "react-map-gl";
 import { connect } from "react-redux";
-import { getBoundary } from "src/config";
-import { MaposhState } from "src/store";
-import { updatePan } from "src/store/map/actions";
-import { IMapState } from "src/store/map/types";
-import { ISystemState } from "src/store/system/types";
 import { IViewport } from "../../model/viewport";
+import { MaposhState } from "../../store";
+import { updatePan } from "../../store/map/actions";
+import { IMapState } from "../../store/map/types";
+import { ISystemState } from "../../store/system/types";
 import { MapBox, NavigationBox } from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
@@ -32,11 +31,14 @@ class Map extends React.Component<IMapProps> {
     this.setLanguage = this.setLanguage.bind(this);
   }
 
-  public updateViewport = (viewport: IMapViewport) => {
-    const { width, height, ...etc } = viewport;
-    const [minLongitude, minLatitude, maxLongitude, maxLatitude] = getBoundary(
-      this.props.map.location.city
-    );
+  public updateViewport = (viewport: ViewState) => {
+    const { width, height, ...etc } = viewport as IMapViewport;
+    const [
+      minLongitude,
+      minLatitude,
+      maxLongitude,
+      maxLatitude
+    ] = this.props.map.location.boundingBox;
     if (etc.longitude <= minLongitude) {
       etc.longitude = minLongitude;
     }
@@ -58,21 +60,26 @@ class Map extends React.Component<IMapProps> {
     this.locate();
   }
 
+  public shouldComponentUpdate(nextProps: IMapProps) {
+    return (
+      this.props.system.language !== nextProps.system.language ||
+      this.props.map !== nextProps.map
+    );
+  }
+
   public componentDidUpdate(prevProps: IMapProps) {
-    if (
-      prevProps.system.language.id !== this.props.system.language.id &&
-      this.map &&
-      this.map.current
-    ) {
-      const map = this.map.current.getMap();
-      const waiting = () => {
-        if (!map.isStyleLoaded()) {
-          setTimeout(waiting, 200);
-        } else {
-          this.setLanguage();
-        }
-      };
-      waiting();
+    if (this.map && this.map.current) {
+      if (this.props.system.language !== prevProps.system.language) {
+        const map = this.map.current.getMap();
+        const waiting = () => {
+          if (!map.isStyleLoaded()) {
+            setTimeout(waiting, 200);
+          } else {
+            this.setLanguage();
+          }
+        };
+        waiting();
+      }
     }
   }
 
@@ -89,7 +96,7 @@ class Map extends React.Component<IMapProps> {
           touchAction="pan-x pan-y"
           mapboxApiAccessToken={MAPBOX_TOKEN}
           mapStyle={MAPBOX_STYLE}
-          onViewportChange={(v: IMapViewport) => this.updateViewport(v)}
+          onViewportChange={(v: ViewState) => this.updateViewport(v)}
         >
           <NavigationBox>
             <NavigationControl onViewportChange={this.updateViewport} />
@@ -124,7 +131,7 @@ class Map extends React.Component<IMapProps> {
       for (const id of layerIDs) {
         map.setLayoutProperty(id as string, "text-field", [
           "get",
-          `name_${this.props.system.language.id}`
+          `name_${this.props.system.language}`
         ]);
       }
     }

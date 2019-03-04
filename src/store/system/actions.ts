@@ -1,8 +1,4 @@
-import {
-  ILanguageState,
-  ISystemState,
-  UPDATE_SESSION
-} from "./types";
+import { ILanguageState, ISystemState, UPDATE_SESSION } from "./types";
 
 export function updateSession(newSession: ISystemState) {
   return {

@@ -9,9 +9,9 @@
   },
   "locale": {
     "default": "ru",
-    "supported": { "en": "English", "ru": "Русский" },
-    "selector": {
-      "size": 1.3
+    "language": {
+      "en": "English",
+      "ru": "Русский"
     }
   },
   "map": {
@@ -19,10 +19,10 @@
     "longitude": 37.6173,
     "zoom": 14,
     "locations": {
-      "default": "Moscow",
+      "default": "moscow",
       "cities": {
-        "Moscow": [37.3193, 55.4907, 37.9676, 55.9576],
-        "Saint Petersburg": [29.4246, 59.6338, 30.7589, 60.2418]
+        "moscow": [37.3193, 55.4907, 37.9676, 55.9576],
+        "saint_petersburg": [29.4246, 59.6338, 30.7589, 60.2418]
       }
     }
   }

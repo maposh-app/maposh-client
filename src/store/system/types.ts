@@ -1,4 +1,4 @@
-import { ILanguage } from "src/model/language";
+import { ILanguage } from "../../model/language";
 
 export interface ILanguageState {
   language: ILanguage;
@@ -13,5 +13,4 @@ interface IUpdateSessionAction {
   payload: ISystemState;
 }
 
-
-export type SystemActionType = IUpdateSessionAction
+export type SystemActionType = IUpdateSessionAction;
