@@ -48,7 +48,7 @@ export const Language: React.SFC<ILanguageComponent> = props => {
 
 interface ISelectorState {
   isOpen: boolean;
-  languages: [string];
+  languages: string[];
   size: number;
 }
 
@@ -132,7 +132,7 @@ class LanguageSelector extends React.Component<ISelectorProps, ISelectorState> {
   };
 
   public setLanguages = () => {
-    this.setState({ languages: Object.keys(whichLanguages()) as [string] });
+    this.setState({ languages: Object.keys(whichLanguages()) as string[] });
   };
 
   public componentDidMount() {

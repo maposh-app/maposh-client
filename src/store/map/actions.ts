@@ -1,8 +1,15 @@
-import { IMapState, UPDATE_MAP } from "./types";
+import { ILocationState, IViewportState, UPDATE_MAP } from "./types";
 
-export function updateMap(newMap: IMapState) {
+export function updatePan(newPan: IViewportState) {
   return {
     type: UPDATE_MAP,
-    payload: newMap
+    payload: newPan
+  };
+}
+
+export function updateLocation(newLocation: ILocationState) {
+  return {
+    type: UPDATE_MAP,
+    payload: newLocation
   };
 }

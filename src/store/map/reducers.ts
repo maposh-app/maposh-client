@@ -1,8 +1,10 @@
-import { where } from "../../config";
+import { getBoundary, getViewport, whichCity } from "../../config";
 import { IMapState, MapActionType, UPDATE_MAP } from "./types";
 
+const defaultCity = whichCity();
 const initialSystemState: IMapState = {
-  viewport: where()
+  viewport: getViewport(),
+  location: { city: defaultCity, boundingBox: getBoundary(defaultCity) }
 };
 
 export function mapReducer(

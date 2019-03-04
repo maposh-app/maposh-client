@@ -1,10 +1,13 @@
+import { ILocation } from "src/model/location";
 import { IViewport } from "src/model/viewport";
 
 export interface IViewportState {
   viewport: IViewport;
 }
 
-export type IMapState = IViewportState;
+export interface ILocationState {
+  location: ILocation;
+}
 
 export const UPDATE_MAP = "UPDATE_MAP";
 
@@ -13,4 +16,11 @@ interface IUpdateViewportAction {
   payload: IViewportState;
 }
 
-export type MapActionType = IUpdateViewportAction;
+interface IUpdateLocationAction {
+  type: typeof UPDATE_MAP;
+  payload: ILocationState;
+}
+
+export type IMapState = IViewportState & ILocationState;
+
+export type MapActionType = IUpdateViewportAction | IUpdateLocationAction;

@@ -1,3 +1,7 @@
 {
-  "title": "Maposh"
+  "title": "Maposh",
+  "city": {
+    "Moscow": "Moscow",
+    "Saint Petersburg": "Saint Petersburg"
+  }
 }
