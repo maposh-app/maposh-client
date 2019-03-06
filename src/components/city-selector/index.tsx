@@ -10,7 +10,7 @@ import { ISystemState } from "../../store/system/types";
 import { selectify } from "../../utils/transform";
 
 interface ILocationSelectorProps {
-  updateCity: typeof updateCity;
+  updateCity: (newCity: string) => void;
   map: IMapState;
   system: ISystemState;
 }

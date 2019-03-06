@@ -5,7 +5,7 @@ export interface ICityLabel {
   label: string;
 }
 
-export type IBoundingBox = [number, number, number, number];
+export type IBoundingBox = [number, number, number, number, number, number];
 
 export interface ILocation {
   city: ICity;

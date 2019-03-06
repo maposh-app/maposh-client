@@ -60,13 +60,6 @@ class Map extends React.Component<IMapProps> {
     this.locate();
   }
 
-  public shouldComponentUpdate(nextProps: IMapProps) {
-    return (
-      this.props.system.language !== nextProps.system.language ||
-      this.props.map !== nextProps.map
-    );
-  }
-
   public componentDidUpdate(prevProps: IMapProps) {
     if (this.map && this.map.current) {
       if (this.props.system.language !== prevProps.system.language) {
@@ -93,7 +86,6 @@ class Map extends React.Component<IMapProps> {
           minZoom={9}
           {...this.props.map.viewport}
           touchRotate={true}
-          touchAction="pan-x pan-y"
           mapboxApiAccessToken={MAPBOX_TOKEN}
           mapStyle={MAPBOX_STYLE}
           onViewportChange={(v: ViewState) => this.updateViewport(v)}
