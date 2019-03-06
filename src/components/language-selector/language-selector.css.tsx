@@ -39,9 +39,7 @@ const Flag = styled.div`
 `;
 
 const FlagContainer = styled.div`
-  .css-vj8t7z,
-  .css-2o5izw,
-  .css-1hwfws3 {
+  .css-vj8t7z {
     border: 0;
   }
 `;
