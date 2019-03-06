@@ -1,15 +1,16 @@
-import i18next from "i18next";
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import Select from "react-select";
-import { getLanguages } from "../../config";
+import { ValueType } from "react-select/lib/types";
+import { getLanguage, getLanguages } from "../../config";
 import { ILanguageLabel } from "../../model/language";
 import { MaposhState } from "../../store";
 import { updateLanguage } from "../../store/system/actions";
 import { ISystemState } from "../../store/system/types";
 import { selectify } from "../../utils/transform";
+import { FlagControl, FlagOption, FlagSingleValue } from "./language-selector.css";
 
 interface ISelectorProps {
   system: ISystemState;
@@ -25,12 +26,15 @@ const LanguageSelector: React.SFC<ISelectorProps> = props => {
     });
   });
 
-  const onSelect = (label: any) => {
-    props.updateLanguage({
-      language: label.value
-    });
+  const onSelect = (label: ValueType<ILanguageLabel>) => {
+    if (label && (label as ILanguageLabel).value) {
+      const language = (label as ILanguageLabel).value;
+      props.updateLanguage({
+        language
+      });
 
-    i18n.changeLanguage(label.value);
+      i18n.changeLanguage(language);
+    }
   };
 
   const currentLanguages: ILanguageLabel[] = selectify(getLanguages());
@@ -39,13 +43,23 @@ const LanguageSelector: React.SFC<ISelectorProps> = props => {
     <Select
       value={{
         value: props.system.language,
-        label: t(`language.${props.system.language}`)
+        label: getLanguage(props.system.language)
+      }}
+      components={{
+        Option: FlagOption,
+        SingleValue: FlagSingleValue,
+        Control: FlagControl
       }}
       options={currentLanguages}
       onChange={onSelect}
+      isSearchable={false}
     />
   );
 };
+// styles={{
+//   option: Flag,
+//   singleValue: Flag
+// }}
 
 const mapStateToProps = (state: MaposhState) => ({
   system: state.system

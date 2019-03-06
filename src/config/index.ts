@@ -14,6 +14,10 @@ export function getLanguages(): { [language: string]: string } {
   return config.locale.language;
 }
 
+export function getLanguage(id: string): string {
+  return getLanguages()[id];
+}
+
 function getCities(): { [city: string]: number[] } {
   return config.map.locations.cities;
 }

@@ -36,6 +36,7 @@ const LocationSelector: React.SFC<ILocationSelectorProps> = props => {
         label: t(`city.${currentCity}`),
         value: currentCity
       }}
+      isClearable={false}
       options={currentCities}
       onChange={onSelect}
     />

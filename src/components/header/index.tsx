@@ -17,7 +17,7 @@ export const Header: React.FunctionComponent = () => {
         <MenuItem style={{ flex: 1 }}>
           <CitySelector />
         </MenuItem>
-        <MenuItem style={{ flex: 1 }}>
+        <MenuItem style={{ paddingRight: 0 }}>
           <LanguageSelector />
         </MenuItem>
       </MenuList>
