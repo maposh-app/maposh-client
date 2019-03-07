@@ -8,14 +8,15 @@ export const Menu = styled.div`
   margin-bottom: 3px;
   width: 100% !important;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  z-index: 42;
 `;
 
 export const MenuList = styled.ul`
   margin: 0;
   align-items: center;
   display: flex;
-  list-style-type: none;
   justify-content: space-between;
+  list-style-type: none;
 `;
 
 export const MenuItem = styled.li`
@@ -23,5 +24,8 @@ export const MenuItem = styled.li`
   display: inline-block;
   flex-grow: 0;
   flex-shrink: 0;
-  padding: 0.7em;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  padding-bottom: 0.3em;
+  padding-top: 0.3em;
 `;

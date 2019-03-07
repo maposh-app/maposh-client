@@ -41,6 +41,7 @@ const Flag = styled.div`
 const FlagContainer = styled.div`
   .css-vj8t7z {
     border: 0;
+    background: transparent;
   }
 `;
 
@@ -71,21 +72,3 @@ export const FlagControl = (props: ControlProps<any>) => {
     </FlagContainer>
   );
 };
-
-// export const Flag = (base: React.CSSProperties, state: any) => {
-//   const flag = flagImage(state.data.value);
-//   return {
-//     marginLeft: "0.5em",
-//     marginRight: "0.5em",
-//     borderWidth: "1.5px",
-//     width: "10px",
-//     height: "10px",
-//     borderColor: `${config.theme.colorTender}`,
-//     borderStyle: "solid",
-//     borderRadius: "100%",
-//     backgroundSize: "cover",
-//     backgroundPosition: "center",
-//     boxShadow: "0 2px 5px 0 rgba(0, 0, 0, 0.2)",
-//     backgroundImage: `url(${flag})`
-//   };
-// };

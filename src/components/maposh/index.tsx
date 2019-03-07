@@ -3,6 +3,7 @@ import * as React from "react";
 import { Provider } from "react-redux";
 import configureStore from "../../store";
 import Container from "../container";
+import { Footer } from "../footer/footer";
 import { Header } from "../header";
 import Map from "../map";
 
@@ -14,6 +15,7 @@ const Maposh: React.FunctionComponent = () => {
       <Container>
         <Header />
         <Map />
+        <Footer />
       </Container>
     </Provider>
   );

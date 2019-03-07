@@ -9,6 +9,6 @@ export const MapBox = styled.div`
 
 export const NavigationBox = styled.div`
   position: fixed;
-  bottom: 3em;
+  top: 4em;
   right: 0.5em;
 `;

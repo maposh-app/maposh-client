@@ -53,13 +53,10 @@ const LanguageSelector: React.SFC<ISelectorProps> = props => {
       options={currentLanguages}
       onChange={onSelect}
       isSearchable={false}
+      menuPlacement="top"
     />
   );
 };
-// styles={{
-//   option: Flag,
-//   singleValue: Flag
-// }}
 
 const mapStateToProps = (state: MaposhState) => ({
   system: state.system
