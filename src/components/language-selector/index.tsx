@@ -10,7 +10,11 @@ import { MaposhState } from "../../store";
 import { updateLanguage } from "../../store/system/actions";
 import { ISystemState } from "../../store/system/types";
 import { selectify } from "../../utils/transform";
-import { FlagControl, FlagOption, FlagSingleValue } from "./language-selector.css";
+import {
+  FlagControl,
+  FlagOption,
+  FlagSingleValue
+} from "./language-selector.css";
 
 interface ISelectorProps {
   system: ISystemState;
@@ -22,7 +26,7 @@ const LanguageSelector: React.SFC<ISelectorProps> = props => {
 
   useEffect(() => {
     props.updateLanguage({
-      language: i18n.languages[0]
+      language: i18n.languages ? i18n.languages[0] : props.system.language
     });
   });
 
@@ -54,6 +58,8 @@ const LanguageSelector: React.SFC<ISelectorProps> = props => {
       onChange={onSelect}
       isSearchable={false}
       menuPlacement="top"
+      menuShouldScrollIntoView={false}
+      menuShouldBlockScroll={true}
     />
   );
 };

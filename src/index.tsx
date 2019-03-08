@@ -10,9 +10,10 @@ import Maposh from "./components/maposh";
 import "./index.css";
 import registerServiceWorker from "./registerServiceWorker";
 import Typographer from "./theme/typography";
+import config from "./config";
 
 Typographer.injectStyles();
-
+document.body.style.backgroundColor = config.theme.colorPrimary;
 ReactDOM.render(
   <Suspense fallback={<Spinner name="rotating-plane" />}>
     <Maposh />

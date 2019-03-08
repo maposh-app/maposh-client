@@ -94,9 +94,6 @@ i18n
           // expiration
           expirationTime: 24 * 3600,
 
-          // language versions
-          versions: {},
-
           // can be either window.localStorage or window.sessionStorage. Default: window.localStorage
           store: window.localStorage
         },
@@ -110,11 +107,10 @@ i18n
     },
     detection: {
       order: [
-        "firstLanguageDetector",
-        "path",
-        "querystring",
-        "cookie",
         "localStorage",
+        "cookie",
+        "firstLanguageDetector",
+        "querystring",
         "navigator",
         "htmlTag",
         "path",

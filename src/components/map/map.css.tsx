@@ -4,7 +4,6 @@ export const MapBox = styled.div`
   position: relative;
   flex: 1;
   flex-shrink: 0;
-  height: 100%;
 `;
 
 export const NavigationBox = styled.div`

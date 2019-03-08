@@ -37,6 +37,8 @@ const LocationSelector: React.SFC<ILocationSelectorProps> = props => {
         value: currentCity
       }}
       isClearable={false}
+      menuShouldScrollIntoView={false}
+      menuShouldBlockScroll={true}
       options={currentCities}
       onChange={onSelect}
     />

@@ -1,8 +1,7 @@
-import { Link } from "@reach/router";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../language-selector";
-import { Menu, MenuItem, MenuList } from "./footer.css";
+import { Menu, MenuItem, MenuLink, MenuList } from "./footer.css";
 export const Footer: React.FunctionComponent = () => {
   const { t } = useTranslation();
   return (
@@ -12,14 +11,10 @@ export const Footer: React.FunctionComponent = () => {
           <LanguageSelector />
         </MenuItem>
         <MenuItem>
-          <Link to="/about">
-            <h1>{t("about_link")}</h1>
-          </Link>
+          <MenuLink to="/about">{t("about_link")}</MenuLink>
         </MenuItem>
         <MenuItem>
-          <Link to="/">
-            <h1>{t("map_link")}</h1>
-          </Link>
+          <MenuLink to="/">{t("map_link")}</MenuLink>
         </MenuItem>
       </MenuList>
     </Menu>
