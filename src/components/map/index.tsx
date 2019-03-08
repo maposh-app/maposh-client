@@ -16,6 +16,7 @@ interface IMapProps {
   map: IMapState;
   system: ISystemState;
   updatePan: typeof updatePan;
+  path: string;
 }
 
 type IMapViewport = IViewport & {

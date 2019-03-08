@@ -1,5 +1,8 @@
 {
   "title": "Maposh",
+  "about_link": "About",
+  "map_link": "Map",
+  "about": "Maposh helps professionals, from novices to experts, connect and share ideas in community-picked <1>third places</1>.",
   "city": {
     "moscow": "Moscow",
     "saint_petersburg": "Saint Petersburg"

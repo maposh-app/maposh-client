@@ -86,23 +86,20 @@ i18n
       escapeValue: false // not needed for react as it escapes by default
     },
     backend: {
-      backends: [
-        // LocalStorageBackend,
-        XHR
-      ],
+      backends: [LocalStorageBackend, XHR],
       backendOptions: [
-        //   {
-        //     prefix: "i18next_res_",
+        {
+          prefix: "i18next_res_",
 
-        //     // expiration
-        //     expirationTime: 24 * 3600,
+          // expiration
+          expirationTime: 24 * 3600,
 
-        //     // language versions
-        //     versions: {},
+          // language versions
+          versions: {},
 
-        //     // can be either window.localStorage or window.sessionStorage. Default: window.localStorage
-        //     store: window.localStorage
-        //   },
+          // can be either window.localStorage or window.sessionStorage. Default: window.localStorage
+          store: window.localStorage
+        },
         {
           loadPath: `${process.env.PUBLIC_URL}/locales/{{lng}}/{{ns}}.json`
         }

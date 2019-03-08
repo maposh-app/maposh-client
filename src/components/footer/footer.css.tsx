@@ -15,7 +15,6 @@ export const MenuList = styled.ul`
   margin: 0;
   align-items: center;
   display: flex;
-  justify-content: space-between;
   list-style-type: none;
 `;
 

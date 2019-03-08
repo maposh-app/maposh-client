@@ -8,12 +8,17 @@ export const Footer: React.FunctionComponent = () => {
   return (
     <Menu>
       <MenuList>
-        <MenuItem style={{ paddingRight: "1em" }}>
+        <MenuItem style={{ marginRight: "auto" }}>
           <LanguageSelector />
         </MenuItem>
         <MenuItem>
           <Link to="/about">
-            <h1>{t("title")}</h1>
+            <h1>{t("about_link")}</h1>
+          </Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to="/">
+            <h1>{t("map_link")}</h1>
           </Link>
         </MenuItem>
       </MenuList>
