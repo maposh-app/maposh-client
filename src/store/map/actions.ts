@@ -1,9 +1,9 @@
+import { Action } from "redux";
 import { ThunkAction } from "redux-thunk";
+import { MaposhState } from "..";
 import { getBoundary } from "../../config";
 import { ICity } from "../../model/location";
 import { ILocationState, IViewportState, UPDATE_MAP } from "./types";
-import { MaposhState } from "..";
-import { Action } from "redux";
 
 export function updatePan(newPan: IViewportState) {
   return {
@@ -18,14 +18,7 @@ export function updateCity(
   return (dispatch, getState) => {
     const { map } = getState();
     const newBoundary = getBoundary(newCity);
-    const [
-      minLongitude,
-      minLatitude,
-      maxLongitude,
-      maxLatitude,
-      cityCenterLongitude,
-      cityCenterLatitude
-    ] = newBoundary;
+    const [, , , , cityCenterLongitude, cityCenterLatitude] = newBoundary;
     return dispatch({
       type: UPDATE_MAP,
       payload: {

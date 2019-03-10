@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import "mapbox-gl/dist/mapbox-gl.css";
 import * as React from "react";
 import ReactMapGL, { NavigationControl, ViewState } from "react-map-gl";
@@ -59,6 +60,17 @@ class Map extends React.Component<IMapProps> {
 
   public componentDidMount() {
     this.locate();
+    if (this.map && this.map.current) {
+      const map = this.map.current.getMap();
+      const waiting = () => {
+        if (!(map && map.isStyleLoaded())) {
+          setTimeout(waiting, 200);
+        } else {
+          this.setLanguage();
+        }
+      };
+      waiting();
+    }
   }
 
   public componentDidUpdate(prevProps: IMapProps) {
@@ -129,17 +141,60 @@ class Map extends React.Component<IMapProps> {
       }
     }
   }
+
+  private withinBoundingBox(longitude: number, latitude: number) {
+    const [
+      minLongitude,
+      minLatitude,
+      maxLongitude,
+      maxLatitude
+    ] = this.props.map.location.boundingBox;
+    return (
+      _.inRange(longitude, minLongitude, maxLongitude) &&
+      _.inRange(latitude, minLatitude, maxLatitude)
+    );
+  }
   private locate() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(position => {
-        this.props.updatePan({
-          viewport: {
-            ...this.props.map.viewport,
-            longitude: position.coords.longitude,
-            latitude: position.coords.latitude
+    if (
+      !this.withinBoundingBox(
+        this.props.map.viewport.longitude,
+        this.props.map.viewport.latitude
+      )
+    ) {
+      const [
+        ,
+        ,
+        ,
+        ,
+        cityCenterLongitude,
+        cityCenterLatitude
+      ] = this.props.map.location.boundingBox;
+      this.props.updatePan({
+        viewport: {
+          ...this.props.map.viewport,
+          longitude: cityCenterLongitude,
+          latitude: cityCenterLatitude
+        }
+      });
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          if (
+            this.withinBoundingBox(
+              position.coords.longitude,
+              position.coords.latitude
+            )
+          ) {
+            this.props.updatePan({
+              viewport: {
+                ...this.props.map.viewport,
+                longitude: position.coords.longitude,
+                latitude: position.coords.latitude
+              }
+            });
           }
         });
-      });
+      }
     }
   }
 }

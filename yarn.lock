@@ -1145,6 +1145,11 @@
   dependencies:
     "@types/jest-diff" "*"
 
+"@types/lodash@^4.14.122":
+  version "4.14.122"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.122.tgz#3e31394c38cf1e5949fb54c1192cbc406f152c6c"
+  integrity sha512-9IdED8wU93ty8gP06ninox+42SBSJHp2IAamsSYMUY76mshRTeUsid/gtbl8ovnOwy8im41ib4cxTiIYMXGKew==
+
 "@types/mapbox-gl@*", "@types/mapbox-gl@^0.51.4":
   version "0.51.4"
   resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-0.51.4.tgz#74ae72af6ea8fcead9a85b44d408e8bc97f91bb5"
@@ -9386,7 +9391,7 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-map-gl@^4.0.13:
+react-map-gl@^4.0.14:
   version "4.0.14"
   resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-4.0.14.tgz#3bd79d9402a40496427791b7d4aa04ce68b3561d"
   integrity sha512-Ijr0UIQ/wLGJZQgLzNDY2DVCduaLm4ILptEMoaKz66XG+XEEk27SssFWkfs2++E12TlFb7RctxiYRtEi87HyCw==
