@@ -1,4 +1,4 @@
-import { Link } from "@reach/router";
+import { Link } from "react-router-dom";
 import config from "../../config";
 import styled from "../../theme/styled-components";
 

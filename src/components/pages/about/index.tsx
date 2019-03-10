@@ -1,7 +1,7 @@
-import { RouteComponentProps } from "@reach/router";
 import * as React from "react";
 import { Trans } from "react-i18next";
 import { connect } from "react-redux";
+import { RouteComponentProps } from "react-router-dom";
 import { MaposhState } from "../../../store";
 import { AboutContent } from "./about.css";
 

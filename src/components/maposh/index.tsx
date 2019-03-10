@@ -1,7 +1,7 @@
-import { Router } from "@reach/router";
 import "normalize.css";
 import * as React from "react";
 import { Provider } from "react-redux";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import configureStore from "../../store";
 import Container from "../container";
 import { Footer } from "../footer/footer";
@@ -15,14 +15,16 @@ const store = configureStore();
 const Maposh: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
-      <Container>
-        <Header />
-        <Router component={Content}>
-          <Map path="/" />
-          <About path="/about" />
-        </Router>
-        <Footer />
-      </Container>
+      <Router>
+        <Container>
+          <Header />
+          <Content>
+            <Route path="/" component={Map} />
+            <Route path="/about" component={About} />
+          </Content>
+          <Footer />
+        </Container>
+      </Router>
     </Provider>
   );
 };
