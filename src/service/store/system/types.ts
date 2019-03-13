@@ -4,7 +4,11 @@ export interface ILanguageState {
   language: ILanguage;
 }
 
-export type ISystemState = ILanguageState;
+export interface IUserState {
+  isAuthenticated: boolean;
+}
+
+export type ISystemState = ILanguageState & IUserState;
 
 export const UPDATE_SESSION = "UPDATE_SESSION";
 

@@ -18,7 +18,6 @@ export const OptionsBox = styled(SelectorBox)`
 `;
 
 export const LanguageBox = styled.div`
-  flex-shrink: 0;
   display: flex;
   flex-flow: row;
   justify-content: center; /* align horizontal */

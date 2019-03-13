@@ -17,7 +17,6 @@ interface IMapProps {
   map: IMapState;
   system: ISystemState;
   updatePan: typeof updatePan;
-  path: string;
 }
 
 type IMapViewport = IViewport & {
@@ -25,7 +24,7 @@ type IMapViewport = IViewport & {
   height: number;
 };
 
-class Map extends React.Component<IMapProps> {
+class BaseMap extends React.Component<IMapProps> {
   private map: React.RefObject<ReactMapGL>;
   public constructor(props: IMapProps) {
     super(props);
@@ -204,7 +203,9 @@ const mapStateToProps = (state: MaposhState) => ({
   map: state.map
 });
 
-export default connect(
+const MaposhMap = connect(
   mapStateToProps,
   { updatePan }
-)(Map);
+)(BaseMap);
+
+export default MaposhMap;

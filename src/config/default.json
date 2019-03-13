@@ -5,7 +5,8 @@
     "colorPure": "#e1f5fe",
     "colorTender": "#546e7a",
     "colorVisitedLink": "#5a5c51",
-    "iconSize": "32px"
+    "iconSize": "32px",
+    "elementBorderRadius": "16px"
   },
   "locale": {
     "default": "ru",

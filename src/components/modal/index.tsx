@@ -1,5 +1,6 @@
 import * as React from "react";
 import ReactModal from "react-modal";
+import { RouteComponentProps } from "react-router";
 import { ModalContent, StyledModal } from "./modal.css";
 
 export interface IModal {
@@ -39,4 +40,21 @@ const Modal: React.FC<IModal> = ({
   );
 };
 
-export default StyledModal(Modal);
+const EnhancedModal = StyledModal(Modal);
+
+export const NamedModal: (
+  name: string,
+  content: React.ReactNode
+) => React.FC<RouteComponentProps> = (name, content) => props => {
+  const re = new RegExp(`${name}`);
+  const shouldModalOpen = (locationPath: string) => re.test(locationPath);
+  return (
+    <EnhancedModal
+      className={name}
+      isOpen={shouldModalOpen(props.location.pathname)}
+      onRequestClose={() => props.history.push("/")}
+      content={content}
+      shouldCloseOnOverlayClick={true}
+    />
+  );
+};

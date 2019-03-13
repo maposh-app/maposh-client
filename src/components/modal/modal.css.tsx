@@ -1,4 +1,5 @@
 import { IModal } from ".";
+import config from "../../config";
 import styled from "../../service/theme/styled-components";
 
 export const ModalContent = styled.div`
@@ -6,9 +7,11 @@ export const ModalContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: auto;
-  padding: 2em;
-  border-radius: 7%;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  border-radius: ${config.theme.elementBorderRadius};
   background-color: #fff;
 `;
 
@@ -23,17 +26,15 @@ export const StyledModal = (Modal: React.FC<IModal>) => styled(Modal)`
     justify-content: center;
     align-items: center;
     background: rgba(0, 0, 0, 0.75);
-    z-index: 3;
+    z-index: 99;
   }
   &__content {
     display: flex;
     align-content: center;
     outline: none;
-    width: 50%;
-    height: 80%;
+    width: 40%;
     @media (max-width: 480px) {
       width: 90%;
-      height: 70%;
     }
   }
 `;

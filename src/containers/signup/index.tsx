@@ -1,20 +1,43 @@
 import { Formik, FormikActions, FormikProps } from "formik";
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import * as React from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { Link, withRouter } from "react-router-dom";
 import * as yup from "yup";
-import Modal from "../../components/modal";
+import {
+  FormContainer,
+  FormContent,
+  FormPrompt,
+  FormSubmitButton
+} from "../../components/form/form.css";
+import { NamedModal } from "../../components/modal";
 import { IFormFields, IFormStatus } from "../../model/form";
 import { generateFormFields } from "../../utils/transform";
-import { Form, FormContainer } from "./signup.css";
 
-interface ISignupFormValues {
+export interface ISignupFormValues {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   passwordConfirm: string;
 }
+
+export const SignupForm = (formFields: IFormFields[], status: IFormStatus) => (
+  props: FormikProps<ISignupFormValues>
+) => {
+  return (
+    <FormContent onSubmit={props.handleSubmit}>
+      {generateFormFields(formFields, "signup-field")}
+      <FormSubmitButton type="submit">
+        {props.isSubmitting ? status.submitting : status.submit}
+      </FormSubmitButton>
+      <FormPrompt>
+        <Trans i18nKey="login.prompt">
+          Already have an account? Sign in <Link to="/login">here</Link>.
+        </Trans>
+      </FormPrompt>
+    </FormContent>
+  );
+};
 
 const initialValues: ISignupFormValues = {
   firstName: "",
@@ -30,23 +53,7 @@ const submitForm = (values: ISignupFormValues, actions: FormikActions<{}>) => {
   console.log({ values, actions });
 };
 
-const mySignupForm = (formFields: IFormFields[], status: IFormStatus) => (
-  props: FormikProps<ISignupFormValues>
-) => {
-  return (
-    <Form onSubmit={props.handleSubmit}>
-      {generateFormFields(formFields, "signup-field")}
-      <button
-        className="button is-block is-link is-medium is-fullwidth"
-        type="submit"
-      >
-        {props.isSubmitting ? status.submitting : status.submit}
-      </button>
-    </Form>
-  );
-};
-
-export const Signup = () => {
+export const BaseSignup = () => {
   const { t } = useTranslation();
 
   const formFields: IFormFields[] = t("signup.form", {
@@ -88,26 +95,12 @@ export const Signup = () => {
         initialValues={initialValues}
         validationSchema={signupSchema}
         onSubmit={submitForm}
-        render={mySignupForm(formFields, formStatus)}
+        render={SignupForm(formFields, formStatus)}
       />
     </FormContainer>
   );
 };
 
-const SignupModal: React.FC<RouteComponentProps> = props => {
-  const shouldSignupOpen = (locationPath: string) =>
-    /\bsignup\b/.test(locationPath);
-  return (
-    <Modal
-      className="signup"
-      isOpen={shouldSignupOpen(props.location.pathname)}
-      onRequestClose={() => props.history.push("/")}
-      content={<Signup />}
-      shouldCloseOnOverlayClick={true}
-    />
-  );
-};
+const SignupModal = withRouter(NamedModal("signup", <BaseSignup />));
 
-const EnhancedSignupModal = withRouter(SignupModal);
-
-export default EnhancedSignupModal;
+export default SignupModal;

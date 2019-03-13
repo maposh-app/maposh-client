@@ -1,11 +1,10 @@
 import * as React from "react";
 import { Trans } from "react-i18next";
-import { connect } from "react-redux";
-import { RouteComponentProps } from "react-router-dom";
-import { MaposhState } from "../../../service/store";
+import { withRouter } from "react-router-dom";
+import { NamedModal } from "../../../components/modal";
 import { AboutContent } from "./about.css";
 
-const About: React.SFC<RouteComponentProps<{}>> = () => {
+const BaseAbout: React.FC = () => {
   return (
     <AboutContent>
       <Trans i18nKey="about">
@@ -16,9 +15,6 @@ const About: React.SFC<RouteComponentProps<{}>> = () => {
     </AboutContent>
   );
 };
+const About = withRouter(NamedModal("about", <BaseAbout />));
 
-const mapStateToProps = (state: MaposhState) => ({
-  system: state.system
-});
-
-export default connect(mapStateToProps)(About);
+export default About;

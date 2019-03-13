@@ -6,7 +6,8 @@ import {
 } from "../../../service/store/system/types";
 
 const initialSystemState: ISystemState = {
-  language: config.locale.default
+  language: config.locale.default,
+  isAuthenticated: false
 };
 
 export function systemReducer(

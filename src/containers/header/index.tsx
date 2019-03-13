@@ -1,9 +1,22 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { MaposhState } from "../../service/store";
+import { ISystemState } from "../../service/store/system/types";
 import CitySelector from "../city-selector";
+import { UserMenuID } from "../user";
 import { Menu, MenuItem, MenuLink, MenuList } from "./header.css";
 
-export const Header: React.FunctionComponent = () => {
+const mapStateToProps = (state: MaposhState) => ({
+  system: state.system
+});
+
+interface IHeaderProps {
+  system: ISystemState;
+}
+
+const Header: React.FC<IHeaderProps> = props => {
+  const { isAuthenticated } = props.system;
   const { t } = useTranslation();
   return (
     <Menu>
@@ -15,9 +28,15 @@ export const Header: React.FunctionComponent = () => {
           <CitySelector />
         </MenuItem>
         <MenuItem>
-          <MenuLink to="/signup">{t("signup.title")}</MenuLink>
+          {isAuthenticated ? (
+            <UserMenuID />
+          ) : (
+            <MenuLink to="/login">{t("login.title")}</MenuLink>
+          )}
         </MenuItem>
       </MenuList>
     </Menu>
   );
 };
+
+export default connect(mapStateToProps)(Header);

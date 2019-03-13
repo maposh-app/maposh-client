@@ -4,11 +4,11 @@
   "map_link": "Map",
   "about": "Maposh helps professionals, from novices to experts, connect and share ideas in community-picked <1>third places</1>.",
   "signup": {
-    "prompt": "Don't have an account? <1>Sign up</1>",
+    "prompt": "Don't have an account? Sign up <1>here</1>.",
     "title": "Sign-up",
     "status": {
-      "submit": "Submit",
-      "submitting": "Submitting..."
+      "submit": "Sign up",
+      "submitting": "Signing up..."
     },
     "form": [
       { "name": "firstName", "placeholder": "First Name" },
@@ -40,7 +40,25 @@
     }
   },
   "login": {
-    "prompt": "Login"
+    "prompt": "Already have an account? Sign in <1>here</1>.",
+    "title": "Login",
+    "status": {
+      "submit": "Login",
+      "submitting": "Ligging in..."
+    },
+    "form": [
+      { "name": "email", "placeholder": "Email Address" },
+      {
+        "name": "password",
+        "placeholder": "Password",
+        "type": "password"
+      }
+    ],
+    "errors": {
+      "email": "Please provide your email.",
+      "emailIsValid": "Please provide a valid email.",
+      "password": "Please provide a password."
+    }
   },
   "city": {
     "moscow": "Moscow",

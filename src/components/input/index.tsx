@@ -1,6 +1,6 @@
 import { ErrorMessage, FieldProps } from "formik";
 import React from "react";
-import { InputField, StyledErrorMessage } from "./input.css";
+import { Input, InputBox, StyledErrorMessage } from "./input.css";
 
 type InputProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -12,20 +12,10 @@ export const InputFieldWithErrors = ({
   ...props
 }: InputProps & FieldProps) => {
   return (
-    <InputField>
-      {/* <Field
-        name={field.name}
-        value={field.value || ""}
-        placeholder={props.placeholder}
-        component={StyledInput}
-      /> */}
-      <input
-        {...field}
-        value={field.value || ""}
-        {...props}
-        className={`__input`}
-      />
+    <InputBox>
+      {props.placeholder}
+      <Input {...field} value={field.value || ""} type={props.type} />
       <ErrorMessage name={field.name} component={StyledErrorMessage} />
-    </InputField>
+    </InputBox>
   );
 };
