@@ -42,4 +42,40 @@ export function getDefaultCity(): ICity {
   return config.map.locations.default;
 }
 
+export function configureApiGateway(): {
+  graphql_endpoint: string;
+  graphql_endpoint_iam_region: string;
+} {
+  const stage = process.env.REACT_APP_STAGE;
+  const url = process.env[`REACT_APP_${stage}_API_GATEWAY_URL`] || "";
+  const region = process.env[`REACT_APP_${stage}_API_GATEWAY_REGION`] || "";
+  return {
+    graphql_endpoint: url,
+    graphql_endpoint_iam_region: region
+  };
+}
+
+export function configureAuth(): {
+  region: string;
+  userPoolId: string;
+  identityPoolId: string;
+  userPoolWebClientId: string;
+} {
+  const stage = process.env.REACT_APP_STAGE;
+  const region = process.env[`REACT_APP_${stage}_COGNITO_REGION`] || "";
+  const userPoolId =
+    process.env[`REACT_APP_${stage}_COGNITO_USER_POOL_ID`] || "";
+  const identityPoolId =
+    process.env[`REACT_APP_${stage}_COGNITO_IDENTITY_POOL_ID`] || "";
+  const userPoolWebClientId =
+    process.env[`REACT_APP_${stage}_COGNITO_APP_CLIENT_ID`] || "";
+
+  return {
+    region,
+    userPoolId,
+    identityPoolId,
+    userPoolWebClientId
+  };
+}
+
 export default config;

@@ -7,6 +7,8 @@
     "@types/react-redux": "^7.0.1",
     "apollo-boost": "^0.3.1",
     "apollo-client": "^2.5.1",
+    "aws-amplify": "^1.1.22",
+    "formik": "^1.5.1",
     "graphql": "^14.1.1",
     "i18next": "^15.0.4",
     "i18next-browser-languagedetector": "^3.0.1",
@@ -21,6 +23,7 @@
     "react-dom": "^16.8.3",
     "react-i18next": "^10.2.0",
     "react-map-gl": "^4.0.14",
+    "react-modal": "^3.8.1",
     "react-redux": "^6.0.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.5",
@@ -30,7 +33,8 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "styled-components": "^4.1.3",
-    "typography": "^0.16.18"
+    "typography": "^0.16.18",
+    "yup": "^0.26.10"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -47,11 +51,13 @@
     "@types/react": "^16.8.6",
     "@types/react-dom": "^16.8.2",
     "@types/react-map-gl": "^4.0.2",
+    "@types/react-modal": "^3.8.1",
     "@types/react-router-dom": "^4.3.1",
     "@types/react-select": "^2.0.13",
     "@types/react-spinkit": "^3.0.5",
     "@types/styled-components": "4.1.8",
     "@types/typography": "^0.16.2",
+    "@types/yup": "^0.26.12",
     "babel-core": "^6.26.3",
     "gulp": "^4.0.0",
     "gulp-typescript": "^5.0.0",
@@ -66,5 +72,10 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "@/(.*)": "<rootDir>/src/$1"
+    }
+  }
 }
