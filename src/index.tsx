@@ -1,19 +1,21 @@
 import * as React from "react";
+import { Suspense } from "react";
 import * as ReactDOM from "react-dom";
 
-import "./i18n";
-
-import { Suspense } from "react";
 import Spinner from "react-spinkit";
+import "./service/i18n";
 
-import Maposh from "./components/maposh";
+import bootstrapAmplify from "./service/middleware";
+import bootstrapTheme from "./service/theme";
+
+import Maposh from "./containers/maposh";
+
 import "./index.css";
 import registerServiceWorker from "./registerServiceWorker";
-import Typographer from "./theme/typography";
-import config from "./config";
 
-Typographer.injectStyles();
-document.body.style.backgroundColor = config.theme.colorPrimary;
+bootstrapTheme();
+bootstrapAmplify();
+
 ReactDOM.render(
   <Suspense fallback={<Spinner name="rotating-plane" />}>
     <Maposh />

@@ -3,6 +3,63 @@
   "about_link": "О проекте",
   "map_link": "Карта",
   "about": "Мэпош помогает профессионалам, начинающим и продвинутым, находить друг друга и обмениваться идеями в подобранных сообществом <1>третьих местах</1>.",
+  "signup": {
+    "prompt": "Нет аккаунта? Зарегистрируйтесь <1>здесь</1>.",
+    "title": "Регистрация",
+    "status": {
+      "submit": "Зарегистрироваться",
+      "submitting": "Регистрируюсь..."
+    },
+    "form": [
+      { "name": "firstName", "placeholder": "Имя" },
+      { "name": "lastName", "placeholder": "Фамилия" },
+      { "name": "email", "placeholder": "Электронная Почта" },
+      {
+        "name": "password",
+        "placeholder": "Пароль",
+        "type": "password"
+      },
+      {
+        "name": "passwordConfirmation",
+        "placeholder": "Подтвердите Пароль",
+        "type": "password"
+      }
+    ],
+    "errors": {
+      "firstName": "Введите имя, пожалуйста.",
+      "lastName": "Введите фамилию, пожалуйста.",
+      "email": "Введите почту, пожалуйста.",
+      "emailIsValid": "Введите действующую почту, пожалуйста.",
+      "password": "Введите пароль, пожалуйста.",
+      "passwordLength": "Введите пароль длиннее 8 знаков, пожалуйста.",
+      "passwordLowercaseLetter": "Включите букву нижнего регистра, пожалуйста.",
+      "passwordUppercaseLetter": "Включите букву верхнего регистра, пожалуйста.",
+      "passwordNumber": "Включите число, пожалуйста.",
+      "passwordSpecialCharacter": "Включите специальный символ: !#$%&()*+,-./\\:;<=>?@]['\"^_{|}~",
+      "passwordConfirmation": "Пароли не совпадают."
+    }
+  },
+  "login": {
+    "prompt": "Уже есть аккаунт? Войдите <1>здесь</1>.",
+    "title": "Войти",
+    "status": {
+      "submit": "Войти",
+      "submitting": "Вхожу..."
+    },
+    "form": [
+      { "name": "email", "placeholder": "Электронная Почта" },
+      {
+        "name": "password",
+        "placeholder": "Пароль",
+        "type": "password"
+      }
+    ],
+    "errors": {
+      "email": "Введите почту, пожалуйста.",
+      "emailIsValid": "Введите действующую почту, пожалуйста.",
+      "password": "Введите пароль, пожалуйста."
+    }
+  },
   "city": {
     "moscow": "Москва",
     "saint_petersburg": "Санкт-Петербург"

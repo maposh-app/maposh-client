@@ -1,14 +1,16 @@
 import * as React from "react";
+import { getWindowHeight, getWindowWidth } from "../../utils/extract";
 import { Box } from "./container.css";
 
 const Container: React.FunctionComponent = props => {
-  const [height, setHeight] = React.useState(window.innerHeight);
-  const [width, setWidth] = React.useState(document.body.clientWidth);
+  const [height, setHeight] = React.useState(getWindowHeight());
+  const [width, setWidth] = React.useState(getWindowWidth());
   const updateWindow = () => {
-    setWidth(window.innerWidth);
-    setHeight(window.innerHeight);
+    setWidth(getWindowWidth());
+    setHeight(getWindowHeight());
   };
   React.useEffect(() => {
+    updateWindow();
     window.addEventListener("resize", updateWindow);
     return () => window.removeEventListener("resize", updateWindow);
   });
