@@ -3,6 +3,45 @@
   "about_link": "About",
   "map_link": "Map",
   "about": "Maposh helps professionals, from novices to experts, connect and share ideas in community-picked <1>third places</1>.",
+  "signup": {
+    "prompt": "Don't have an account? <1>Sign up</1>",
+    "title": "Sign-up",
+    "status": {
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    },
+    "form": [
+      { "name": "firstName", "placeholder": "First Name" },
+      { "name": "lastName", "placeholder": "Last Name" },
+      { "name": "email", "placeholder": "Email Address" },
+      {
+        "name": "password",
+        "placeholder": "Password",
+        "type": "password"
+      },
+      {
+        "name": "passwordConfirmation",
+        "placeholder": "Confirm Password",
+        "type": "password"
+      }
+    ],
+    "errors": {
+      "firstName": "Please provide your first name.",
+      "lastName": "Please provide your surname.",
+      "email": "Please provide your email.",
+      "emailIsValid": "Please provide a valid email.",
+      "password": "Please provide a password.",
+      "passwordLength": "Please make a password longer than 8 characters.",
+      "passwordUppercaseLetter": "Please include an upper-case letter.",
+      "passwordLowercaseLetter": "Please include an lower-case letter.",
+      "passwordNumber": "Please include a numeral.",
+      "passwordSpecialCharacter": "Please include a special character: !#$%&()*+,-./\\:;<=>?@]['\"^_{|}~",
+      "passwordConfirmation": "Passwords do not match."
+    }
+  },
+  "login": {
+    "prompt": "Login"
+  },
   "city": {
     "moscow": "Moscow",
     "saint_petersburg": "Saint Petersburg"

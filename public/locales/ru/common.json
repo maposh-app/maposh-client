@@ -3,6 +3,45 @@
   "about_link": "О проекте",
   "map_link": "Карта",
   "about": "Мэпош помогает профессионалам, начинающим и продвинутым, находить друг друга и обмениваться идеями в подобранных сообществом <1>третьих местах</1>.",
+  "signup": {
+    "prompt": "Нет аккаунта? <1>Зарегистрироваться</1>",
+    "title": "Регистрация",
+    "status": {
+      "submit": "Отправить",
+      "submitting": "Отправляю..."
+    },
+    "form": [
+      { "name": "firstName", "placeholder": "Имя" },
+      { "name": "lastName", "placeholder": "Фамилия" },
+      { "name": "email", "placeholder": "Электронная почта" },
+      {
+        "name": "password",
+        "placeholder": "Пароль",
+        "type": "password"
+      },
+      {
+        "name": "passwordConfirmation",
+        "placeholder": "Подтвердите Пароль",
+        "type": "password"
+      }
+    ],
+    "errors": {
+      "firstName": "Введите имя, пожалуйста.",
+      "lastName": "Введите фамилию, пожалуйста.",
+      "email": "Введите почту, пожалуйста.",
+      "emailIsValid": "Введите действующую почту, пожалуйста.",
+      "password": "Введите пароль, пожалуйста.",
+      "passwordLength": "Введите пароль длиннее 8 знаков, пожалуйста.",
+      "passwordLowercaseLetter": "Включите букву нижнего регистра, пожалуйста.",
+      "passwordUppercaseLetter": "Включите букву верхнего регистра, пожалуйста.",
+      "passwordNumber": "Включите число, пожалуйста.",
+      "passwordSpecialCharacter": "Включите специальный символ: !#$%&()*+,-./\\:;<=>?@]['\"^_{|}~",
+      "passwordConfirmation": "Пароли не совпадают."
+    }
+  },
+  "login": {
+    "prompt": "Войти"
+  },
   "city": {
     "moscow": "Москва",
     "saint_petersburg": "Санкт-Петербург"

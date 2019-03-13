@@ -1,4 +1,4 @@
-import styled from "../../theme/styled-components";
+import styled from "../../service/theme/styled-components";
 
 export const Box = styled.div`
   display: flex !important;
