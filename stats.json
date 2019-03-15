@@ -1,0 +1,26 @@
+yarn run v1.13.0
+$ /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/node_modules/.bin/webpack --profile --json
+{
+  "errors": [
+    "Entry module not found: Error: Can't resolve './src' in '/Users/sdll/Documents/Work/Projects/Maposh/maposh-client'\nresolve './src' in '/Users/sdll/Documents/Work/Projects/Maposh/maposh-client'\n  using description file: /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/package.json (relative path: .)\n    Field 'browser' doesn't contain a valid alias configuration\n    using description file: /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/package.json (relative path: ./src)\n      no extension\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src is not a file\n      .wasm\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src.wasm doesn't exist\n      .mjs\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src.mjs doesn't exist\n      .js\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src.js doesn't exist\n      .json\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src.json doesn't exist\n      as directory\n        existing directory\n          using path: /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src/index\n            using description file: /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/package.json (relative path: ./src/index)\n              no extension\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src/index doesn't exist\n              .wasm\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src/index.wasm doesn't exist\n              .mjs\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src/index.mjs doesn't exist\n              .js\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src/index.js doesn't exist\n              .json\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/sdll/Documents/Work/Projects/Maposh/maposh-client/src/index.json doesn't exist"
+  ],
+  "warnings": [
+    "configuration\nThe 'mode' option has not been set, webpack will fallback to 'production' for this value. Set 'mode' option to 'development' or 'production' to enable defaults for each environment.\nYou can also set it to 'none' to disable any default behavior. Learn more: https://webpack.js.org/concepts/mode/"
+  ],
+  "version": "4.28.3",
+  "hash": "8d7cae485b360aa1fa8c",
+  "time": 78,
+  "builtAt": 1552558596200,
+  "publicPath": "",
+  "outputPath": "/Users/sdll/Documents/Work/Projects/Maposh/maposh-client/dist",
+  "assetsByChunkName": {},
+  "assets": [],
+  "filteredAssets": 0,
+  "entrypoints": {},
+  "namedChunkGroups": {},
+  "chunks": [],
+  "modules": [],
+  "filteredModules": 0,
+  "children": []
+}
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

@@ -1,71 +1,59 @@
-import { Formik, FormikActions, FormikProps } from "formik";
+import { Auth } from "aws-amplify";
+import { Formik } from "formik";
 import * as React from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { Link, withRouter } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import * as yup from "yup";
-import {
-  FormContainer,
-  FormContent,
-  FormPrompt,
-  FormSubmitButton
-} from "../../components/form/form.css";
+import { generateForm, IFormFields, IFormStatus } from "../../components/form";
+import { FormContainer } from "../../components/form/form.css";
 import { NamedModal } from "../../components/modal";
-import { IFormFields, IFormStatus } from "../../model/form";
-import { generateFormFields } from "../../utils/transform";
+import { MaposhState } from "../../service/store";
+import { updateUserStatus } from "../../service/store/system/actions";
+import { ISystemState } from "../../service/store/system/types";
 
-export interface ISignupFormValues {
-  firstName: string;
-  lastName: string;
+interface ISignupFormValues {
   email: string;
   password: string;
   passwordConfirm: string;
 }
-
-export const SignupForm = (formFields: IFormFields[], status: IFormStatus) => (
-  props: FormikProps<ISignupFormValues>
-) => {
-  return (
-    <FormContent onSubmit={props.handleSubmit}>
-      {generateFormFields(formFields, "signup-field")}
-      <FormSubmitButton type="submit">
-        {props.isSubmitting ? status.submitting : status.submit}
-      </FormSubmitButton>
-      <FormPrompt>
-        <Trans i18nKey="login.prompt">
-          Already have an account? Sign in <Link to="/login">here</Link>.
-        </Trans>
-      </FormPrompt>
-    </FormContent>
-  );
-};
-
-const initialValues: ISignupFormValues = {
-  firstName: "",
-  lastName: "",
+const signupFormInitialValues: ISignupFormValues = {
   email: "",
   password: "",
   passwordConfirm: ""
 };
+interface ISignupProps {
+  system: ISystemState;
+  updateUserStatus: typeof updateUserStatus;
+}
 
-const submitForm = (values: ISignupFormValues, actions: FormikActions<{}>) => {
-  // tslint:disable:no-console
-  console.log("submitting the form..");
-  console.log({ values, actions });
-};
+const BaseSignup: React.FC<ISignupProps> = props => {
+  const [isUserNew, setIsUserNew] = React.useState(true);
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
-export const BaseSignup = () => {
+  const checkIfUserIsNew = async () => {
+    const newUser = await Auth.signUp(email, password);
+    setIsUserNew(newUser !== null);
+  };
+
+  const submitSignupForm = async (values: ISignupFormValues) => {
+    setEmail(values.email);
+    setPassword(values.password);
+    checkIfUserIsNew();
+  };
+
   const { t } = useTranslation();
 
-  const formFields: IFormFields[] = t("signup.form", {
+  const signupFormFields: IFormFields[] = t("signup.form", {
     returnObjects: true
   });
-  const formStatus: IFormStatus = t("signup.status", {
+
+  const signupFormStatus: IFormStatus = t("signup.status", {
     returnObjects: true
   });
 
   const signupSchema = yup.object().shape({
-    firstName: yup.string().required(t("signup.errors.firstName")),
-    lastName: yup.string().required(t("signup.errors.lastName")),
     email: yup
       .string()
       .email(t("signup.errors.emailIsValid"))
@@ -89,18 +77,28 @@ export const BaseSignup = () => {
       )
       .required(t("signup.errors.passwordConfirmation"))
   });
+
   return (
     <FormContainer>
       <Formik
-        initialValues={initialValues}
+        initialValues={signupFormInitialValues}
         validationSchema={signupSchema}
-        onSubmit={submitForm}
-        render={SignupForm(formFields, formStatus)}
+        onSubmit={submitSignupForm}
+        render={generateForm(signupFormFields, signupFormStatus)}
       />
     </FormContainer>
   );
 };
 
-const SignupModal = withRouter(NamedModal("signup", <BaseSignup />));
+const mapStateToProps = (state: MaposhState) => ({
+  system: state.system
+});
+
+const Signup = connect(
+  mapStateToProps,
+  { updateUserStatus }
+)(BaseSignup);
+
+const SignupModal = withRouter(NamedModal("signup", <Signup />));
 
 export default SignupModal;

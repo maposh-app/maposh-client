@@ -3,22 +3,17 @@ import { getWindowHeight, getWindowWidth } from "../../utils/extract";
 import { Box } from "./container.css";
 
 const Container: React.FunctionComponent = props => {
-  const [height, setHeight] = React.useState(getWindowHeight());
-  const [width, setWidth] = React.useState(getWindowWidth());
+  const [height, setHeight] = React.useState(`${getWindowHeight()}px`);
+  const [width, setWidth] = React.useState(`${getWindowWidth()}px`);
   const updateWindow = () => {
-    setWidth(getWindowWidth());
-    setHeight(getWindowHeight());
+    setWidth(`${getWindowWidth()}px`);
+    setHeight(`${getWindowHeight()}px`);
   };
   React.useEffect(() => {
-    updateWindow();
     window.addEventListener("resize", updateWindow);
     return () => window.removeEventListener("resize", updateWindow);
   });
-  return (
-    <Box style={{ height: `${height}px`, width: `${width}px` }}>
-      {props.children}
-    </Box>
-  );
+  return <Box style={{ height, width }}>{props.children}</Box>;
 };
 
 export default Container;

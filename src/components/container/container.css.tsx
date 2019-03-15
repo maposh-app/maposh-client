@@ -4,6 +4,7 @@ export const Box = styled.div`
   display: flex !important;
   flex: 1;
   flex-flow: column;
+  flex-shrink: 0;
   margin: 0;
   padding: 0;
   justify-content: space-between;

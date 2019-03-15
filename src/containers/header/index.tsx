@@ -15,7 +15,7 @@ interface IHeaderProps {
   system: ISystemState;
 }
 
-const Header: React.FC<IHeaderProps> = props => {
+const BaseHeader: React.FC<IHeaderProps> = props => {
   const { isAuthenticated } = props.system;
   const { t } = useTranslation();
   return (
@@ -39,4 +39,6 @@ const Header: React.FC<IHeaderProps> = props => {
   );
 };
 
-export default connect(mapStateToProps)(Header);
+const Header = connect(mapStateToProps)(BaseHeader);
+
+export default Header;

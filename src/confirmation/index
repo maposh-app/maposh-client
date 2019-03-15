@@ -1,0 +1,113 @@
+import { Auth } from "aws-amplify";
+import * as React from "react";
+import { updateUserStatus } from "../service/store/system/actions";
+import { ISystemState } from "../service/store/system/types";
+
+interface IConfirmationFormValues {
+  confirmationCode: string;
+}
+
+const confirmationFormInitialValues: IConfirmationFormValues = {
+  confirmationCode: ""
+};
+
+interface IConfirmationProps {
+  system: ISystemState;
+  updateUserStatus: typeof updateUserStatus;
+}
+
+const BaseConfirmation: React.FC<IConfirmationProps> = props => {
+  const submitConfirmationForm = async (values: IConfirmationFormValues) => {
+    try {
+      await Auth.confirmSignUp(email, values.confirmationCode);
+      await Auth.signUp(email, password);
+      props.updateUserStatus({ isAuthenticated: true });
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  const { t } = useTranslation();
+
+  const signupFormFields: IFormFields[] = t("signup.form", {
+    returnObjects: true
+  });
+
+  const signupFormStatus: IFormStatus = t("signup.status", {
+    returnObjects: true
+  });
+
+  const signupSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email(t("signup.errors.emailIsValid"))
+      .required(t("signup.errors.email")),
+    password: yup
+      .string()
+      .required(t("signup.errors.password"))
+      .min(8, t("signup.errors.passwordLength"))
+      .matches(/[a-z]/, t("signup.errors.passwordLowercaseLetter"))
+      .matches(/[A-Z]/, t("signup.errors.passwordUppercaseLetter"))
+      .matches(/[0-9]/, t("signup.errors.passwordNumber"))
+      .matches(
+        /[a-zA-Z0-9]+[^a-zA-Z0-9\s]+/,
+        t("signup.errors.passwordSpecialCharacter")
+      ),
+    passwordConfirmation: yup
+      .string()
+      .oneOf(
+        [yup.ref("password"), null],
+        t("signup.errors.passwordConfirmation")
+      )
+      .required(t("signup.errors.passwordConfirmation"))
+  });
+
+  const confirmationFormFields: IFormFields[] = t("account_verification.form", {
+    returnObjects: true
+  });
+  const confirmationFormStatus: IFormStatus = t("account_verification.status", {
+    returnObjects: true
+  });
+
+  const confirmationSchema = yup.object().shape({
+    code: yup
+      .string()
+      .required(t("account_verification.errors.verification_code"))
+  });
+
+  return (
+    <FormContainer>
+      {!isUserNew ? (
+        <Formik
+          initialValues={signupFormInitialValues}
+          validationSchema={signupSchema}
+          onSubmit={submitSignupForm}
+          render={SignupForm(signupFormFields, signupFormStatus)}
+        />
+      ) : (
+        <Formik
+          initialValues={confirmationFormInitialValues}
+          validationSchema={confirmationSchema}
+          onSubmit={submitConfirmationForm}
+          render={ConfirmationForm(
+            confirmationFormFields,
+            confirmationFormStatus
+          )}
+        />
+      )}
+    </FormContainer>
+  );
+};
+
+const mapStateToProps = (state: MaposhState) => ({
+  system: state.system
+});
+
+const Signup = connect(
+  mapStateToProps,
+  { updateUserStatus }
+)(BaseSignup);
+
+const SignupModal = withRouter(NamedModal("signup", <Signup />));
+
+export default SignupModal;

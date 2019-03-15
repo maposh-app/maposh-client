@@ -3,16 +3,35 @@
   "about_link": "About",
   "map_link": "Map",
   "about": "Maposh helps professionals, from novices to experts, connect and share ideas in community-picked <1>third places</1>.",
+  "user_settings": {
+    "form": [
+      { "name": "firstName", "placeholder": "First Name" },
+      { "name": "lastName", "placeholder": "Last Name" }
+    ],
+    "errors": {
+      "firstName": "Please provide your first name.",
+      "lastName": "Please provide your surname."
+    }
+  },
+  "confirmation": {
+    "title": "Account Verification",
+    "status": {
+      "submit": "Verify",
+      "submitting": "Verifying..."
+    },
+    "form": [{ "name": "code", "placeholder": "Email Confirmation Code" }],
+    "errors": {
+      "verification_code": "Please enter the code sent to the e-mail address you have provided."
+    }
+  },
   "signup": {
-    "prompt": "Don't have an account? Sign up <1>here</1>.",
+    "prompt": "Don't have an account?\nSign up <1>here</1>.",
     "title": "Sign-up",
     "status": {
       "submit": "Sign up",
       "submitting": "Signing up..."
     },
     "form": [
-      { "name": "firstName", "placeholder": "First Name" },
-      { "name": "lastName", "placeholder": "Last Name" },
       { "name": "email", "placeholder": "Email Address" },
       {
         "name": "password",
@@ -26,8 +45,6 @@
       }
     ],
     "errors": {
-      "firstName": "Please provide your first name.",
-      "lastName": "Please provide your surname.",
       "email": "Please provide your email.",
       "emailIsValid": "Please provide a valid email.",
       "password": "Please provide a password.",
@@ -40,11 +57,11 @@
     }
   },
   "login": {
-    "prompt": "Already have an account? Sign in <1>here</1>.",
+    "prompt": "Already have an account?\nSign in <1>here</1>.",
     "title": "Login",
     "status": {
       "submit": "Login",
-      "submitting": "Ligging in..."
+      "submitting": "Logging in..."
     },
     "form": [
       { "name": "email", "placeholder": "Email Address" },
@@ -59,6 +76,9 @@
       "emailIsValid": "Please provide a valid email.",
       "password": "Please provide a password."
     }
+  },
+  "signout": {
+    "title": "Sign Out"
   },
   "city": {
     "moscow": "Moscow",

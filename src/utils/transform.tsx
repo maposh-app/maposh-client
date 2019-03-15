@@ -1,8 +1,3 @@
-import { Field } from "formik";
-import * as React from "react";
-import { InputFieldWithErrors } from "../components/input";
-import { IFormFields } from "../model/form";
-
 interface IParams {
   [key: string]: string;
 }
@@ -19,16 +14,3 @@ export function selectify(block: IParams): IOptions {
   });
   return options;
 }
-
-export const generateFormFields = (
-  fields: IFormFields[],
-  keyPrefix: string
-) => {
-  return fields.map((props, idx) => (
-    <Field
-      {...props}
-      key={`${keyPrefix}-${idx}`}
-      component={InputFieldWithErrors}
-    />
-  ));
-};

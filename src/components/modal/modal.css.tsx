@@ -7,10 +7,7 @@ export const ModalContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 1em;
-  padding-bottom: 1em;
-  padding-left: 1.5em;
-  padding-right: 1.5em;
+  padding: 1em;
   border-radius: ${config.theme.elementBorderRadius};
   background-color: #fff;
 `;
@@ -32,9 +29,5 @@ export const StyledModal = (Modal: React.FC<IModal>) => styled(Modal)`
     display: flex;
     align-content: center;
     outline: none;
-    width: 40%;
-    @media (max-width: 480px) {
-      width: 90%;
-    }
   }
 `;
