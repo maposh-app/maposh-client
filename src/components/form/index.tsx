@@ -14,27 +14,47 @@ export interface IFormStatus {
   submit: string;
 }
 
-const generateFormFields = (fields: IFormFields[], keyPrefix: string) => {
+export const generateFormFields = (
+  fields: IFormFields[],
+  keyPrefix: string,
+  handleBlur?: (e: React.FocusEvent) => void
+) => {
   return fields.map((props, idx) => (
     <Field
       {...props}
       key={`${keyPrefix}-${idx}`}
       component={InputFieldWithErrors}
+      onBlur={handleBlur ? handleBlur : null}
     />
   ));
 };
 
+export const generateFormSubmissionButton = (
+  props: React.ButtonHTMLAttributes<HTMLButtonElement>,
+  status: IFormStatus,
+  isSubmitting = false
+) => {
+  return (
+    <FormSubmitButton {...props}>
+      {isSubmitting ? status.submitting : status.submit}
+    </FormSubmitButton>
+  );
+};
+
 export function generateForm<T>(
   formFields: IFormFields[],
-  status: IFormStatus
+  status: IFormStatus,
+  handleBlur?: (e: React.FocusEvent) => void
 ) {
   return (props: FormikProps<T>) => {
     return (
       <FormContent onSubmit={props.handleSubmit}>
-        {generateFormFields(formFields, "confirmation-field")}
-        <FormSubmitButton type="submit">
-          {props.isSubmitting ? status.submitting : status.submit}
-        </FormSubmitButton>
+        {generateFormFields(formFields, "submit-field", handleBlur)}
+        {generateFormSubmissionButton(
+          { type: "submit", disabled: !props.isValid || props.isSubmitting },
+          status,
+          props.isSubmitting
+        )}
       </FormContent>
     );
   };

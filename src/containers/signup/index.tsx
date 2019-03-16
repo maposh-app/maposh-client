@@ -1,16 +1,15 @@
 import { Auth } from "aws-amplify";
-import { Formik } from "formik";
+import { Formik, FormikActions } from "formik";
 import * as React from "react";
-import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { Trans, useTranslation } from "react-i18next";
 import * as yup from "yup";
 import { generateForm, IFormFields, IFormStatus } from "../../components/form";
-import { FormContainer } from "../../components/form/form.css";
-import { NamedModal } from "../../components/modal";
-import { MaposhState } from "../../service/store";
-import { updateUserStatus } from "../../service/store/system/actions";
-import { ISystemState } from "../../service/store/system/types";
+import {
+  FormContainer,
+  FormNav,
+  FormPrompt,
+  FormPromptBox
+} from "../../components/form/form.css";
 
 interface ISignupFormValues {
   email: string;
@@ -23,27 +22,34 @@ const signupFormInitialValues: ISignupFormValues = {
   passwordConfirm: ""
 };
 interface ISignupProps {
-  system: ISystemState;
-  updateUserStatus: typeof updateUserStatus;
+  override?: string;
+  authState?: string;
+  onStateChange?: (where: string, state: object) => void;
+  onAuthEvent?: (where: string, event: { type: string; data: string }) => void;
 }
 
-const BaseSignup: React.FC<ISignupProps> = props => {
-  const [isUserNew, setIsUserNew] = React.useState(true);
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
-  const checkIfUserIsNew = async () => {
-    const newUser = await Auth.signUp(email, password);
-    setIsUserNew(newUser !== null);
-  };
-
-  const submitSignupForm = async (values: ISignupFormValues) => {
-    setEmail(values.email);
-    setPassword(values.password);
-    checkIfUserIsNew();
-  };
-
+const Signup: React.FC<ISignupProps> = props => {
+  const [isLoading, setIsLoading] = React.useState(false);
   const { t } = useTranslation();
+
+  const submitSignupForm = (
+    values: ISignupFormValues,
+    actions: FormikActions<ISignupFormValues>
+  ) => {
+    setIsLoading(true);
+    Auth.signUp(values.email, values.password)
+      .then(
+        () =>
+          props.onStateChange &&
+          props.onStateChange("confirmSignUp", { username: values.email })
+      )
+      .catch(err => {
+        if (props.onAuthEvent) {
+          props.onAuthEvent("signUp", { type: "error", data: err.message });
+          actions.setSubmitting(false);
+        }
+      });
+  };
 
   const signupFormFields: IFormFields[] = t("signup.form", {
     returnObjects: true
@@ -78,27 +84,35 @@ const BaseSignup: React.FC<ISignupProps> = props => {
       .required(t("signup.errors.passwordConfirmation"))
   });
 
+  const goSignIn = () => {
+    if (props.onStateChange) {
+      props.onStateChange("signIn", {});
+    }
+  };
+
   return (
-    <FormContainer>
-      <Formik
-        initialValues={signupFormInitialValues}
-        validationSchema={signupSchema}
-        onSubmit={submitSignupForm}
-        render={generateForm(signupFormFields, signupFormStatus)}
-      />
-    </FormContainer>
+    <div>
+      {props.authState === "signUp" && (
+        <FormContainer>
+          <Formik
+            initialValues={signupFormInitialValues}
+            validationSchema={signupSchema}
+            onSubmit={submitSignupForm}
+            render={generateForm(signupFormFields, signupFormStatus)}
+          />
+          {props.onStateChange && (
+            <FormPrompt>
+              <FormPromptBox>
+                <Trans i18nKey="login.prompt">
+                  Already have an account? Sign in <FormNav onClick={() => goSignIn()}>here</FormNav>.
+                </Trans>
+              </FormPromptBox>
+            </FormPrompt>
+          )}
+        </FormContainer>
+      )}
+    </div>
   );
 };
 
-const mapStateToProps = (state: MaposhState) => ({
-  system: state.system
-});
-
-const Signup = connect(
-  mapStateToProps,
-  { updateUserStatus }
-)(BaseSignup);
-
-const SignupModal = withRouter(NamedModal("signup", <Signup />));
-
-export default SignupModal;
+export default Signup;

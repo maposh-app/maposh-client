@@ -77,7 +77,7 @@ i18n
       default: [config.locale.default]
     },
     load: "languageOnly",
-    debug: true,
+    debug: false,
     ns: ["common"],
     keySeparator: ".",
     defaultNS: "common",
@@ -102,7 +102,7 @@ i18n
       ]
     },
     react: {
-      wait: true
+      wait: true,
     },
     detection: {
       order: [
