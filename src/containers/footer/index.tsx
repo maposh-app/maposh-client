@@ -2,12 +2,12 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../language-selector";
 import { Menu, MenuItem, MenuLink, MenuList } from "./footer.css";
-export const Footer: React.FunctionComponent = () => {
+const Footer: React.FunctionComponent = () => {
   const { t } = useTranslation();
   return (
     <Menu>
       <MenuList>
-        <MenuItem style={{ marginRight: "auto" }}>
+        <MenuItem style={{ marginRight: "auto", flexShrink: 0 }}>
           <LanguageSelector />
         </MenuItem>
         <MenuItem>
@@ -20,3 +20,4 @@ export const Footer: React.FunctionComponent = () => {
     </Menu>
   );
 };
+export default Footer;

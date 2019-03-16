@@ -5,6 +5,8 @@ import styled from "../../service/theme/styled-components";
 export const Menu = styled.div`
   background-color: ${config.theme.colorPrimary};
   width: 100% !important;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
 `;
@@ -25,6 +27,5 @@ export const MenuItem = styled.li`
 `;
 
 export const MenuLink = styled(Link)`
-  font-size: 1em;
   font-weight: bold;
 `;

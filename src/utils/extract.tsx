@@ -6,7 +6,7 @@ export const getWindowHeight: () => number = () => {
   return (
     window.innerHeight ||
     document.documentElement.clientHeight ||
-    (root ? root.clientWidth : 0)
+    (root ? root.clientHeight : 0)
   );
 };
 

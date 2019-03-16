@@ -1,3 +1,4 @@
+import { I18n } from "aws-amplify";
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,11 +11,7 @@ import { MaposhState } from "../../service/store";
 import { updateLanguage } from "../../service/store/system/actions";
 import { ISystemState } from "../../service/store/system/types";
 import { selectify } from "../../utils/transform";
-import {
-  FlagControl,
-  FlagOption,
-  FlagSingleValue
-} from "./language-selector.css";
+import { FlagControl, FlagOption, FlagSingleValue } from "./language-selector.css";
 
 interface ISelectorProps {
   system: ISystemState;
@@ -38,6 +35,7 @@ const LanguageSelector: React.SFC<ISelectorProps> = props => {
       });
 
       i18n.changeLanguage(language);
+      I18n.setLanguage(language);
     }
   };
 

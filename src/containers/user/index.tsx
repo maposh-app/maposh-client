@@ -1,8 +1,9 @@
+import { SignOut } from "aws-amplify-react";
 import * as React from "react";
-import { UserPhotoID } from "./user.css";
+import { useTranslation } from "react-i18next";
 
 export const UserMenuID: React.FC = () => {
-  return (
-    <UserPhotoID src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Identicon.svg/1280px-Identicon.svg.png" />
-  );
+  const { t } = useTranslation();
+  // return <button onClick={() => Auth.signOut()}>{t("signout.title")}</button>;
+  return <SignOut />;
 };

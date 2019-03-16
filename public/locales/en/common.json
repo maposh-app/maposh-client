@@ -3,17 +3,79 @@
   "about_link": "About",
   "map_link": "Map",
   "about": "Maposh helps professionals, from novices to experts, connect and share ideas in community-picked <1>third places</1>.",
-  "signup": {
-    "prompt": "Don't have an account? Sign up <1>here</1>.",
-    "title": "Sign-up",
-    "status": {
-      "submit": "Sign up",
-      "submitting": "Signing up..."
-    },
+  "user": {
     "form": [
       { "name": "firstName", "placeholder": "First Name" },
-      { "name": "lastName", "placeholder": "Last Name" },
-      { "name": "email", "placeholder": "Email Address" },
+      { "name": "lastName", "placeholder": "Last Name" }
+    ],
+    "errors": {
+      "firstName": "Please provide your first name.",
+      "lastName": "Please provide your surname."
+    },
+    "troubleshooting": {
+      "forgotten_password": "Reset your <1>password</1>."
+    }
+  },
+  "password_reset": {
+    "title": "Password Reset",
+    "completion_prompt": "Back to Sign In",
+    "resend": "Resend Code",
+    "entry_form": [
+      { "name": "email", "placeholder": "Email Address", "type": "email" }
+    ],
+    "entry_form_status": {
+      "submit": "Send Code",
+      "submitting": "Sending..."
+    },
+    "submit_form": [
+      {
+        "name": "confirmationCode",
+        "placeholder": "Confirmation Code",
+        "type": "text"
+      },
+      {
+        "name": "newPassword",
+        "placeholder": "New Password",
+        "type": "password"
+      }
+    ],
+    "submit_form_status": {
+      "submit": "Change Password",
+      "submitting": "Changing..."
+    },
+    "errors": {
+      "confirmation_code": "Пожалуйста, введите код, присланный Вам на почту."
+    }
+  },
+  "account_confirmation": {
+    "title": "Account confirmation",
+    "completion_prompt": "Back to Sign In",
+    "resend": "Resend Code",
+    "status": {
+      "submit": "Verify",
+      "submitting": "Verifying..."
+    },
+    "form": [
+      { "name": "email", "placeholder": "Email Address", "type": "email" },
+      {
+        "name": "confirmationCode",
+        "placeholder": "Email Confirmation Code",
+        "type": "text"
+      }
+    ],
+    "errors": {
+      "confirmation_code": "Please enter the code sent to the e-mail address you have provided."
+    }
+  },
+  "signup": {
+    "prompt": "Sign up <1>here</1>.",
+    "title": "Sign-up",
+    "status": {
+      "submit": "Sign Up",
+      "submitting": "Signing Up..."
+    },
+    "form": [
+      { "name": "email", "placeholder": "Email Address", "type": "email" },
       {
         "name": "password",
         "placeholder": "Password",
@@ -26,8 +88,6 @@
       }
     ],
     "errors": {
-      "firstName": "Please provide your first name.",
-      "lastName": "Please provide your surname.",
       "email": "Please provide your email.",
       "emailIsValid": "Please provide a valid email.",
       "password": "Please provide a password.",
@@ -44,7 +104,7 @@
     "title": "Login",
     "status": {
       "submit": "Login",
-      "submitting": "Ligging in..."
+      "submitting": "Logging In..."
     },
     "form": [
       { "name": "email", "placeholder": "Email Address" },
@@ -59,6 +119,9 @@
       "emailIsValid": "Please provide a valid email.",
       "password": "Please provide a password."
     }
+  },
+  "signout": {
+    "title": "Sign Out"
   },
   "city": {
     "moscow": "Moscow",

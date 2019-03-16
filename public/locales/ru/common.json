@@ -3,17 +3,28 @@
   "about_link": "О проекте",
   "map_link": "Карта",
   "about": "Мэпош помогает профессионалам, начинающим и продвинутым, находить друг друга и обмениваться идеями в подобранных сообществом <1>третьих местах</1>.",
+  "user": {
+    "form": [
+      { "name": "firstName", "placeholder": "Имя" },
+      { "name": "lastName", "placeholder": "Фамилия" }
+    ],
+    "errors": {
+      "firstName": "Введите имя, пожалуйста.",
+      "lastName": "Введите фамилию, пожалуйста."
+    },
+    "troubleshooting": {
+      "forgotten_password": "Поменять <1>пароль</1>."
+    }
+  },
   "signup": {
-    "prompt": "Нет аккаунта? Зарегистрируйтесь <1>здесь</1>.",
+    "prompt": "Регистрация <1>здесь</1>.",
     "title": "Регистрация",
     "status": {
       "submit": "Зарегистрироваться",
       "submitting": "Регистрируюсь..."
     },
     "form": [
-      { "name": "firstName", "placeholder": "Имя" },
-      { "name": "lastName", "placeholder": "Фамилия" },
-      { "name": "email", "placeholder": "Электронная Почта" },
+      { "name": "email", "placeholder": "Электронная Почта", "type": "email" },
       {
         "name": "password",
         "placeholder": "Пароль",
@@ -26,8 +37,6 @@
       }
     ],
     "errors": {
-      "firstName": "Введите имя, пожалуйста.",
-      "lastName": "Введите фамилию, пожалуйста.",
       "email": "Введите почту, пожалуйста.",
       "emailIsValid": "Введите действующую почту, пожалуйста.",
       "password": "Введите пароль, пожалуйста.",
@@ -39,6 +48,57 @@
       "passwordConfirmation": "Пароли не совпадают."
     }
   },
+  "password_reset": {
+    "title": "Восстановление Пароля",
+    "completion_prompt": "Вернуться к Входу",
+    "resend": "Получить Новый Код",
+    "entry_form": [
+      { "name": "email", "placeholder": "Электронная Почта", "type": "email" }
+    ],
+    "entry_form_status": {
+      "submit": "Отправить Код",
+      "submitting": "Отправляю..."
+    },
+    "submit_form": [
+      {
+        "name": "confirmationCode",
+        "placeholder": "Код Подтверждения",
+        "type": "text"
+      },
+      {
+        "name": "newPassword",
+        "placeholder": "Новый Пароль",
+        "type": "password"
+      }
+    ],
+    "submit_form_status": {
+      "submit": "Поменять",
+      "submitting": "Меняю..."
+    },
+    "errors": {
+      "confirmation_code": "Пожалуйста, введите код, присланный Вам на почту."
+    }
+  },
+  "account_confirmation": {
+    "title": "Верификация Аккаунта",
+    "completion_prompt": "Вернуться к Входу",
+    "resend": "Получить Новый Код",
+    "status": {
+      "submit": "Подтвердить",
+      "submitting": "Подтверждаю..."
+    },
+    "form": [
+      { "name": "email", "placeholder": "Электронная Почта", "type": "email" },
+      {
+        "name": "confirmationCode",
+        "placeholder": "Код Подтверждения",
+        "type": "text"
+      }
+    ],
+    "errors": {
+      "confirmation_code": "Пожалуйста, введите код, присланный Вам на почту."
+    }
+  },
   "login": {
     "prompt": "Уже есть аккаунт? Войдите <1>здесь</1>.",
     "title": "Войти",
@@ -47,7 +107,7 @@
       "submitting": "Вхожу..."
     },
     "form": [
-      { "name": "email", "placeholder": "Электронная Почта" },
+      { "name": "email", "placeholder": "Электронная Почта", "type": "email" },
       {
         "name": "password",
         "placeholder": "Пароль",
@@ -59,6 +119,9 @@
       "emailIsValid": "Введите действующую почту, пожалуйста.",
       "password": "Введите пароль, пожалуйста."
     }
+  },
+  "signout": {
+    "title": "Выйти"
   },
   "city": {
     "moscow": "Москва",

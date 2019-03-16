@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 import LoginModal from "../../containers/login";
 import About from "../../containers/pages/about";
-import SignupModal from "../../containers/signup";
 import { getQuerystring } from "../../utils/extract";
 import { MaposhState } from "../store";
 import { ISystemState } from "../store/system/types";
@@ -72,7 +71,6 @@ export const UnauthenticatedRoute = connect(mapStateToProps)(
 const MaposhRoutes: React.FC = () => (
   <Switch>
     <Route path="/about" component={About} />
-    <UnauthenticatedRoute path="/signup" component={SignupModal} />
     <UnauthenticatedRoute path="/login" component={LoginModal} />
   </Switch>
 );
