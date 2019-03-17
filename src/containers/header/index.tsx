@@ -16,7 +16,6 @@ interface IHeaderProps {
 }
 
 const BaseHeader: React.FC<IHeaderProps> = props => {
-  const { isAuthenticated } = props.system;
   const { t } = useTranslation();
   return (
     <Menu>
@@ -28,7 +27,7 @@ const BaseHeader: React.FC<IHeaderProps> = props => {
           <CitySelector />
         </MenuItem>
         <MenuItem>
-          {isAuthenticated ? (
+          {props.system.isAuthenticated ? (
             <UserMenuID />
           ) : (
             <MenuLink to="/login">{t("login.title")}</MenuLink>

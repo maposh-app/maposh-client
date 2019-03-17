@@ -3,9 +3,14 @@ import { Formik, FormikActions } from "formik";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
-import { generateForm, IFormFields, IFormStatus } from "../../components/form";
+import {
+  generateFormContent,
+  IFormFields,
+  IFormStatus
+} from "../../components/form";
 import {
   FormContainer,
+  FormContent,
   FormNav,
   FormPrompt,
   FormPromptBox
@@ -36,9 +41,11 @@ const Confirmation: React.FC<IConfirmationProps> = props => {
     values: IConfirmationFormValues,
     actions: FormikActions<IConfirmationFormValues>
   ) => {
-    setEmail(values.email);
+    if (values.email) {
+      setEmail(values.email);
+    }
     Auth.confirmSignUp(values.email, values.confirmationCode)
-      .then(() => props.onStateChange && props.onStateChange("signedUp"))
+      .then(() => props.onStateChange && props.onStateChange("signIn"))
       .catch(err => {
         if (props.onAuthEvent) {
           props.onAuthEvent("confirmSignUp", {
@@ -58,10 +65,10 @@ const Confirmation: React.FC<IConfirmationProps> = props => {
   };
   const { t } = useTranslation();
 
-  const confirmationFormFields: IFormFields[] = t("account_confirmation.form", {
+  const formFields: IFormFields[] = t("account_confirmation.form", {
     returnObjects: true
   });
-  const confirmationFormStatus: IFormStatus = t("account_confirmation.status", {
+  const formStatus: IFormStatus = t("account_confirmation.status", {
     returnObjects: true
   });
 
@@ -75,9 +82,9 @@ const Confirmation: React.FC<IConfirmationProps> = props => {
       .required(t("account_confirmation.errors.confirmation_code"))
   });
 
-  const goSignIn = () => {
+  const goSignIn = (values: IConfirmationFormValues) => {
     if (props.onStateChange) {
-      props.onStateChange("signIn", {});
+      props.onStateChange("signIn", { ...values });
     }
   };
 
@@ -100,24 +107,31 @@ const Confirmation: React.FC<IConfirmationProps> = props => {
             initialValues={{ email, confirmationCode: "" }}
             validationSchema={confirmationSchema}
             onSubmit={submitConfirmationForm}
-            render={generateForm(
-              confirmationFormFields,
-              confirmationFormStatus,
-              saveEmail
+            render={formikProps => (
+              <>
+                <FormContent onSubmit={formikProps.handleSubmit}>
+                  {generateFormContent<IConfirmationFormValues>(
+                    formFields,
+                    formStatus,
+                    formikProps,
+                    saveEmail
+                  )}
+                </FormContent>
+                <FormPrompt>
+                  <FormPromptBox>
+                    <FormNav onClick={() => resendCode()}>
+                      {t("account_confirmation.resend")}
+                    </FormNav>
+                  </FormPromptBox>
+                  <FormPromptBox>
+                    <FormNav onClick={() => goSignIn(formikProps.values)}>
+                      {t("account_confirmation.completion_prompt")}
+                    </FormNav>
+                  </FormPromptBox>
+                </FormPrompt>
+              </>
             )}
           />
-          <FormPrompt>
-            <FormPromptBox>
-              <FormNav onClick={() => resendCode()}>
-                {t("account_confirmation.resend")}
-              </FormNav>
-            </FormPromptBox>
-            <FormPromptBox>
-              <FormNav onClick={() => goSignIn()}>
-                {t("account_confirmation.completion_prompt")}
-              </FormNav>
-            </FormPromptBox>
-          </FormPrompt>
         </FormContainer>
       )}
     </>

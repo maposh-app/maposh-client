@@ -1,3 +1,5 @@
+import { Auth } from "aws-amplify";
+
 export const getWindowHeight: () => number = () => {
   if (window.innerHeight && document.documentElement.clientHeight) {
     return Math.min(window.innerHeight, document.documentElement.clientHeight);
@@ -37,4 +39,13 @@ export const getQuerystring = (name: string, url = window.location.href) => {
   }
 
   return decodeURIComponent(results[2].replace(/\+/g, " "));
+};
+
+export const isUserAuthenticated = async () => {
+  try {
+    const isAuthenticated = await Auth.currentAuthenticatedUser();
+    return true;
+  } catch {
+    return false;
+  }
 };
