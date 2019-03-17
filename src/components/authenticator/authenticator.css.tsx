@@ -38,7 +38,7 @@ const NavButton = {
   border: "1px solid transparent",
   borderRadius: "4px",
   color: "#333",
-  backgroundColor: "#fff",
+  backgroundColor: config.theme.colorVisitedLink,
   borderColor: "#ccc"
 };
 
@@ -105,6 +105,7 @@ export const Input = {
 };
 
 export const Button = {
+  borderRadius: config.theme.elementBorderRadius,
   display: "inline-block",
   padding: "6px 12px",
   marginBottom: "0",
@@ -119,7 +120,6 @@ export const Button = {
   userSelect: "none",
   backgroundImage: "none",
   border: "1px solid transparent",
-  borderRadius: "4px",
   color: "#333",
   backgroundColor: "#fff",
   borderColor: "#ccc"

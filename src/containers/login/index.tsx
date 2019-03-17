@@ -63,7 +63,6 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
           } else if (props.checkContact) {
             props.checkContact(user);
           } else {
-            updateUserStatus({ isAuthenticated: true });
             props.onStateChange("signedIn", user);
           }
         }
