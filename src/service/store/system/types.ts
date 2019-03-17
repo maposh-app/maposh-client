@@ -4,11 +4,6 @@ export interface ILanguageState {
   language: ILanguage;
 }
 
-export const SIGN_IN = "SIGN_IN";
-export const CONFIRM_SIGN_IN = "SIGN_IN";
-export const FORGOT_PASSWORD = "FORGOT_PASSWORD";
-export const SIGN_OUT = "SIGN_OUT";
-
 export interface IUserState {
   isAuthenticated: boolean;
 }

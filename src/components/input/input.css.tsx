@@ -9,6 +9,7 @@ export const InputBox = styled.label`
   position: relative;
   min-height: 5em;
   flex: 1;
+  margin-bottom: 0.7em;
 `;
 
 export const Input = styled.input`

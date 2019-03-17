@@ -44,7 +44,7 @@
       "passwordLowercaseLetter": "Включите букву нижнего регистра, пожалуйста.",
       "passwordUppercaseLetter": "Включите букву верхнего регистра, пожалуйста.",
       "passwordNumber": "Включите число, пожалуйста.",
-      "passwordSpecialCharacter": "Включите специальный символ: !#$%&()*+,-./\\:;<=>?@]['\"^_{|}~",
+      "passwordSpecialCharacter": "Включите специальный символ, например, 道.",
       "passwordConfirmation": "Пароли не совпадают."
     }
   },
@@ -61,8 +61,8 @@
     },
     "submit_form": [
       {
-        "name": "confirmationCode",
-        "placeholder": "Код Подтверждения",
+        "name": "passwordResetCode",
+        "placeholder": "Код Смены Пароля",
         "type": "text"
       },
       {

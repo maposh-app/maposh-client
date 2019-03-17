@@ -6,9 +6,14 @@ import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import * as yup from "yup";
 import MaposhAuthenticator from "../../components/authenticator";
-import { generateForm, IFormFields, IFormStatus } from "../../components/form";
+import {
+  generateFormContent,
+  IFormFields,
+  IFormStatus
+} from "../../components/form";
 import {
   FormContainer,
+  FormContent,
   FormNav,
   FormPrompt,
   FormPromptBox
@@ -46,7 +51,6 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
     Auth.signIn(values.email, values.password)
       .then(user => {
         if (props.onStateChange) {
-          props.updateUserStatus({ isAuthenticated: true });
           if (
             user.challengeName === "SMS_MFA" ||
             user.challengeName === "SOFTWARE_TOKEN_MFA"
@@ -58,6 +62,8 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
             props.onStateChange("TOTPSetup", user);
           } else if (props.checkContact) {
             props.checkContact(user);
+          } else {
+            props.onStateChange("signedIn", user);
           }
         }
       })
@@ -84,16 +90,16 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
     returnObjects: true
   });
 
-  const signupSchema = yup.object().shape({
+  const signinSchema = yup.object().shape({
     email: yup
       .string()
       .email(t("login.errors.emailIsValid"))
       .required(t("login.errors.email")),
     password: yup.string().required(t("login.errors.password"))
   });
-  const goSignUp = () => {
+  const goSignUp = (values: ILoginFormValues) => {
     if (props.onStateChange) {
-      props.onStateChange("signUp", {});
+      props.onStateChange("signUp", { ...values });
     }
   };
   const goResetPassword = () => {
@@ -107,26 +113,42 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
         <FormContainer>
           <Formik
             initialValues={initialValues}
-            validationSchema={signupSchema}
+            validationSchema={signinSchema}
             onSubmit={submitForm}
-            render={generateForm(formFields, formStatus)}
+            validateOnBlur={true}
+            validateOnChange={true}
+            render={formikProps => (
+              <FormContent onSubmit={formikProps.handleSubmit}>
+                {generateFormContent<ILoginFormValues>(
+                  formFields,
+                  formStatus,
+                  formikProps
+                )}
+                {props.onStateChange && (
+                  <FormPrompt>
+                    <FormPromptBox>
+                      <Trans i18nKey="signup.prompt">
+                        Don't have an account? Sign up
+                        <FormNav onClick={() => goSignUp(formikProps.values)}>
+                          here
+                        </FormNav>
+                        .
+                      </Trans>
+                    </FormPromptBox>
+                    <FormPromptBox>
+                      <Trans i18nKey="user.troubleshooting.forgotten_password">
+                        Reset your password
+                        <FormNav onClick={() => goResetPassword()}>
+                          here
+                        </FormNav>
+                        .
+                      </Trans>
+                    </FormPromptBox>
+                  </FormPrompt>
+                )}
+              </FormContent>
+            )}
           />
-          {props.onStateChange && (
-            <FormPrompt>
-              <FormPromptBox>
-                <Trans i18nKey="signup.prompt">
-                  Don't have an account? Sign up
-                  <FormNav onClick={() => goSignUp()}>here</FormNav>.
-                </Trans>
-              </FormPromptBox>
-              <FormPromptBox>
-                <Trans i18nKey="user.troubleshooting.forgotten_password">
-                  Reset your password
-                  <FormNav onClick={() => goResetPassword()}>here</FormNav>.
-                </Trans>
-              </FormPromptBox>
-            </FormPrompt>
-          )}
         </FormContainer>
       )}
     </div>

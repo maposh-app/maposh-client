@@ -10,9 +10,7 @@ const rootReducer = combineReducers({
   map: mapReducer
 });
 
-export type MaposhState = ReturnType<typeof rootReducer>;
-
-export default function configureStore() {
+function bootstrapStore() {
   const middlewares = [thunkMiddleware];
   const middleWareEnhancer = applyMiddleware(...middlewares);
 
@@ -23,3 +21,8 @@ export default function configureStore() {
 
   return store;
 }
+
+export type MaposhState = ReturnType<typeof rootReducer>;
+export type MaposhStore = ReturnType<typeof bootstrapStore>;
+
+export default bootstrapStore;

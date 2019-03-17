@@ -1,11 +1,16 @@
 import { Auth } from "aws-amplify";
-import { Formik, FormikActions } from "formik";
+import { Formik, FormikActions, FormikValues } from "formik";
 import * as React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import * as yup from "yup";
-import { generateForm, IFormFields, IFormStatus } from "../../components/form";
+import {
+  generateFormContent,
+  IFormFields,
+  IFormStatus
+} from "../../components/form";
 import {
   FormContainer,
+  FormContent,
   FormNav,
   FormPrompt,
   FormPromptBox
@@ -14,29 +19,28 @@ import {
 interface ISignupFormValues {
   email: string;
   password: string;
-  passwordConfirm: string;
+  passwordConfirmation: string;
 }
-const signupFormInitialValues: ISignupFormValues = {
-  email: "",
-  password: "",
-  passwordConfirm: ""
-};
 interface ISignupProps {
   override?: string;
   authState?: string;
   onStateChange?: (where: string, state: object) => void;
   onAuthEvent?: (where: string, event: { type: string; data: string }) => void;
+  authData?: FormikValues;
 }
 
-const Signup: React.FC<ISignupProps> = props => {
-  const [isLoading, setIsLoading] = React.useState(false);
+const SignUp: React.FC<ISignupProps> = props => {
+  const signupFormInitialValues: ISignupFormValues = {
+    email: props.authData ? props.authData.email : "",
+    password: props.authData ? props.authData.password : "",
+    passwordConfirmation: ""
+  };
   const { t } = useTranslation();
 
   const submitSignupForm = (
     values: ISignupFormValues,
     actions: FormikActions<ISignupFormValues>
   ) => {
-    setIsLoading(true);
     Auth.signUp(values.email, values.password)
       .then(
         () =>
@@ -84,9 +88,9 @@ const Signup: React.FC<ISignupProps> = props => {
       .required(t("signup.errors.passwordConfirmation"))
   });
 
-  const goSignIn = () => {
+  const goSignIn = (values: ISignupFormValues) => {
     if (props.onStateChange) {
-      props.onStateChange("signIn", {});
+      props.onStateChange("signIn", { ...values });
     }
   };
 
@@ -98,21 +102,35 @@ const Signup: React.FC<ISignupProps> = props => {
             initialValues={signupFormInitialValues}
             validationSchema={signupSchema}
             onSubmit={submitSignupForm}
-            render={generateForm(signupFormFields, signupFormStatus)}
+            validateOnBlur={true}
+            validateOnChange={true}
+            render={formikProps => (
+              <FormContent onSubmit={formikProps.handleSubmit}>
+                {generateFormContent<ISignupFormValues>(
+                  signupFormFields,
+                  signupFormStatus,
+                  formikProps
+                )}
+                {props.onStateChange && (
+                  <FormPrompt>
+                    <FormPromptBox>
+                      <Trans i18nKey="login.prompt">
+                        Already have an account? Sign in
+                        <FormNav onClick={() => goSignIn(formikProps.values)}>
+                          here
+                        </FormNav>
+                        .
+                      </Trans>
+                    </FormPromptBox>
+                  </FormPrompt>
+                )}
+              </FormContent>
+            )}
           />
-          {props.onStateChange && (
-            <FormPrompt>
-              <FormPromptBox>
-                <Trans i18nKey="login.prompt">
-                  Already have an account? Sign in <FormNav onClick={() => goSignIn()}>here</FormNav>.
-                </Trans>
-              </FormPromptBox>
-            </FormPrompt>
-          )}
         </FormContainer>
       )}
     </div>
   );
 };
 
-export default Signup;
+export default SignUp;

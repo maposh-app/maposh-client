@@ -1,9 +1,10 @@
-import { Authenticator, RequireNewPassword, SignOut } from "aws-amplify-react";
+import { Authenticator, RequireNewPassword } from "aws-amplify-react";
 import * as React from "react";
 import Confirmation from "../../containers/confirmation";
 import { Login } from "../../containers/login";
+import Logout from "../../containers/logout";
 import PasswordReset from "../../containers/password-reset";
-import Signup from "../../containers/signup";
+import SignUp from "../../containers/signup";
 import AuthenticatorTheme from "./authenticator.css";
 
 const MaposhAuthenticator: React.FC = () => {
@@ -18,10 +19,9 @@ const MaposhAuthenticator: React.FC = () => {
         override={"SignIn"}
       />
       <RequireNewPassword />
-      <Signup override={"SignUp"} />
+      <SignUp override={"SignUp"} />
       <Confirmation override={"ConfirmSignUp"} />
       <PasswordReset override={"ForgotPassword"} />
-      <SignOut />
     </Authenticator>
   );
 };

@@ -13,7 +13,7 @@ export interface IModal {
   onRequestClose?: () => void;
 }
 
-const Modal: React.FC<IModal> = ({
+const BaseModal: React.FC<IModal> = ({
   className,
   content,
   ariaLabel = "Alert Modal",
@@ -40,7 +40,7 @@ const Modal: React.FC<IModal> = ({
   );
 };
 
-const EnhancedModal = StyledModal(Modal);
+export const Modal = StyledModal(BaseModal);
 
 export const NamedModal: (
   name: string,
@@ -49,7 +49,7 @@ export const NamedModal: (
   const re = new RegExp(`${name}`);
   const shouldModalOpen = (locationPath: string) => re.test(locationPath);
   return (
-    <EnhancedModal
+    <Modal
       className={name}
       isOpen={shouldModalOpen(props.location.pathname)}
       onRequestClose={() => props.history.push("/")}

@@ -29,8 +29,8 @@
     },
     "submit_form": [
       {
-        "name": "confirmationCode",
-        "placeholder": "Confirmation Code",
+        "name": "passwordResetCode",
+        "placeholder": "Password Reset Code",
         "type": "text"
       },
       {
@@ -95,7 +95,7 @@
       "passwordUppercaseLetter": "Please include an upper-case letter.",
       "passwordLowercaseLetter": "Please include an lower-case letter.",
       "passwordNumber": "Please include a numeral.",
-      "passwordSpecialCharacter": "Please include a special character: !#$%&()*+,-./\\:;<=>?@]['\"^_{|}~",
+      "passwordSpecialCharacter": "Please include a special character (e.g. 道).",
       "passwordConfirmation": "Passwords do not match."
     }
   },

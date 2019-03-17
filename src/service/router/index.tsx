@@ -37,11 +37,11 @@ export const BaseAuthenticatedRoute: React.FC<
   );
 };
 
-const AuthenticatedRedirectComponent: React.FC<RouteComponentProps> = ({
-  location
-}) => {
+const AuthenticatedRedirectComponent: React.FC<RouteComponentProps> = () => {
   const redirect = getQuerystring("redirect");
-  return <Redirect to={`redirect`} />;
+  return (
+    <Redirect to={redirect === "" || redirect === null ? "/" : redirect} />
+  );
 };
 
 export const BaseUnauthenticatedRoute: React.FC<
