@@ -11,7 +11,7 @@
     "aws-amplify-react": "^2.3.2",
     "formik": "^1.5.1",
     "graphql": "^14.1.1",
-    "i18next": "^15.0.4",
+    "i18next": "^15.0.7",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-chained-backend": "^1.0.1",
     "i18next-localstorage-backend": "^2.1.2",
@@ -19,11 +19,11 @@
     "lodash": "^4.17.11",
     "mapbox-gl": "^0.53.1",
     "normalize.css": "^8.0.1",
-    "react": "^16.8.3",
+    "react": "^16.8.4",
     "react-apollo": "^2.5.1",
-    "react-dom": "^16.8.3",
+    "react-dom": "^16.8.4",
     "react-i18next": "^10.2.0",
-    "react-map-gl": "^4.0.14",
+    "react-map-gl": "^4.1.1",
     "react-modal": "^3.8.1",
     "react-redux": "^6.0.1",
     "react-router-dom": "^4.3.1",
@@ -40,7 +40,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!aws-amplify-react)/\"",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
@@ -74,10 +74,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "jest": {
-    "moduleNameMapper": {
-      "@/(.*)": "<rootDir>/src/$1"
-    }
-  }
+  ]
 }

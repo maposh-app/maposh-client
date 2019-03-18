@@ -9,4 +9,6 @@ export const Box = styled.div`
   padding: 0;
   justify-content: space-between;
   position: relative;
+  height: 100%;
+  width: 100%;
 `;
