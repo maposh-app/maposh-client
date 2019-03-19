@@ -11,15 +11,13 @@ import bootstrapStore from "./service/store";
 import bootstrapBridges from "./service/store/bridges";
 import bootstrapTheme from "./service/theme";
 
+const root = document.getElementById("root") as HTMLElement;
+
 bootstrapAmplify();
 const store = bootstrapStore();
 bootstrapBridges(store);
-bootstrapTheme();
+bootstrapTheme(root);
 
-ReactDOM.render(
-  <Suspense fallback={<Loader />}>
-    <Maposh store={store} />
-  </Suspense>,
-  document.getElementById("root") as HTMLElement
-);
+ReactDOM.render(<Maposh store={store} />, root);
+
 registerServiceWorker();

@@ -32,6 +32,7 @@ type IPasswordResetFormValues = IPasswordResetEntryFormValues &
 interface IPasswordResetProps {
   t: i18n.TFunction;
   i18n: i18n.i18n;
+  tReady: any;
   override?: string;
   authState?: string;
   onStateChange?: (where: string, state?: object) => void;

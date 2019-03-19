@@ -61,7 +61,7 @@ export function configureAuth(): {
   identityPoolId: string;
   userPoolWebClientId: string;
 } {
-  const stage = process.env.REACT_APP_STAGE;
+  const stage = (process.env.REACT_APP_STAGE as string).toUpperCase();
   const region = process.env[`REACT_APP_${stage}_COGNITO_REGION`] || "";
   const userPoolId =
     process.env[`REACT_APP_${stage}_COGNITO_USER_POOL_ID`] || "";

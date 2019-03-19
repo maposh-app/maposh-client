@@ -14,7 +14,7 @@ export const ModalContent = styled.div`
 
 export const StyledModal = (Modal: React.FC<IModal>) => styled(Modal)`
   &__overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -22,12 +22,14 @@ export const StyledModal = (Modal: React.FC<IModal>) => styled(Modal)`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.25);
     z-index: 99;
   }
   &__content {
     display: flex;
     align-content: center;
     outline: none;
+    max-width: 90%;
+    z-index: 4;
   }
 `;

@@ -3,6 +3,7 @@ import styled from "../../service/theme/styled-components";
 
 export const FormSubmitButton = styled.button`
   border: 0;
+  padding: 0.8em;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   border-radius: ${config.theme.elementBorderRadius};
   background-color: ${config.theme.colorPrimary};
@@ -11,6 +12,8 @@ export const FormSubmitButton = styled.button`
     color: ${config.theme.colorTender};
   }
   outline: none;
+  margin-top: 1em;
+  margin-bottom: 1em;
 `;
 
 export const FormContainer = styled.div`
@@ -23,14 +26,13 @@ export const FormContent = styled.form`
   flex-direction: column;
   height: 100%;
   margin: 0;
-  margin-bottom: 1em;
 `;
 
 export const FormPrompt = styled.aside`
-  font-size: 0.6em;
+  margin-top: auto;
+  font-size: 1em;
   color: ${config.theme.colorTender};
   display: flex;
-  flex-wrap: wrap;
   width: 100%;
   justify-content: space-between;
 `;
