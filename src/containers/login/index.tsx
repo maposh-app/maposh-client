@@ -97,7 +97,7 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
       .required(t("login.errors.email")),
     password: yup.string().required(t("login.errors.password"))
   });
-  const goSignUp = (values: ILoginFormValues) => {
+  const goSignUp = (values: ILoginFormValues) => () => {
     if (props.onStateChange) {
       props.onStateChange("signUp", { ...values });
     }
@@ -127,22 +127,14 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
                 {props.onStateChange && (
                   <FormPrompt>
                     <FormPromptBox>
-                      <Trans i18nKey="signup.prompt">
-                        Don't have an account? Sign up
-                        <FormNav onClick={() => goSignUp(formikProps.values)}>
-                          here
-                        </FormNav>
-                        .
-                      </Trans>
+                      <FormNav onClick={goSignUp(formikProps.values)}>
+                        {t("signup.title")}
+                      </FormNav>
                     </FormPromptBox>
                     <FormPromptBox>
-                      <Trans i18nKey="user.troubleshooting.forgotten_password">
-                        Reset your password
-                        <FormNav onClick={() => goResetPassword()}>
-                          here
-                        </FormNav>
-                        .
-                      </Trans>
+                      <FormNav onClick={goResetPassword}>
+                        {t("user.troubleshooting.forgotten_password")}
+                      </FormNav>
                     </FormPromptBox>
                   </FormPrompt>
                 )}

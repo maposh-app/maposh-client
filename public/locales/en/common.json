@@ -13,7 +13,7 @@
       "lastName": "Please provide your surname."
     },
     "troubleshooting": {
-      "forgotten_password": "Reset your <1>password</1>."
+      "forgotten_password": "Reset Password"
     }
   },
   "password_reset": {
@@ -68,8 +68,7 @@
     }
   },
   "signup": {
-    "prompt": "Sign up <1>here</1>.",
-    "title": "Sign-up",
+    "title": "Sign Up",
     "status": {
       "submit": "Sign Up",
       "submitting": "Signing Up..."

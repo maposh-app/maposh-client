@@ -39,16 +39,15 @@ export const FormPrompt = styled.aside`
 
 export const FormPromptBox = styled.div`
   flex: 0 1 auto;
-  padding: 1em;
   text-align: center;
 `;
 
 export const FormNav = styled.button`
   background: none !important;
-  color: ${config.theme.colorLink};
+  color: ${config.theme.colorTender};
   border: none;
   padding: 0 !important;
   font: inherit;
-  border-bottom: 1px solid ${config.theme.colorLink};
+  border-bottom: 1px solid ${config.theme.colorTender};
   cursor: pointer;
 `;

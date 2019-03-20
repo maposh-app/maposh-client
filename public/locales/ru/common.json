@@ -13,11 +13,10 @@
       "lastName": "Введите фамилию, пожалуйста."
     },
     "troubleshooting": {
-      "forgotten_password": "Поменять <1>пароль</1>."
+      "forgotten_password": "Поменять Пароль"
     }
   },
   "signup": {
-    "prompt": "Регистрация <1>здесь</1>.",
     "title": "Регистрация",
     "status": {
       "submit": "Зарегистрироваться",

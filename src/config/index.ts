@@ -46,7 +46,7 @@ export function configureApiGateway(): {
   graphql_endpoint: string;
   graphql_endpoint_iam_region: string;
 } {
-  const stage = process.env.REACT_APP_STAGE;
+  const stage = (process.env.REACT_APP_STAGE as string).toUpperCase();
   const url = process.env[`REACT_APP_${stage}_API_GATEWAY_URL`] || "";
   const region = process.env[`REACT_APP_${stage}_API_GATEWAY_REGION`] || "";
   return {
