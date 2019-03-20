@@ -40,12 +40,3 @@ export const getQuerystring = (name: string, url = window.location.href) => {
 
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
-
-export const isUserAuthenticated = async () => {
-  try {
-    const isAuthenticated = await Auth.currentAuthenticatedUser();
-    return true;
-  } catch {
-    return false;
-  }
-};

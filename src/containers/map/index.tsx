@@ -153,7 +153,26 @@ class BaseMap extends React.Component<IMapProps> {
       _.inRange(latitude, minLatitude, maxLatitude)
     );
   }
+
   private locate() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        if (
+          this.withinBoundingBox(
+            position.coords.longitude,
+            position.coords.latitude
+          )
+        ) {
+          this.props.updatePan({
+            viewport: {
+              ...this.props.map.viewport,
+              longitude: position.coords.longitude,
+              latitude: position.coords.latitude
+            }
+          });
+        }
+      });
+    }
     if (
       !this.withinBoundingBox(
         this.props.map.viewport.longitude,
@@ -175,25 +194,6 @@ class BaseMap extends React.Component<IMapProps> {
           latitude: cityCenterLatitude
         }
       });
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          if (
-            this.withinBoundingBox(
-              position.coords.longitude,
-              position.coords.latitude
-            )
-          ) {
-            this.props.updatePan({
-              viewport: {
-                ...this.props.map.viewport,
-                longitude: position.coords.longitude,
-                latitude: position.coords.latitude
-              }
-            });
-          }
-        });
-      }
     }
   }
 }

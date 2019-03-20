@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
+import Logo from "../../components/logo";
 import { MaposhState } from "../../service/store";
 import { ISystemState } from "../../service/store/system/types";
 import CitySelector from "../city-selector";
@@ -21,7 +22,9 @@ const BaseHeader: React.FC<IHeaderProps> = props => {
     <Menu>
       <MenuList>
         <MenuItem style={{ marginRight: "auto" }}>
-          <MenuLink to="/">{t("title")}</MenuLink>
+          <MenuLink to="/">
+            <Logo />
+          </MenuLink>
         </MenuItem>
         <MenuItem style={{ flex: 0.2, minWidth: "160px" }}>
           <CitySelector />
