@@ -1,6 +1,7 @@
 {
   "theme": {
     "colorPrimary": "#fff3e0",
+    "colorCoprimary": "#e7e0ff",
     "colorLink": "#1d2120",
     "colorPure": "#e1f5fe",
     "colorTender": "#546e7a",
@@ -32,6 +33,10 @@
           59.9348
         ]
       }
+    },
+    "places": {
+      "food": "4d4b7105d754a06374d81259",
+      "coworking": "4bf58dd8d48988d174941735"
     }
   }
 }
