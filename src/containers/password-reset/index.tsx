@@ -289,7 +289,6 @@ const PasswordResetWithoutTranslation: React.FC<
           if (!values.email) {
             errors.email = t("login.errors.email");
           }
-          console.log(errors);
           return errors;
         }}
       >

@@ -1,17 +1,37 @@
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+import MapboxLanguage from "@mapbox/mapbox-gl-language";
+import { FeatureCollection } from "geojson";
 import * as _ from "lodash";
+import { GeolocateControl } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import * as React from "react";
-import ReactMapGL, { NavigationControl, ViewState } from "react-map-gl";
+import ReactMapboxGl, {
+  RotationControl,
+  ScaleControl,
+  ZoomControl
+} from "react-mapbox-gl";
 import { connect } from "react-redux";
-import { IViewport } from "../../model/viewport";
 import { MaposhState } from "../../service/store";
 import { updatePan } from "../../service/store/map/actions";
 import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
-import { MapBox, NavigationBox } from "./map.css";
+import { DrawStyles, MapBox } from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
-const MAPBOX_STYLE: string = process.env.REACT_APP_MAPBOX_STYLE || "";
+const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.env.REACT_APP_MAPBOX_STYLE || "";
+
+const INITIAL_MAP_DATA: FeatureCollection = {
+  type: "FeatureCollection",
+  features: []
+};
+
+const Map = ReactMapboxGl({
+  accessToken: MAPBOX_TOKEN,
+  minZoom: 9,
+  touchZoomRotate: true,
+  doubleClickZoom: false
+});
 
 interface IMapProps {
   map: IMapState;
@@ -19,65 +39,49 @@ interface IMapProps {
   updatePan: typeof updatePan;
 }
 
-type IMapViewport = IViewport & {
-  width: number;
-  height: number;
-};
+interface IMapData {
+  data: FeatureCollection;
+  selectedFeatureIndices: number[];
+  mode: string;
+}
 
-class BaseMap extends React.Component<IMapProps> {
-  private map: React.RefObject<ReactMapGL>;
+class BaseMap extends React.Component<IMapProps, IMapData> {
+  private map: mapboxgl.Map | null;
+  private draw: MapboxDraw;
+  private mapLanguage: typeof MapboxLanguage;
   public constructor(props: IMapProps) {
     super(props);
-    this.map = React.createRef();
+    this.locate();
+    this.map = null;
+    this.draw = new MapboxDraw({
+      displayControlsDefault: false,
+      controls: {
+        polygon: true,
+        trash: true
+      },
+      styles: DrawStyles
+    });
+    this.mapLanguage = new MapboxLanguage({
+      defaultLanguage: this.props.system.language
+    });
     this.setLanguage = this.setLanguage.bind(this);
+    this.state = {
+      data: INITIAL_MAP_DATA,
+      selectedFeatureIndices: [],
+      mode: "view"
+    };
+    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
-  public updateViewport = (viewport: ViewState) => {
-    const { width, height, ...etc } = viewport as IMapViewport;
-    const [
-      minLongitude,
-      minLatitude,
-      maxLongitude,
-      maxLatitude
-    ] = this.props.map.location.boundingBox;
-    if (etc.longitude <= minLongitude) {
-      etc.longitude = minLongitude;
-    }
-    if (etc.longitude >= maxLongitude) {
-      etc.longitude = maxLongitude;
-    }
-    if (etc.latitude <= minLatitude) {
-      etc.latitude = minLatitude;
-    }
-    if (etc.latitude >= maxLatitude) {
-      etc.latitude = maxLatitude;
-    }
-    this.props.updatePan({
-      viewport: etc
-    });
-  };
-
   public componentDidMount() {
-    this.locate();
-    if (this.map && this.map.current) {
-      const map = this.map.current.getMap();
-      const waiting = () => {
-        if (!(map && map.isStyleLoaded())) {
-          setTimeout(waiting, 200);
-        } else {
-          this.setLanguage();
-        }
-      };
-      waiting();
-    }
+    window.addEventListener("keydown", this.handleKeydown);
   }
 
   public componentDidUpdate(prevProps: IMapProps) {
-    if (this.map && this.map.current) {
+    if (this.map) {
       if (this.props.system.language !== prevProps.system.language) {
-        const map = this.map.current.getMap();
         const waiting = () => {
-          if (!map.isStyleLoaded()) {
+          if (!(this.map as mapboxgl.Map).isStyleLoaded()) {
             setTimeout(waiting, 200);
           } else {
             this.setLanguage();
@@ -85,59 +89,105 @@ class BaseMap extends React.Component<IMapProps> {
         };
         waiting();
       }
+      if (this.props.map.location.city !== prevProps.map.location.city) {
+        this.locate();
+        this.map.flyTo({
+          center: [
+            this.props.map.viewport.longitude,
+            this.props.map.viewport.latitude
+          ],
+          zoom: this.props.map.viewport.zoom
+        });
+      }
     }
   }
-
+  public componentWillUnmount() {
+    window.removeEventListener("keydown", this.handleKeydown);
+  }
   public render() {
+    const [
+      minLongitude,
+      minLatitude,
+      maxLongitude,
+      maxLatitude,
+      cityCenterLongitude,
+      cityCenterLatitude
+    ] = this.props.map.location.boundingBox;
+
     return (
       <MapBox>
-        <ReactMapGL
-          ref={this.map}
-          width="100%"
-          height="100%"
-          minZoom={9}
-          {...this.props.map.viewport}
-          touchRotate={true}
-          mapboxApiAccessToken={MAPBOX_TOKEN}
-          mapStyle={MAPBOX_STYLE}
-          onViewportChange={(v: ViewState) => this.updateViewport(v)}
+        <Map
+          onStyleLoad={map => {
+            this.map = map;
+            this.setLanguage();
+            this.locate();
+            this.map.flyTo({
+              center: [
+                this.props.map.viewport.longitude,
+                this.props.map.viewport.latitude
+              ]
+            });
+            const geolocate = new GeolocateControl({
+              positionOptions: {
+                enableHighAccuracy: true
+              },
+              trackUserLocation: true
+            });
+            map.addControl(geolocate);
+            map.addControl(this.draw, "top-left");
+            map.addControl(this.mapLanguage);
+          }}
+          onMoveEnd={(map, evt) => this.updateLocation(map)}
+          maxBounds={[[minLongitude, minLatitude], [maxLongitude, maxLatitude]]}
+          style={MAPBOX_STYLE}
+          containerStyle={{
+            height: "100%",
+            width: "100%"
+          }}
         >
-          <NavigationBox>
-            <NavigationControl onViewportChange={this.updateViewport} />
-          </NavigationBox>
-        </ReactMapGL>
+          <ScaleControl />
+          <ZoomControl style={{ top: 45 }} />
+          <RotationControl style={{ top: 105 }} />
+        </Map>
       </MapBox>
     );
   }
 
-  private setLanguage() {
-    if (this.map && this.map.current) {
-      const map = this.map.current.getMap();
-      const style = map.getStyle();
-      const layers = style.layers || [];
-      const layerIDs = layers.reduce(
-        (filtered: [string?], layer: mapboxgl.Layer) => {
-          const id: string = layer.id.toLowerCase();
-          if (
-            id.includes("label") ||
-            id.includes("poi") ||
-            id.includes("place") ||
-            id.includes("cafes") ||
-            id.includes("libraries")
-          ) {
-            filtered.push(layer.id);
-          }
-          return filtered;
-        },
-        []
-      );
-
-      for (const id of layerIDs) {
-        map.setLayoutProperty(id as string, "text-field", [
-          "get",
-          `name_${this.props.system.language}`
-        ]);
+  private updateLocation(map: mapboxgl.Map) {
+    const [
+      minLongitude,
+      minLatitude,
+      maxLongitude,
+      maxLatitude,
+      cityCenterLongitude,
+      cityCenterLatitude
+    ] = this.props.map.location.boundingBox;
+    const { lng, lat } = map.getCenter();
+    const zoom = map.getZoom();
+    this.props.updatePan({
+      viewport: {
+        ...this.props.map.viewport,
+        longitude: lng,
+        latitude: lat,
+        zoom
       }
+    });
+  }
+
+  private handleKeydown({ key }: KeyboardEvent) {
+    if (key === "Escape") {
+      this.draw.deleteAll();
+    }
+  }
+
+  private setLanguage() {
+    if (this.map) {
+      this.map.setStyle(
+        this.mapLanguage.setLanguage(
+          this.map.getStyle(),
+          this.props.system.language
+        )
+      );
     }
   }
 
