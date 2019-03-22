@@ -1,3 +1,4 @@
+import * as React from "react";
 import config from "../../config";
 import styled from "../../service/theme/styled-components";
 
@@ -14,7 +15,24 @@ export const NavigationBox = styled.div`
   right: 0.5em;
 `;
 
-export const DrawStyles = [
+export const ShowPlacesButton = styled.button`
+  position: fixed;
+  top: 7em;
+  left: 4em;
+  padding: 1.7em;
+  outline: none;
+  border-radius: ${config.theme.elementBorderRadius};
+`;
+
+export const SearchBox = styled.div`
+  position: relative;
+  display: grid;
+  justify-items: center;
+  top: 1em;
+  pointer-events: none;
+`;
+
+export const drawStyle = [
   // ACTIVE (being drawn)
   // line stroke
   {
@@ -89,3 +107,7 @@ export const DrawStyles = [
     }
   }
 ];
+
+export const placesLayerStyle = {
+  "icon-image": "marker-15"
+};

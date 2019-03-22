@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.1.1",
+    "@mapbox/mapbox-gl-geocoder": "^3.1.6",
     "@mapbox/mapbox-gl-language": "^0.10.0",
     "@types/node": "^11.10.4",
     "@types/react-redux": "^7.0.1",
@@ -11,6 +12,7 @@
     "apollo-client": "^2.5.1",
     "aws-amplify": "^1.1.22",
     "aws-amplify-react": "^2.3.2",
+    "axios": "^0.18.0",
     "formik": "^1.5.1",
     "graphql": "^14.1.1",
     "i18next": "^15.0.7",

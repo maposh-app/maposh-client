@@ -16,6 +16,9 @@
       "forgotten_password": "Reset Password"
     }
   },
+  "search": {
+    "placeholder": "Search..."
+  },
   "password_reset": {
     "title": "Password Reset",
     "completion_prompt": "Back to Sign In",
