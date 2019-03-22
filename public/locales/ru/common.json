@@ -16,6 +16,9 @@
       "forgotten_password": "Поменять Пароль"
     }
   },
+  "search": {
+    "placeholder": "Найти..."
+  },
   "signup": {
     "title": "Регистрация",
     "status": {

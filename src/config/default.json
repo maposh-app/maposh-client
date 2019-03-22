@@ -34,9 +34,13 @@
         ]
       }
     },
-    "places": {
-      "food": "4d4b7105d754a06374d81259",
-      "coworking": "4bf58dd8d48988d174941735"
+    "foursquare": {
+      "recommendations_url": "https://api.foursquare.com/v2/search/recommendations",
+      "limit": 50,
+      "places": {
+        "food": "4d4b7105d754a06374d81259",
+        "coworking": "4bf58dd8d48988d174941735"
+      }
     }
   }
 }

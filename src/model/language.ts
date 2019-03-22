@@ -5,7 +5,3 @@ export interface ILanguageLabel {
   value: ILanguage;
   label: string;
 }
-export interface ITranslate {
-  translate: i18n.TFunction;
-  context: i18n.i18n;
-}
