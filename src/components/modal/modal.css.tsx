@@ -14,7 +14,7 @@ export const ModalContent = styled.div`
 
 export const StyledModal = (Modal: React.FC<IModal>) => styled(Modal)`
   &__overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;

@@ -4,8 +4,7 @@ import styled from "../../service/theme/styled-components";
 
 export const MapBox = styled.div`
   position: relative;
-  flex: 1 1 auto;
-  pointer-events: auto;
+  flex: 1;
   height: 1em;
 `;
 
@@ -71,6 +70,7 @@ export const SearchBox = styled.div`
   position: relative;
   top: 1em;
   pointer-events: none;
+  touch-action: none;
   z-index: 20;
   .mapboxgl-ctrl-geocoder {
     margin: auto;
@@ -152,7 +152,7 @@ export const drawStyle = [
 ];
 
 export const placesLayerStyle = {
-  "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 7, 10, 10],
+  "circle-radius": 10,
   "circle-color": ["get", "color"],
   "circle-stroke-width": 1,
   "circle-opacity": 0.7

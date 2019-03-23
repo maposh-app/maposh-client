@@ -5,14 +5,11 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxLanguage from "@mapbox/mapbox-gl-language";
 import * as _ from "lodash";
 import { GeolocateControl, LngLat } from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
 import ReactMapboxGl, {
-  Cluster,
   Feature,
   Layer,
-  Marker,
   Popup,
   RotationControl,
   ScaleControl,
@@ -27,10 +24,8 @@ import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { RecommendationsLoader } from "../../utils/load";
 import {
-  clusterMarkerStyle,
   drawStyle,
   MapBox,
-  PlaceMarker,
   PlacePopup,
   placesLayerStyle,
   SearchBox,
@@ -42,8 +37,7 @@ const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.en
 
 const Map = ReactMapboxGl({
   accessToken: MAPBOX_TOKEN,
-  minZoom: 9,
-  doubleClickZoom: false
+  minZoom: 9
 });
 
 interface IMapProps {
@@ -204,18 +198,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           <ZoomControl style={{ top: 45 }} />
           <RotationControl style={{ top: 105 }} />
           <SearchBox id="search" />
-          {/* <Cluster ClusterMarkerFactory={this.clusterMarker}>
-            {places.map((place: IPlace, key: number) => (
-              <Marker
-                key={key}
-                coordinates={[place.longitude, place.latitude]}
-                data-feature={place}
-              >
-                <PlaceMarker image={place.photo || ""} />
-              </Marker>
-            ))}
-          </Cluster>
-            */}
           {popup && (
             <Popup offset={[0, -15]} coordinates={popup.coordinates}>
               <PlacePopup>{popup.place.name}</PlacePopup>
