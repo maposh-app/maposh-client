@@ -37,10 +37,24 @@
     "foursquare": {
       "recommendations_url": "https://api.foursquare.com/v2/search/recommendations",
       "limit": 50,
+      "photo_side": 30,
       "places": {
         "food": "4d4b7105d754a06374d81259",
         "coworking": "4bf58dd8d48988d174941735"
-      }
+      },
+      "colors": [
+        "#a50026",
+        "#d73027",
+        "#f46d43",
+        "#fdae61",
+        "#fee08b",
+        "#ffffbf",
+        "#d9ef8b",
+        "#a6d96a",
+        "#66bd63",
+        "#1a9850",
+        "#006837"
+      ]
     }
   }
 }

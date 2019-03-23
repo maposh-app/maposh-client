@@ -8,7 +8,7 @@ export const Menu = styled.div`
   width: 100% !important;
   font-size: 0.8em;
   box-shadow: 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
-  z-index: 2;
+  z-index: 96;
 `;
 
 export const MenuList = styled.ul`

@@ -8,7 +8,7 @@ export const Menu = styled.div`
   flex: 0 1 auto;
   flex-wrap: wrap;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  z-index: 97;
 `;
 
 export const MenuList = styled.ul`

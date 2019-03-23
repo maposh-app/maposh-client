@@ -30,6 +30,6 @@ export const StyledModal = (Modal: React.FC<IModal>) => styled(Modal)`
     align-content: center;
     outline: none;
     max-width: 90%;
-    z-index: 4;
+    z-index: 98;
   }
 `;

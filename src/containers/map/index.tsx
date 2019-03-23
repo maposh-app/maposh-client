@@ -9,8 +9,11 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
 import ReactMapboxGl, {
+  Cluster,
   Feature,
   Layer,
+  Marker,
+  Popup,
   RotationControl,
   ScaleControl,
   ZoomControl
@@ -24,8 +27,11 @@ import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { RecommendationsLoader } from "../../utils/load";
 import {
+  clusterMarkerStyle,
   drawStyle,
   MapBox,
+  PlaceMarker,
+  PlacePopup,
   placesLayerStyle,
   SearchBox,
   ShowPlacesButton
@@ -37,7 +43,6 @@ const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.en
 const Map = ReactMapboxGl({
   accessToken: MAPBOX_TOKEN,
   minZoom: 9,
-  touchZoomRotate: true,
   doubleClickZoom: false
 });
 
@@ -50,8 +55,14 @@ interface IMapProps {
   updatePan: typeof updatePan;
 }
 
+interface IPopup {
+  coordinates: GeoJSON.Position;
+  place: IPlace;
+}
+
 interface IMapData {
   places: IPlace[];
+  popup?: IPopup;
   isDrawing: boolean;
 }
 
@@ -114,7 +125,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       isDrawing: false
     };
     this.handleKeydown = this.handleKeydown.bind(this);
-    this.searchPlaces = this.searchPlaces.bind(this);
+    this.handlePlaces = this.handlePlaces.bind(this);
     this.startDrawing = this.startDrawing.bind(this);
     this.stopDrawing = this.stopDrawing.bind(this);
   }
@@ -139,6 +150,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       if (this.props.map.location.city !== prevProps.map.location.city) {
         this.locate();
         this.setupSearch();
+        this.stopDrawing();
         this.map.flyTo({
           center: [
             this.props.map.viewport.longitude,
@@ -159,7 +171,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       maxLongitude,
       maxLatitude
     ] = this.props.map.location.boundingBox;
-    const { places, isDrawing } = this.state;
+    const { places, isDrawing, popup } = this.state;
 
     return (
       <MapBox>
@@ -191,55 +203,103 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           <ScaleControl />
           <ZoomControl style={{ top: 45 }} />
           <RotationControl style={{ top: 105 }} />
-          <ShowPlacesButton
-            style={{ display: isDrawing ? "inline-block" : "none" }}
-            onClick={() => this.searchPlaces("coffee")}
-          >
-            Show cafes
-          </ShowPlacesButton>
           <SearchBox id="search" />
-          <Layer type="symbol" id="marker" layout={placesLayerStyle}>
-            {places.map((place, index) => {
-              return (
-                <Feature
-                  key={`${place.name}-${index}`}
-                  coordinates={[place.longitude, place.latitude]}
-                />
-              );
-            })}
+          {/* <Cluster ClusterMarkerFactory={this.clusterMarker}>
+            {places.map((place: IPlace, key: number) => (
+              <Marker
+                key={key}
+                coordinates={[place.longitude, place.latitude]}
+                data-feature={place}
+              >
+                <PlaceMarker image={place.photo || ""} />
+              </Marker>
+            ))}
+          </Cluster>
+            */}
+          {popup && (
+            <Popup offset={[0, -15]} coordinates={popup.coordinates}>
+              <PlacePopup>{popup.place.name}</PlacePopup>
+            </Popup>
+          )}
+          <Layer type="circle" id="places" paint={placesLayerStyle}>
+            {places.length > 0 &&
+              places.map((place, index) => {
+                return (
+                  <Feature
+                    key={`${place.name}-${index}`}
+                    coordinates={[place.longitude, place.latitude]}
+                    properties={place}
+                    onClick={() => {
+                      this.setState({
+                        popup: {
+                          coordinates: [place.longitude, place.latitude],
+                          place
+                        }
+                      });
+                    }}
+                    onMouseEnter={evt => {
+                      this.setState({
+                        popup: {
+                          coordinates: [place.longitude, place.latitude],
+                          place
+                        }
+                      });
+                    }}
+                    onMouseLeave={() => {
+                      this.setState({ popup: undefined });
+                    }}
+                  />
+                );
+              })}
           </Layer>
+          <ShowPlacesButton
+            style={{
+              display: isDrawing || places.length > 0 ? "inline-block" : "none"
+            }}
+            onClick={() => this.handlePlaces("coffee")}
+          >
+            {isDrawing
+              ? this.props.t("search.show.cafes")
+              : places.length > 0
+              ? this.props.t("search.hide.cafes")
+              : ""}
+          </ShowPlacesButton>
         </Map>
       </MapBox>
     );
   }
 
   private stopDrawing() {
-    this.setState({ isDrawing: false });
+    this.setState({ isDrawing: false, places: [] });
   }
 
   private startDrawing() {
     this.setState({ isDrawing: true });
   }
 
-  private searchPlaces(intent: string) {
+  private handlePlaces(intent: string) {
     const data = this.draw.getAll();
-    this.recommender
-      .recommend(data, this.props.map.location.city, intent)
-      .then(places => {
-        this.setState({ places });
-      })
-      .catch(err => {
-        alert(
-          `Could not find any coffee shops, sorry! Failed with the error: ${err}`
-        );
-      });
-    this.draw.deleteAll();
-    this.setState({ isDrawing: false });
+    if (data.features.length > 0) {
+      this.recommender
+        .recommend(data, this.props.map.location.city, intent)
+        .then(places => {
+          this.setState({ places });
+        })
+        .catch(err => {
+          alert(this.props.t("search.errors.404"));
+          console.log(err);
+        });
+      this.draw.deleteAll();
+      this.setState({ isDrawing: false });
+    } else if (this.state.places.length > 0) {
+      this.setState({ places: [] });
+    }
   }
 
   private handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
       this.draw.deleteAll();
+      this.setState({ places: [] });
     }
   }
 
@@ -251,13 +311,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           this.props.system.language
         )
       );
-    }
-    const geocoderElement = document.getElementById("mapboxgl-ctrl-geocoder");
-    if (geocoderElement) {
-      const geocoderInput = geocoderElement.querySelector("input");
-      if (geocoderInput) {
-        geocoderInput.placeholder = this.props.t("search.placeholder");
-      }
     }
   }
 
@@ -294,6 +347,10 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         searchBox.removeChild(searchBox.firstChild);
       }
       searchBox.appendChild(this.search.onAdd(this.map));
+      const searchInput = searchBox.querySelector("input");
+      if (searchInput) {
+        searchInput.placeholder = this.props.t("search.placeholder");
+      }
     }
   }
   private locate() {
