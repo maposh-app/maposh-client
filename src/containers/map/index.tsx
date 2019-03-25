@@ -3,42 +3,28 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxLanguage from "@mapbox/mapbox-gl-language";
-import * as _ from "lodash";
 import { GeolocateControl, LngLat } from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
-import ReactMapboxGl, {
-  Feature,
-  Layer,
-  RotationControl,
-  ScaleControl,
-  ZoomControl
-} from "react-mapbox-gl";
+import ReactMapboxGl, { Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl } from "react-mapbox-gl";
 import { connect } from "react-redux";
+import Close from "../../components/close";
 import { IPlace } from "../../model/place";
 import i18n from "../../service/i18n";
 import { MaposhState } from "../../service/store";
-import { updatePan } from "../../service/store/map/actions";
+import { updateCity, updatePan } from "../../service/store/map/actions";
 import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
+import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
-import {
-  drawStyle,
-  MapBox,
-  placesLayerStyle,
-  SearchBox,
-  ShowPlacesButton
-} from "./map.css";
+import { drawStyle, MapBox, PlaceInfo, PlaceMarker, PlacePopup, placesLayerStyle, SearchBox, ShowPlacesButton } from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
 const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.env.REACT_APP_MAPBOX_STYLE || "";
 
 const Map = ReactMapboxGl({
   accessToken: MAPBOX_TOKEN,
-  minZoom: 9,
-  touchZoomRotate: true,
-  doubleClickZoom: false
+  minZoom: 9
 });
 
 interface IMapProps {
@@ -48,15 +34,22 @@ interface IMapProps {
   map: IMapState;
   system: ISystemState;
   updatePan: typeof updatePan;
+  updateCity: (newCity: string) => void;
+}
+
+interface IPopup {
+  coordinates: GeoJSON.Position;
+  place: IPlace;
 }
 
 interface IMapData {
   places: IPlace[];
+  popup?: IPopup;
   isDrawing: boolean;
 }
 
 class BaseMap extends React.Component<IMapProps, IMapData> {
-  private map: mapboxgl.Map | null;
+  private map?: mapboxgl.Map;
   private draw: MapboxDraw;
   private geolocate: GeolocateControl;
   private search: typeof MapboxGeocoder;
@@ -65,7 +58,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   public constructor(props: IMapProps) {
     super(props);
     this.locate();
-    this.map = null;
     this.recommender = new RecommendationsLoader();
     this.geolocate = new GeolocateControl({
       positionOptions: {
@@ -77,9 +69,10 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
     // TODO: Make a pull request for native support
     (this.geolocate as any)._updateCamera = (position: Position) => {
       if (
-        this.withinBoundingBox(
+        withinBoundingBox(
           position.coords.longitude,
-          position.coords.latitude
+          position.coords.latitude,
+          this.props.map.location
         )
       ) {
         const center = new LngLat(
@@ -95,6 +88,11 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
             geolocateSource: true
           }
         );
+      } else {
+        const city = getCityIfExists(position);
+        if (city) {
+          this.props.updateCity(city);
+        }
       }
     };
     this.draw = new MapboxDraw({
@@ -114,7 +112,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       isDrawing: false
     };
     this.handleKeydown = this.handleKeydown.bind(this);
-    this.searchPlaces = this.searchPlaces.bind(this);
+    this.handlePlaces = this.handlePlaces.bind(this);
     this.startDrawing = this.startDrawing.bind(this);
     this.stopDrawing = this.stopDrawing.bind(this);
   }
@@ -139,6 +137,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       if (this.props.map.location.city !== prevProps.map.location.city) {
         this.locate();
         this.setupSearch();
+        this.stopDrawing();
         this.map.flyTo({
           center: [
             this.props.map.viewport.longitude,
@@ -149,9 +148,11 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       }
     }
   }
+
   public componentWillUnmount() {
     window.removeEventListener("keydown", this.handleKeydown);
   }
+
   public render() {
     const [
       minLongitude,
@@ -159,7 +160,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       maxLongitude,
       maxLatitude
     ] = this.props.map.location.boundingBox;
-    const { places, isDrawing } = this.state;
+    const { places, isDrawing, popup } = this.state;
 
     return (
       <MapBox>
@@ -191,55 +192,89 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           <ScaleControl />
           <ZoomControl style={{ top: 45 }} />
           <RotationControl style={{ top: 105 }} />
-          <ShowPlacesButton
-            style={{ display: isDrawing ? "inline-block" : "none" }}
-            onClick={() => this.searchPlaces("coffee")}
-          >
-            Show cafes
-          </ShowPlacesButton>
           <SearchBox id="search" />
-          <Layer type="symbol" id="marker" layout={placesLayerStyle}>
-            {places.map((place, index) => {
-              return (
-                <Feature
-                  key={`${place.name}-${index}`}
-                  coordinates={[place.longitude, place.latitude]}
+          {popup && (
+            <Popup offset={[0, -15]} coordinates={popup.coordinates}>
+              <PlacePopup>
+                <PlaceMarker image={popup.place.photo} />
+                <PlaceInfo>{popup.place.name}</PlaceInfo>
+                <Close
+                  onClick={() => {
+                    this.setState({ popup: undefined });
+                  }}
                 />
-              );
-            })}
+              </PlacePopup>
+            </Popup>
+          )}
+          <Layer type="circle" id="places" paint={placesLayerStyle}>
+            {places.length > 0 &&
+              places.map((place, index) => {
+                return (
+                  <Feature
+                    key={`${place.name}-${index}`}
+                    coordinates={[place.longitude, place.latitude]}
+                    properties={place}
+                    onClick={() => {
+                      this.setState({
+                        popup: {
+                          coordinates: [place.longitude, place.latitude],
+                          place
+                        }
+                      });
+                    }}
+                  />
+                );
+              })}
           </Layer>
+          <ShowPlacesButton
+            style={{
+              display: isDrawing || places.length > 0 ? "inline-block" : "none"
+            }}
+            onClick={() => this.handlePlaces("coffee")}
+          >
+            {isDrawing
+              ? this.props.t("search.show.cafes")
+              : places.length > 0
+              ? this.props.t("search.hide.cafes")
+              : ""}
+          </ShowPlacesButton>
         </Map>
       </MapBox>
     );
   }
 
   private stopDrawing() {
-    this.setState({ isDrawing: false });
+    this.setState({ isDrawing: false, places: [] });
   }
 
   private startDrawing() {
     this.setState({ isDrawing: true });
   }
 
-  private searchPlaces(intent: string) {
+  private handlePlaces(intent: string) {
     const data = this.draw.getAll();
-    this.recommender
-      .recommend(data, this.props.map.location.city, intent)
-      .then(places => {
-        this.setState({ places });
-      })
-      .catch(err => {
-        alert(
-          `Could not find any coffee shops, sorry! Failed with the error: ${err}`
-        );
-      });
-    this.draw.deleteAll();
-    this.setState({ isDrawing: false });
+    if (data.features.length > 0) {
+      this.recommender
+        .recommend(data, this.props.map.location.city, intent)
+        .then(places => {
+          this.setState({ places });
+        })
+        .catch(err => {
+          alert(this.props.t("search.errors.404"));
+          console.log(err);
+        });
+      this.draw.deleteAll();
+      this.setState({ isDrawing: false });
+    } else if (this.state.places.length > 0) {
+      this.setState({ places: [] });
+    }
   }
 
   private handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
       this.draw.deleteAll();
+      this.setState({ places: [] });
+      this.setState({ popup: undefined });
     }
   }
 
@@ -252,26 +287,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         )
       );
     }
-    const geocoderElement = document.getElementById("mapboxgl-ctrl-geocoder");
-    if (geocoderElement) {
-      const geocoderInput = geocoderElement.querySelector("input");
-      if (geocoderInput) {
-        geocoderInput.placeholder = this.props.t("search.placeholder");
-      }
-    }
-  }
-
-  private withinBoundingBox(longitude: number, latitude: number) {
-    const [
-      minLongitude,
-      minLatitude,
-      maxLongitude,
-      maxLatitude
-    ] = this.props.map.location.boundingBox;
-    return (
-      _.inRange(longitude, minLongitude, maxLongitude) &&
-      _.inRange(latitude, minLatitude, maxLatitude)
-    );
   }
 
   private setupSearch() {
@@ -294,15 +309,20 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         searchBox.removeChild(searchBox.firstChild);
       }
       searchBox.appendChild(this.search.onAdd(this.map));
+      const searchInput = searchBox.querySelector("input");
+      if (searchInput) {
+        searchInput.placeholder = this.props.t("search.placeholder");
+      }
     }
   }
   private locate() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(position => {
         if (
-          this.withinBoundingBox(
+          withinBoundingBox(
             position.coords.longitude,
-            position.coords.latitude
+            position.coords.latitude,
+            this.props.map.location
           )
         ) {
           this.props.updatePan({
@@ -314,13 +334,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           });
         }
       });
-    }
-    if (
-      !this.withinBoundingBox(
+    } else if (
+      !withinBoundingBox(
         this.props.map.viewport.longitude,
-        this.props.map.viewport.latitude
+        this.props.map.viewport.latitude,
+        this.props.map.location
       )
     ) {
+      console.log("here");
       const [
         ,
         ,
@@ -348,7 +369,7 @@ const mapStateToProps = (state: MaposhState) => ({
 const MaposhMap = withTranslation()(
   connect(
     mapStateToProps,
-    { updatePan }
+    { updatePan, updateCity }
   )(BaseMap)
 );
 

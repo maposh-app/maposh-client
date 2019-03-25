@@ -4,9 +4,11 @@ import styled from "../../service/theme/styled-components";
 
 export const MapBox = styled.div`
   position: relative;
-  flex: 1 1 auto;
-  pointer-events: auto;
+  flex: 1;
   height: 1em;
+  .mapboxgl-popup-content {
+    border-radius: ${config.theme.elementBorderRadius};
+  }
 `;
 
 export const NavigationBox = styled.div`
@@ -16,25 +18,78 @@ export const NavigationBox = styled.div`
 `;
 
 export const ShowPlacesButton = styled.button`
-  position: fixed;
-  top: 7em;
-  left: 4em;
-  padding: 1.7em;
+  position: absolute;
+  font-size: 1.5em;
+
+  @media (min-width: 768px) {
+    top: 7px;
+    left: 50px;
+  }
+
+  @media (max-width: 768px) {
+    right: 5px;
+    bottom: 50px;
+  }
+  padding: 1em;
   outline: none;
+  background-color: #fff;
   border-radius: ${config.theme.elementBorderRadius};
+`;
+
+export const clusterMarkerStyle = {
+  width: config.map.foursquare.photo_side,
+  height: config.map.foursquare.photo_side,
+  borderRadius: "50%",
+  backgroundColor: "#51D5A0",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "white",
+  border: "2px solid #56C498",
+  cursor: "pointer"
+};
+
+export const PlacePopup = styled.div`
+  background: white;
+  font-weight: bold;
+  font-size: 1.5em;
+  border-radius: ${config.theme.elementBorderRadius};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const PlaceInfo = styled.div`
+  margin: 15px;
+`;
+
+export const PlaceMarker = styled.div`
+  margin: 10px;
+  margin-right: 5px;
+  border-width: 1.5px;
+  width: ${config.map.foursquare.photo_side}px;
+  height: ${config.map.foursquare.photo_side}px;
+  border-color: ${config.theme.colorTender} !important;
+  border-style: solid !important;
+  border-radius: 100% !important;
+  background-size: cover;
+  background-position: center;
+  background: ${(props: { image?: string }) => `url(${props.image})`};
 `;
 
 export const SearchBox = styled.div`
   position: relative;
-  display: grid;
-  justify-items: center;
   top: 1em;
   pointer-events: none;
+  touch-action: none;
+  z-index: 20;
+  .mapboxgl-ctrl-geocoder {
+    margin: auto;
+    border-radius: ${config.theme.elementBorderRadius};
+  }
 `;
 
 export const drawStyle = [
-  // ACTIVE (being drawn)
-  // line stroke
   {
     id: "gl-draw-line",
     type: "line",
@@ -109,5 +164,8 @@ export const drawStyle = [
 ];
 
 export const placesLayerStyle = {
-  "icon-image": "marker-15"
+  "circle-radius": 10,
+  "circle-color": ["get", "color"],
+  "circle-stroke-width": 1,
+  "circle-opacity": 0.7
 };

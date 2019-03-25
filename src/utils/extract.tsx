@@ -1,4 +1,6 @@
-import { Auth } from "aws-amplify";
+import * as _ from "lodash";
+import { getLocations } from "../config";
+import { ICity, ILocation } from "../model/location";
 
 export const getWindowHeight: () => number = () => {
   if (window.innerHeight && document.documentElement.clientHeight) {
@@ -41,21 +43,32 @@ export const getQuerystring = (name: string, url = window.location.href) => {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
 
-export const hexToRGBA = (hex: string, alpha: number) => {
-  hex = hex.charAt(0) === "#" ? hex.substring(1, 7) : hex;
+export const withinBoundingBox = (
+  longitude: number,
+  latitude: number,
+  location: ILocation
+) => {
+  const [
+    minLongitude,
+    minLatitude,
+    maxLongitude,
+    maxLatitude
+  ] = location.boundingBox;
+  return (
+    _.inRange(longitude, minLongitude, maxLongitude) &&
+    _.inRange(latitude, minLatitude, maxLatitude)
+  );
+};
 
-  if (hex.length !== 6) {
-    alert("Invalid length of the input hex value!");
-    return;
-  }
-  if (/[0-9a-f]{6}/i.test(hex) !== true) {
-    alert("Invalid digits in the input hex value!");
-    return;
-  }
-
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  return [r, g, b, alpha * 255];
+export const getCityIfExists = (coordinates: Position): ICity | undefined => {
+  const locationsInfo = getLocations();
+  const locations = locationsInfo.filter(location =>
+    withinBoundingBox(
+      coordinates.coords.longitude,
+      coordinates.coords.latitude,
+      location
+    )
+  );
+  const info = locations.pop();
+  return info ? info.city : info;
 };

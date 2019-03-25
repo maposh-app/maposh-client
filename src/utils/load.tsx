@@ -2,6 +2,7 @@ import axios from "axios";
 import { FeatureCollection, Polygon } from "geojson";
 import config from "../config";
 import { IPlace } from "../model/place";
+import { percentage2color } from "./transform";
 
 export class RecommendationsLoader {
   private apiURL: string;
@@ -33,8 +34,7 @@ export class RecommendationsLoader {
       .join(";");
 
     const near = `near=${city}`;
-    // const why = `intent=${intent}`;
-    const why = `section=${intent}`;
+    const why = `intent=${intent}`;
     const focus = `polygon=${polygon}`;
     const version = `v=${new Date()
       .toISOString()
@@ -49,12 +49,19 @@ export class RecommendationsLoader {
       version
     ].join("&");
     const request = `${this.apiURL}?${query}`;
-    console.log(request);
     return axios
       .get(request)
       .then(res => {
         const venues = res.data.response.group.results;
-        return venues.map((info: any) => {
+        return venues.map((info: any, idx: number) => {
+          const photo =
+            (info.photo &&
+              info.photo.prefix &&
+              info.photo.suffix &&
+              `${info.photo.prefix}${config.map.foursquare.photo_side}x${
+                config.map.foursquare.photo_side
+              }${info.photo.suffix}`) ||
+            undefined;
           const place: IPlace = {
             name: info.venue.name || "",
             placeID: info.venue.id || "",
@@ -62,13 +69,18 @@ export class RecommendationsLoader {
             address: info.venue.location.address || "",
             longitude: info.venue.location.lng || "",
             latitude: info.venue.location.lat || "",
-            rating: info.venue.rating
+            color: percentage2color(
+              ((venues.length - idx) / venues.length) * 100
+            ),
+            rating: info.venue.rating,
+            photo
           };
           return place;
         });
       })
       .catch(err => {
-        throw err.response.data;
+        console.log(err);
+        throw err;
       });
   }
 }

@@ -5,5 +5,7 @@ export interface IPlace {
   address: string;
   longitude: number;
   latitude: number;
+  color: string;
   rating?: number;
+  photo?: string;
 }
