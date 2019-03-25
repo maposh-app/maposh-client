@@ -6,6 +6,9 @@ export const MapBox = styled.div`
   position: relative;
   flex: 1;
   height: 1em;
+  .mapboxgl-popup-content {
+    border-radius: ${config.theme.elementBorderRadius};
+  }
 `;
 
 export const NavigationBox = styled.div`
@@ -48,13 +51,21 @@ export const clusterMarkerStyle = {
 
 export const PlacePopup = styled.div`
   background: white;
-  font-weight: 400;
-  font-style: bold;
-  padding: 5px;
+  font-weight: bold;
+  font-size: 1.5em;
   border-radius: ${config.theme.elementBorderRadius};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const PlaceInfo = styled.div`
+  margin: 15px;
 `;
 
 export const PlaceMarker = styled.div`
+  margin: 10px;
+  margin-right: 5px;
   border-width: 1.5px;
   width: ${config.map.foursquare.photo_side}px;
   height: ${config.map.foursquare.photo_side}px;
@@ -63,7 +74,7 @@ export const PlaceMarker = styled.div`
   border-radius: 100% !important;
   background-size: cover;
   background-position: center;
-  /* background: ${(props: { image: string }) => `url(${props.image})`}; */
+  background: ${(props: { image?: string }) => `url(${props.image})`};
 `;
 
 export const SearchBox = styled.div`
@@ -74,6 +85,7 @@ export const SearchBox = styled.div`
   z-index: 20;
   .mapboxgl-ctrl-geocoder {
     margin: auto;
+    border-radius: ${config.theme.elementBorderRadius};
   }
 `;
 
