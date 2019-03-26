@@ -104,7 +104,6 @@ export const drawStyle = [
       "line-width": 3
     }
   },
-  // polygon fill
   {
     id: "gl-draw-polygon-fill",
     type: "fill",
@@ -115,8 +114,6 @@ export const drawStyle = [
       "fill-opacity": 0.5
     }
   },
-  // polygon outline stroke
-  // This doesn't style the first edge of the polygon, which uses the line stroke styling instead
   {
     id: "gl-draw-polygon-stroke-active",
     type: "line",
