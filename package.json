@@ -23,6 +23,8 @@
     "lodash": "^4.17.11",
     "mapbox-gl": "0.53.1",
     "normalize.css": "^8.0.1",
+    "patch-package": "^6.0.7",
+    "postinstall-postinstall": "^2.0.0",
     "react": "^16.8.5",
     "react-apollo": "^2.5.1",
     "react-dom": "^16.8.5",
@@ -79,6 +81,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postinstall": "patch-package",
     "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!aws-amplify-react)/\"",
     "eject": "react-scripts eject"
   }

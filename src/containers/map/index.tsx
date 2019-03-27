@@ -3,10 +3,18 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxLanguage from "@mapbox/mapbox-gl-language";
+import { Point } from "geojson";
 import { GeolocateControl, LngLat } from "mapbox-gl";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
-import ReactMapboxGl, { Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl } from "react-mapbox-gl";
+import ReactMapboxGl, {
+  Feature,
+  Layer,
+  Popup,
+  RotationControl,
+  ScaleControl,
+  ZoomControl
+} from "react-mapbox-gl";
 import { connect } from "react-redux";
 import Close from "../../components/close";
 import { IPlace } from "../../model/place";
@@ -17,7 +25,17 @@ import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
-import { drawStyle, MapBox, PlaceInfo, PlaceMarker, PlacePopup, placesLayerStyle, SearchBox, ShowPlacesButton } from "./map.css";
+import Rater from "../rater";
+import {
+  drawStyle,
+  MapBox,
+  PlaceInfo,
+  PlaceMarker,
+  PlacePopup,
+  placesLayerStyle,
+  SearchBox,
+  ShowPlacesButton
+} from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
 const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.env.REACT_APP_MAPBOX_STYLE || "";
@@ -181,6 +199,25 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
             map.on("draw.create", this.startDrawing);
             map.on("draw.delete", this.stopDrawing);
             map.addControl(this.mapLanguage);
+            map.on("click", "places", evt => {
+              if (evt.features) {
+                const info = evt.features[0];
+                const coordinates = (info.geometry as Point).coordinates.slice();
+                while (Math.abs(evt.lngLat.lng - coordinates[0]) > 180) {
+                  coordinates[0] +=
+                    evt.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+
+                if (info.properties) {
+                  this.setState({
+                    popup: {
+                      coordinates: [evt.lngLat.lng, evt.lngLat.lat],
+                      place: info.properties as IPlace
+                    }
+                  });
+                }
+              }
+            });
           }}
           maxBounds={[[minLongitude, minLatitude], [maxLongitude, maxLatitude]]}
           style={MAPBOX_STYLE}
@@ -196,6 +233,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           {popup && (
             <Popup offset={[0, -15]} coordinates={popup.coordinates}>
               <PlacePopup>
+                <Rater />
                 <PlaceMarker image={popup.place.photo} />
                 <PlaceInfo>{popup.place.name}</PlaceInfo>
                 <Close
@@ -214,14 +252,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                     key={`${place.name}-${index}`}
                     coordinates={[place.longitude, place.latitude]}
                     properties={place}
-                    onClick={() => {
-                      this.setState({
-                        popup: {
-                          coordinates: [place.longitude, place.latitude],
-                          place
-                        }
-                      });
-                    }}
                   />
                 );
               })}
