@@ -233,7 +233,11 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           {popup && (
             <Popup offset={[0, -15]} coordinates={popup.coordinates}>
               <PlacePopup>
-                <Rater />
+                <Rater
+                  key={`${popup.place.name}-rater`}
+                  placeID={popup.place.placeID}
+                  currentScore={popup.place.maposhRating}
+                />
                 <PlaceMarker image={popup.place.photo} />
                 <PlaceInfo>{popup.place.name}</PlaceInfo>
                 <Close
@@ -296,15 +300,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       this.draw.deleteAll();
       this.setState({ isDrawing: false });
     } else if (this.state.places.length > 0) {
-      this.setState({ places: [] });
+      this.stopDrawing();
     }
   }
 
   private handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
       this.draw.deleteAll();
-      this.setState({ places: [] });
-      this.setState({ popup: undefined });
+      this.setState({ places: [], popup: undefined });
     }
   }
 
@@ -371,7 +374,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         this.props.map.location
       )
     ) {
-      console.log("here");
       const [
         ,
         ,

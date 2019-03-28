@@ -39,12 +39,12 @@
       {
         "name": "password",
         "placeholder": "Пароль",
-        "type": "password"
+        "type": "new-password"
       },
       {
         "name": "passwordConfirmation",
         "placeholder": "Подтвердите Пароль",
-        "type": "password"
+        "type": "new-password"
       }
     ],
     "errors": {
@@ -79,7 +79,7 @@
       {
         "name": "newPassword",
         "placeholder": "Новый Пароль",
-        "type": "password"
+        "type": "new-password"
       }
     ],
     "submit_form_status": {
@@ -122,7 +122,7 @@
       {
         "name": "password",
         "placeholder": "Пароль",
-        "type": "password"
+        "type": "current-password"
       }
     ],
     "errors": {

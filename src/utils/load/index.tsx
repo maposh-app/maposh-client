@@ -1,8 +1,9 @@
+import { API, graphqlOperation } from "aws-amplify";
 import axios from "axios";
 import { FeatureCollection, Polygon } from "geojson";
-import config from "../config";
-import { IPlace } from "../model/place";
-import { percentage2color } from "./transform";
+import config from "../../config";
+import { IPlace } from "../../model/place";
+import { mutations, percentage2color } from "../transform";
 
 export class RecommendationsLoader {
   private apiURL: string;
@@ -15,7 +16,7 @@ export class RecommendationsLoader {
     this.limit = `limit=${config.map.foursquare.limit}`;
     this.credentials = `client_secret=${clientSecret}&client_id=${clientID}`;
   }
-  public async recommend(
+  public recommend(
     where: FeatureCollection,
     city: string,
     intent: string
@@ -49,6 +50,7 @@ export class RecommendationsLoader {
       version
     ].join("&");
     const request = `${this.apiURL}?${query}`;
+    let numUnknown = 0;
     return axios
       .get(request)
       .then(res => {
@@ -78,7 +80,26 @@ export class RecommendationsLoader {
           return place;
         });
       })
+      .then(async (places: IPlace[]) => {
+        return await Promise.all(
+          places.map(async (place: IPlace) => {
+            try {
+              const result = await (API.graphql(
+                graphqlOperation(mutations.getMaposhScore(place.placeID))
+              ) as any);
+              if (result.data && result.data.getPlaceInfo) {
+                place.maposhRating = result.data.getPlaceInfo.upvoteCount;
+              }
+            } catch {
+              ++numUnknown;
+              place.maposhRating = 0;
+            }
+            return place;
+          })
+        );
+      })
       .catch(err => {
+        console.log(`Have found ${numUnknown} unknown places...`);
         console.log(err);
         throw err;
       });
