@@ -278,7 +278,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   }
 
   private stopDrawing() {
-    this.setState({ isDrawing: false, places: [] });
+    this.setState({ isDrawing: false, places: [], popup: undefined });
   }
 
   private startDrawing() {
