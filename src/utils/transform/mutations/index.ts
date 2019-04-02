@@ -6,22 +6,38 @@ const getMaposhScore = (placeID: string) => `
   }
 `;
 
-const addPlace = (placeID: string, city: string) => `
+const upvotePlace = (placeID: string, city: string) => `
   mutation {
-    addPlace(placeID: "${placeID}", city: "${city}")
+    ratePlace(placeID: "${placeID}", city: "${city}", score: 1)
+    like(placeID: "${placeID}", city: "${city}")
   }
 `;
 
-const upvotePlace = (placeID: string, city: string) => `
+const forgetUpvote = (placeID: string, city: string) => `
   mutation {
-    upvotePlace(placeID: "${placeID}", city: "${city}")
+    ratePlace(placeID: "${placeID}", city: "${city}", score: -1)
+    forget(placeID: "${placeID}")
+  }
+`;
+
+const forgetDownvote = (placeID: string, city: string) => `
+  mutation {
+    ratePlace(placeID: "${placeID}", city: "${city}", score: 1)
+    forget(placeID: "${placeID}")
   }
 `;
 
 const downvotePlace = (placeID: string, city: string) => `
   mutation {
-    downvotePlace(placeID: "${placeID}", city: "${city}")
+    ratePlace(placeID: "${placeID}", city: "${city}", score: -1)
+    dislike(placeID: "${placeID}")
   }
 `;
 
-export default { addPlace, upvotePlace, downvotePlace, getMaposhScore };
+export default {
+  upvotePlace,
+  downvotePlace,
+  getMaposhScore,
+  forgetUpvote,
+  forgetDownvote
+};

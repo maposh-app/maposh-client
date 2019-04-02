@@ -7,7 +7,9 @@ import {
 
 const initialSystemState: ISystemState = {
   language: config.locale.default,
-  isAuthenticated: false
+  isAuthenticated: false,
+  favourites: new Set<string>(),
+  dislikes: new Set<string>()
 };
 
 export function systemReducer(

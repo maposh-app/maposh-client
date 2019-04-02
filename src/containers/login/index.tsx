@@ -1,7 +1,7 @@
-import { Auth } from "aws-amplify";
+import { API, Auth, graphqlOperation } from "aws-amplify";
 import { Formik, FormikActions } from "formik";
 import * as React from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import * as yup from "yup";
@@ -20,7 +20,10 @@ import {
 } from "../../components/form/form.css";
 import { NamedModal } from "../../components/modal";
 import { MaposhState } from "../../service/store";
-import { updateUserStatus } from "../../service/store/system/actions";
+import {
+  updateAuthStatus,
+  updatePreferences
+} from "../../service/store/system/actions";
 import { ISystemState } from "../../service/store/system/types";
 
 interface ILoginFormValues {
@@ -35,7 +38,8 @@ const initialValues: ILoginFormValues = {
 
 interface ILoginProps {
   system: ISystemState;
-  updateUserStatus: typeof updateUserStatus;
+  updateAuthStatus: typeof updateAuthStatus;
+  updatePreferences: typeof updatePreferences;
   override?: string;
   authState?: string;
   onStateChange?: (where: string, state?: object) => void;
@@ -49,7 +53,7 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
     actions: FormikActions<ILoginFormValues>
   ) => {
     Auth.signIn(values.email, values.password)
-      .then(user => {
+      .then(async user => {
         if (props.onStateChange) {
           if (
             user.challengeName === "SMS_MFA" ||
@@ -63,6 +67,29 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
           } else if (props.checkContact) {
             props.checkContact(user);
           } else {
+            const queries: string = `meInfo {
+               favourites { placeID }
+               dislikes { placeID } }`;
+            const result = (await API.graphql(
+              graphqlOperation(`{${queries}}`)
+            )) as any;
+            if (result.data) {
+              if (result.data.meInfo) {
+                props.updatePreferences({
+                  favourites: new Set<string>(
+                    result.data.meInfo.favourites.map(
+                      (place: { placeID: string }) => place.placeID
+                    )
+                  ),
+                  dislikes: new Set<string>(
+                    result.data.meInfo.dislikes.map(
+                      (place: { placeID: string }) => place.placeID
+                    )
+                  )
+                });
+              }
+            }
+
             props.onStateChange("signedIn", user);
           }
         }
@@ -154,7 +181,7 @@ const mapStateToProps = (state: MaposhState) => ({
 export const Login = withRouter(
   connect(
     mapStateToProps,
-    { updateUserStatus }
+    { updateAuthStatus, updatePreferences }
   )(BaseLogin)
 );
 

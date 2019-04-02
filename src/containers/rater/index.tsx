@@ -5,7 +5,9 @@ import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 import { MaposhState } from "../../service/store";
+import { updatePlaces } from "../../service/store/map/actions";
 import { IMapState } from "../../service/store/map/types";
+import { updatePreferences } from "../../service/store/system/actions";
 import { ISystemState } from "../../service/store/system/types";
 import { mutations } from "../../utils/transform";
 import { DownArrow, RatingContainer, RatingCount, UpArrow } from "./rater.css";
@@ -13,19 +15,19 @@ import { DownArrow, RatingContainer, RatingCount, UpArrow } from "./rater.css";
 interface IRaterProps {
   system: ISystemState;
   map: IMapState;
+  updatePreferences: typeof updatePreferences;
+  updatePlaces: typeof updatePlaces;
   placeID: string;
-  currentScore?: number;
 }
 
-const BaseRater: React.FC<IRaterProps & RouteComponentProps> = ({
-  placeID,
-  currentScore,
-  system,
-  map,
-  history
-}) => {
-  const [vote, setVote] = React.useState(0);
-  const [score, setScore] = React.useState(currentScore || 0);
+const BaseRater: React.FC<IRaterProps & RouteComponentProps> = props => {
+  const [vote, setVote] = React.useState(
+    props.system.favourites.has(props.placeID)
+      ? 1
+      : props.system.dislikes.has(props.placeID)
+      ? -1
+      : 0
+  );
 
   const draw = (direction: number) => {
     const isCastedAlready = direction === vote;
@@ -33,50 +35,130 @@ const BaseRater: React.FC<IRaterProps & RouteComponentProps> = ({
     return !isCastedAlready;
   };
 
-  const upvoteBackend = () => {
+  const like = () => {
     (API.graphql(
-      graphqlOperation(mutations.upvotePlace(placeID, map.location.city))
+      graphqlOperation(
+        mutations.upvotePlace(props.placeID, props.map.location.city)
+      )
     ) as Promise<GraphQLResult>).catch(err => {
       console.log(err);
     });
+    const newPlaces = props.map.places;
+    const rating = newPlaces[props.placeID].maposhRating;
+    newPlaces[props.placeID].maposhRating = rating ? rating + 1 : 1;
+    props.updatePlaces({ places: newPlaces });
+
+    const favourites = props.system.favourites;
+    const dislikes = props.system.dislikes;
+    dislikes.delete(props.placeID);
+    props.updatePreferences({
+      favourites: favourites.add(props.placeID),
+      dislikes
+    });
   };
-  const downvoteBackend = () => {
+
+  const forgetLike = () => {
     (API.graphql(
-      graphqlOperation(mutations.downvotePlace(placeID, map.location.city))
+      graphqlOperation(
+        mutations.forgetUpvote(props.placeID, props.map.location.city)
+      )
     ) as Promise<GraphQLResult>).catch(err => {
       console.log(err);
+    });
+    const newPlaces = props.map.places;
+    const rating = newPlaces[props.placeID].maposhRating;
+    newPlaces[props.placeID].maposhRating = rating ? rating - 1 : 0;
+    props.updatePlaces({ places: newPlaces });
+
+    const favourites = props.system.favourites;
+    const dislikes = props.system.dislikes;
+    favourites.delete(props.placeID);
+    props.updatePreferences({
+      favourites,
+      dislikes
+    });
+  };
+
+  const dislike = () => {
+    (API.graphql(
+      graphqlOperation(
+        mutations.downvotePlace(props.placeID, props.map.location.city)
+      )
+    ) as Promise<GraphQLResult>).catch(err => {
+      console.log(err);
+    });
+    const newPlaces = props.map.places;
+    const rating = newPlaces[props.placeID].maposhRating;
+    newPlaces[props.placeID].maposhRating = rating ? rating - 1 : -1;
+    props.updatePlaces({ places: newPlaces });
+
+    const favourites = props.system.favourites;
+    const dislikes = props.system.dislikes;
+    favourites.delete(props.placeID);
+    props.updatePreferences({
+      favourites,
+      dislikes: dislikes.add(props.placeID)
+    });
+  };
+
+  const forgetDislike = () => {
+    (API.graphql(
+      graphqlOperation(
+        mutations.forgetDownvote(props.placeID, props.map.location.city)
+      )
+    ) as Promise<GraphQLResult>).catch(err => {
+      console.log(err);
+    });
+    const newPlaces = props.map.places;
+    const rating = newPlaces[props.placeID].maposhRating;
+    newPlaces[props.placeID].maposhRating = rating ? rating + 1 : 0;
+    props.updatePlaces({ places: newPlaces });
+
+    const favourites = props.system.favourites;
+    const dislikes = props.system.dislikes;
+    dislikes.delete(props.placeID);
+    props.updatePreferences({
+      favourites,
+      dislikes
     });
   };
 
   const upvote = () => {
-    if (system.isAuthenticated) {
+    if (props.system.isAuthenticated) {
       if (draw(1)) {
-        upvoteBackend();
+        like();
       } else {
-        downvoteBackend();
+        forgetLike();
       }
     } else {
-      history.push("/login");
+      props.history.push("/login");
     }
   };
 
   const downvote = () => {
-    if (system.isAuthenticated) {
+    if (props.system.isAuthenticated) {
       if (draw(-1)) {
-        downvoteBackend();
+        dislike();
       } else {
-        upvoteBackend();
+        forgetDislike();
       }
     } else {
-      history.push("/login");
+      props.history.push("/login");
     }
   };
 
+  const score = props.map.places[props.placeID].maposhRating || 0;
   return (
     <RatingContainer>
-      <UpArrow active={vote === 1} onClick={upvote} />
-      <RatingCount>{score + vote}</RatingCount>
-      <DownArrow active={vote === -1} onClick={downvote} />
+      <UpArrow
+        active={props.system.favourites.has(props.placeID)}
+        onClick={upvote}
+      />
+      <RatingCount>{score}</RatingCount>
+      <DownArrow
+        active={props.system.dislikes.has(props.placeID)}
+        onClick={downvote}
+      />
     </RatingContainer>
   );
 };
@@ -86,6 +168,9 @@ const mapStateToProps = (state: MaposhState) => ({
   map: state.map
 });
 
-const Rater = connect(mapStateToProps)(withRouter(BaseRater));
+const Rater = connect(
+  mapStateToProps,
+  { updatePreferences, updatePlaces }
+)(withRouter(BaseRater));
 
 export default Rater;

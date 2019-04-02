@@ -7,14 +7,7 @@ import { Point } from "geojson";
 import { GeolocateControl, LngLat } from "mapbox-gl";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
-import ReactMapboxGl, {
-  Feature,
-  Layer,
-  Popup,
-  RotationControl,
-  ScaleControl,
-  ZoomControl
-} from "react-mapbox-gl";
+import ReactMapboxGl, { Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl } from "react-mapbox-gl";
 import { connect } from "react-redux";
 import Close from "../../components/close";
 import { IPlace } from "../../model/place";
@@ -26,16 +19,7 @@ import { ISystemState } from "../../service/store/system/types";
 import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
 import Rater from "../rater";
-import {
-  drawStyle,
-  MapBox,
-  PlaceInfo,
-  PlaceMarker,
-  PlacePopup,
-  placesLayerStyle,
-  SearchBox,
-  ShowPlacesButton
-} from "./map.css";
+import { drawStyle, MapBox, PlaceInfo, PlaceMarker, PlacePopup, placesLayerStyle, SearchBox, ShowPlacesButton } from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
 const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.env.REACT_APP_MAPBOX_STYLE || "";
@@ -61,7 +45,7 @@ interface IPopup {
 }
 
 interface IMapData {
-  places: IPlace[];
+  places: string[];
   popup?: IPopup;
   isDrawing: boolean;
 }
@@ -236,7 +220,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                 <Rater
                   key={`${popup.place.name}-rater`}
                   placeID={popup.place.placeID}
-                  currentScore={popup.place.maposhRating}
                 />
                 <PlaceMarker image={popup.place.photo} />
                 <PlaceInfo>{popup.place.name}</PlaceInfo>
@@ -253,9 +236,12 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
               places.map((place, index) => {
                 return (
                   <Feature
-                    key={`${place.name}-${index}`}
-                    coordinates={[place.longitude, place.latitude]}
-                    properties={place}
+                    key={`${place}-${index}`}
+                    coordinates={[
+                      this.props.map.places[place].longitude,
+                      this.props.map.places[place].latitude
+                    ]}
+                    properties={this.props.map.places[place]}
                   />
                 );
               })}

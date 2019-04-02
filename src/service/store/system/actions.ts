@@ -1,7 +1,8 @@
 import {
+  IAuthState,
   ILanguageState,
+  IPreferencesState,
   ISystemState,
-  IUserState,
   UPDATE_SESSION
 } from "../../../service/store/system/types";
 
@@ -19,9 +20,16 @@ export function updateLanguage(newLanguage: ILanguageState) {
   };
 }
 
-export function updateUserStatus(newStatus: IUserState) {
+export function updateAuthStatus(newStatus: IAuthState) {
   return {
     type: UPDATE_SESSION,
     payload: newStatus
+  };
+}
+
+export function updatePreferences(newPreferences: IPreferencesState) {
+  return {
+    type: UPDATE_SESSION,
+    payload: newPreferences
   };
 }
