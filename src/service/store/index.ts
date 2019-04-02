@@ -23,6 +23,6 @@ function bootstrapStore() {
 }
 
 export type MaposhState = ReturnType<typeof rootReducer>;
-export type MaposhStore = ReturnType<typeof bootstrapStore>;
 
-export default bootstrapStore;
+const MaposhStore = bootstrapStore();
+export default MaposhStore;

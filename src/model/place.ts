@@ -7,5 +7,6 @@ export interface IPlace {
   latitude: number;
   color: string;
   rating?: number;
+  maposhRating?: number;
   photo?: string;
 }

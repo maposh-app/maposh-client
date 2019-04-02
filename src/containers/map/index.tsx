@@ -3,6 +3,7 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxLanguage from "@mapbox/mapbox-gl-language";
+import { Point } from "geojson";
 import { GeolocateControl, LngLat } from "mapbox-gl";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
@@ -17,6 +18,7 @@ import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
+import Rater from "../rater";
 import { drawStyle, MapBox, PlaceInfo, PlaceMarker, PlacePopup, placesLayerStyle, SearchBox, ShowPlacesButton } from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
@@ -43,7 +45,7 @@ interface IPopup {
 }
 
 interface IMapData {
-  places: IPlace[];
+  places: string[];
   popup?: IPopup;
   isDrawing: boolean;
 }
@@ -181,6 +183,25 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
             map.on("draw.create", this.startDrawing);
             map.on("draw.delete", this.stopDrawing);
             map.addControl(this.mapLanguage);
+            map.on("click", "places", evt => {
+              if (evt.features) {
+                const info = evt.features[0];
+                const coordinates = (info.geometry as Point).coordinates.slice();
+                while (Math.abs(evt.lngLat.lng - coordinates[0]) > 180) {
+                  coordinates[0] +=
+                    evt.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+
+                if (info.properties) {
+                  this.setState({
+                    popup: {
+                      coordinates: [evt.lngLat.lng, evt.lngLat.lat],
+                      place: info.properties as IPlace
+                    }
+                  });
+                }
+              }
+            });
           }}
           maxBounds={[[minLongitude, minLatitude], [maxLongitude, maxLatitude]]}
           style={MAPBOX_STYLE}
@@ -196,6 +217,10 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           {popup && (
             <Popup offset={[0, -15]} coordinates={popup.coordinates}>
               <PlacePopup>
+                <Rater
+                  key={`${popup.place.name}-rater`}
+                  placeID={popup.place.placeID}
+                />
                 <PlaceMarker image={popup.place.photo} />
                 <PlaceInfo>{popup.place.name}</PlaceInfo>
                 <Close
@@ -211,17 +236,12 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
               places.map((place, index) => {
                 return (
                   <Feature
-                    key={`${place.name}-${index}`}
-                    coordinates={[place.longitude, place.latitude]}
-                    properties={place}
-                    onClick={() => {
-                      this.setState({
-                        popup: {
-                          coordinates: [place.longitude, place.latitude],
-                          place
-                        }
-                      });
-                    }}
+                    key={`${place}-${index}`}
+                    coordinates={[
+                      this.props.map.places[place].longitude,
+                      this.props.map.places[place].latitude
+                    ]}
+                    properties={this.props.map.places[place]}
                   />
                 );
               })}
@@ -244,7 +264,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   }
 
   private stopDrawing() {
-    this.setState({ isDrawing: false, places: [] });
+    this.setState({ isDrawing: false, places: [], popup: undefined });
   }
 
   private startDrawing() {
@@ -266,15 +286,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       this.draw.deleteAll();
       this.setState({ isDrawing: false });
     } else if (this.state.places.length > 0) {
-      this.setState({ places: [] });
+      this.stopDrawing();
     }
   }
 
   private handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
       this.draw.deleteAll();
-      this.setState({ places: [] });
-      this.setState({ popup: undefined });
+      this.setState({ places: [], popup: undefined });
     }
   }
 
@@ -341,7 +360,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         this.props.map.location
       )
     ) {
-      console.log("here");
       const [
         ,
         ,

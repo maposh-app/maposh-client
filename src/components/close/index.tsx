@@ -1,14 +1,15 @@
 import styled from "../../service/theme/styled-components";
 
 const Close = styled.div`
-  position: absolute;
+  position: relative;
+  align-self: flex-start;
   right: 5px;
   top: 5px;
   display: inline-block;
   width: 16px;
   height: 16px;
   overflow: hidden;
-  margin:5px;
+  margin: 5px;
   opacity: 0.3;
   :hover {
     opacity: 1;

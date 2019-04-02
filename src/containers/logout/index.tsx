@@ -3,20 +3,27 @@ import { Auth } from "aws-amplify";
 import Constants from "aws-amplify-react/src/Auth/common/constants";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { updatePreferences } from "../../service/store/system/actions";
 import { LogoutButton } from "./logout.css";
 
 const logger = new ConsoleLogger("SignOut");
 
 interface ILogoutProps {
+  updatePreferences: typeof updatePreferences;
   googleSignOut?: () => void;
   facebookSignOut?: () => void;
   amazonSignOut?: () => void;
   auth0SignOut?: (opts: string) => void;
 }
 
-const Logout: React.FC<ILogoutProps> = props => {
+const BaseLogout: React.FC<ILogoutProps> = props => {
   const { t } = useTranslation();
   const signOut = () => {
+    props.updatePreferences({
+      favourites: new Set<string>(),
+      dislikes: new Set<string>()
+    });
     let payload: { [prop: string]: string } = {};
     try {
       const source = localStorage.getItem(Constants.AUTH_SOURCE_KEY);
@@ -74,5 +81,12 @@ const Logout: React.FC<ILogoutProps> = props => {
   };
   return <LogoutButton onClick={signOut}>{t("signout.title")}</LogoutButton>;
 };
+
+const mapStateToProps = () => ({});
+
+const Logout = connect(
+  mapStateToProps,
+  { updatePreferences }
+)(BaseLogout);
 
 export default Logout;

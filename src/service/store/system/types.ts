@@ -4,11 +4,16 @@ export interface ILanguageState {
   language: ILanguage;
 }
 
-export interface IUserState {
+export interface IAuthState {
   isAuthenticated: boolean;
 }
 
-export type ISystemState = ILanguageState & IUserState;
+export interface IPreferencesState {
+  favourites: Set<string>;
+  dislikes: Set<string>;
+}
+
+export type ISystemState = ILanguageState & IAuthState & IPreferencesState;
 
 export const UPDATE_SESSION = "UPDATE_SESSION";
 

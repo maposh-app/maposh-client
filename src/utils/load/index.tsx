@@ -1,13 +1,20 @@
+import { API, graphqlOperation } from "aws-amplify";
 import axios from "axios";
 import { FeatureCollection, Polygon } from "geojson";
-import config from "../config";
-import { IPlace } from "../model/place";
-import { percentage2color } from "./transform";
+import * as _ from "lodash";
+import config from "../../config";
+import { IPlace } from "../../model/place";
+import MaposhStore from "../../service/store";
+import { updatePlaces } from "../../service/store/map/actions";
+import { IPlacesState } from "../../service/store/map/types";
+import { updatePreferences } from "../../service/store/system/actions";
+import { percentage2color } from "../transform";
 
 export class RecommendationsLoader {
   private apiURL: string;
   private credentials: string;
   private limit: string;
+
   constructor() {
     this.apiURL = config.map.foursquare.recommendations_url;
     const clientSecret = process.env.REACT_APP_FOURSQUARE_CLIENT_SECRET || "";
@@ -15,11 +22,8 @@ export class RecommendationsLoader {
     this.limit = `limit=${config.map.foursquare.limit}`;
     this.credentials = `client_secret=${clientSecret}&client_id=${clientID}`;
   }
-  public async recommend(
-    where: FeatureCollection,
-    city: string,
-    intent: string
-  ): Promise<IPlace[]> {
+
+  public recommend(where: FeatureCollection, city: string, intent: string) {
     const polygon = where.features
       .map(feature => {
         const coordinates = (feature.geometry as Polygon).coordinates.pop();
@@ -77,6 +81,62 @@ export class RecommendationsLoader {
           };
           return place;
         });
+      })
+      .then(async (places: IPlace[]) => {
+        const queries: string =
+          places
+            .map((place: IPlace) => {
+              return `id${_.camelCase(place.placeID)}: getPlaceInfo(placeID: "${
+                place.placeID
+              }") { upvoteCount }`;
+            })
+            .join("\n") +
+          `\n meInfo {
+          favourites {
+            placeID
+          }
+          dislikes {
+            placeID
+          }
+        }`;
+        const result = (await API.graphql(
+          graphqlOperation(`{${queries}}`)
+        )) as any;
+        if (result.data) {
+          const maposhPlaces = MaposhStore.getState().map.places;
+          if (result.data.meInfo) {
+            MaposhStore.dispatch(
+              updatePreferences({
+                favourites: new Set<string>(
+                  result.data.meInfo.favourites.map(
+                    (place: { placeID: string }) => place.placeID
+                  )
+                ),
+                dislikes: new Set<string>(
+                  result.data.meInfo.dislikes.map(
+                    (place: { placeID: string }) => place.placeID
+                  )
+                )
+              })
+            );
+          }
+          const placesDict = places.reduce(
+            (dict: IPlacesState["places"], place: IPlace) => {
+              const maposhPlaceData =
+                result.data[`id${_.camelCase(place.placeID)}`];
+              if (maposhPlaceData) {
+                place.maposhRating = maposhPlaceData.upvoteCount;
+              }
+              dict[place.placeID] = place;
+              return dict;
+            },
+            {}
+          );
+          MaposhStore.dispatch(
+            updatePlaces({ places: { ...maposhPlaces, ...placesDict } })
+          );
+        }
+        return places.map(place => place.placeID);
       })
       .catch(err => {
         console.log(err);

@@ -5,6 +5,7 @@ import { ICity } from "../../../model/location";
 import { MaposhState } from "../../../service/store";
 import {
   ILocationState,
+  IPlacesState,
   IViewportState,
   UPDATE_MAP
 } from "../../../service/store/map/types";
@@ -13,6 +14,13 @@ export function updatePan(newPan: IViewportState) {
   return {
     type: UPDATE_MAP,
     payload: newPan
+  };
+}
+
+export function updatePlaces(newPlaces: IPlacesState) {
+  return {
+    type: UPDATE_MAP,
+    payload: newPlaces
   };
 }
 

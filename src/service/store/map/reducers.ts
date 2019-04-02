@@ -8,7 +8,8 @@ import {
 const defaultCity = getDefaultCity();
 const initialSystemState: IMapState = {
   viewport: getViewport(),
-  location: { city: defaultCity, boundingBox: getBoundary(defaultCity) }
+  location: { city: defaultCity, boundingBox: getBoundary(defaultCity) },
+  places: {}
 };
 
 export function mapReducer(

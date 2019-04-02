@@ -2,7 +2,6 @@ import { Authenticator, RequireNewPassword } from "aws-amplify-react";
 import * as React from "react";
 import Confirmation from "../../containers/confirmation";
 import { Login } from "../../containers/login";
-import Logout from "../../containers/logout";
 import PasswordReset from "../../containers/password-reset";
 import SignUp from "../../containers/signup";
 import AuthenticatorTheme from "./authenticator.css";

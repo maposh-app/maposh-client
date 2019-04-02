@@ -6,6 +6,8 @@
     "colorPure": "#e1f5fe",
     "colorTender": "#546e7a",
     "colorVisitedLink": "#5a5c51",
+    "colorPositive": "#66bd63",
+    "colorNegative": "#f46d43",
     "iconSize": "32px",
     "elementBorderRadius": "16px"
   },
@@ -37,7 +39,7 @@
     "foursquare": {
       "recommendations_url": "https://api.foursquare.com/v2/search/recommendations",
       "limit": 50,
-      "photo_side": 30,
+      "photo_side": 60,
       "places": {
         "food": "4d4b7105d754a06374d81259",
         "coworking": "4bf58dd8d48988d174941735"
