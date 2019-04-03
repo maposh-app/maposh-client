@@ -7,7 +7,13 @@ import { Point } from "geojson";
 import { GeolocateControl, LngLat } from "mapbox-gl";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
-import ReactMapboxGl, { Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl } from "react-mapbox-gl";
+import ReactMapboxGl, {
+  Feature,
+  Layer,
+  RotationControl,
+  ScaleControl,
+  ZoomControl
+} from "react-mapbox-gl";
 import { connect } from "react-redux";
 import Close from "../../components/close";
 import { IPlace } from "../../model/place";
@@ -18,8 +24,15 @@ import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
-import Rater from "../rater";
-import { drawStyle, MapBox, PlaceInfo, PlaceMarker, PlacePopup, placesLayerStyle, SearchBox, ShowPlacesButton } from "./map.css";
+import PlaceProfile from "../place";
+import {
+  drawStyle,
+  MapBox,
+  placesLayerStyle,
+  SearchBox,
+  ShowPlacesButton,
+  StyledPopup
+} from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
 const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.env.REACT_APP_MAPBOX_STYLE || "";
@@ -136,17 +149,10 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         };
         waiting();
       }
-      if (this.props.map.location.city !== prevProps.map.location.city) {
-        this.locate();
+      if (this.props.map.location !== prevProps.map.location) {
         this.setupSearch();
         this.stopDrawing();
-        this.map.flyTo({
-          center: [
-            this.props.map.viewport.longitude,
-            this.props.map.viewport.latitude
-          ],
-          zoom: this.props.map.viewport.zoom
-        });
+        this.locate();
       }
     }
   }
@@ -170,14 +176,8 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           onStyleLoad={map => {
             this.map = map;
             this.setLanguage();
-            this.setupSearch();
             this.locate();
-            this.map.flyTo({
-              center: [
-                this.props.map.viewport.longitude,
-                this.props.map.viewport.latitude
-              ]
-            });
+            this.setupSearch();
             map.addControl(this.geolocate);
             map.addControl(this.draw, "top-left");
             map.on("draw.create", this.startDrawing);
@@ -215,21 +215,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           <RotationControl style={{ top: 105 }} />
           <SearchBox id="search" />
           {popup && (
-            <Popup offset={[0, -15]} coordinates={popup.coordinates}>
-              <PlacePopup>
-                <Rater
-                  key={`${popup.place.name}-rater`}
-                  placeID={popup.place.placeID}
-                />
-                <PlaceMarker image={popup.place.photo} />
-                <PlaceInfo>{popup.place.name}</PlaceInfo>
-                <Close
-                  onClick={() => {
-                    this.setState({ popup: undefined });
-                  }}
-                />
-              </PlacePopup>
-            </Popup>
+            <StyledPopup offset={[0, -15]} coordinates={popup.coordinates}>
+              <PlaceProfile place={popup.place} />
+              <Close
+                onClick={() => {
+                  this.setState({ popup: undefined });
+                }}
+              />
+            </StyledPopup>
           )}
           <Layer type="circle" id="places" paint={placesLayerStyle}>
             {places.length > 0 &&
@@ -322,6 +315,19 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       bbox: [minLongitude, minLatitude, maxLongitude, maxLatitude],
       trackProximity: true
     });
+    if (this.map && this.map.getZoom() > 9) {
+      const { lng, lat } = this.map.getCenter().wrap();
+      this.props.updatePan({
+        viewport: {
+          ...this.props.map.viewport,
+          longitude: lng,
+          latitude: lat
+        }
+      });
+      this.search.setProximity({ longitude: lng, latitude: lat });
+    } else {
+      this.search.setProximity(null);
+    }
     const searchBox = document.getElementById("search");
     if (searchBox) {
       while (searchBox.firstChild) {
@@ -333,6 +339,24 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         searchInput.placeholder = this.props.t("search.placeholder");
       }
     }
+    this.search.on("result", (event: any) => {
+      if (event.result && event.result.place_name && event.result.geometry) {
+        this.recommender
+          .searchByAddress(
+            event.result.text,
+            event.result.place_name,
+            event.result.geometry.coordinates[1],
+            event.result.geometry.coordinates[0]
+          )
+          .then(places => {
+            this.setState({ places });
+          })
+          .catch(err => {
+            alert(this.props.t("search.errors.404"));
+            console.log(err);
+          });
+      }
+    });
   }
   private locate() {
     if (navigator.geolocation) {
@@ -351,15 +375,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
               latitude: position.coords.latitude
             }
           });
+          if (this.map) {
+            this.map.flyTo({
+              center: [position.coords.longitude, position.coords.latitude]
+            });
+          }
         }
       });
-    } else if (
-      !withinBoundingBox(
-        this.props.map.viewport.longitude,
-        this.props.map.viewport.latitude,
-        this.props.map.location
-      )
-    ) {
+    } else {
       const [
         ,
         ,
@@ -374,6 +397,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           longitude: cityCenterLongitude,
           latitude: cityCenterLatitude
         }
+      });
+    }
+    if (this.map) {
+      this.map.flyTo({
+        center: [
+          this.props.map.viewport.longitude,
+          this.props.map.viewport.latitude
+        ]
       });
     }
   }

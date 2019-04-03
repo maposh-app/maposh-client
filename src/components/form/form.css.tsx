@@ -46,8 +46,8 @@ export const FormNav = styled.button`
   background: none !important;
   color: ${config.theme.colorTender};
   border: none;
-  padding: 0 !important;
+  padding: 5px !important;
+  margin: 10px !important;
   font: inherit;
-  border-bottom: 1px solid ${config.theme.colorTender};
   cursor: pointer;
 `;
