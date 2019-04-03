@@ -340,15 +340,28 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       }
     }
     this.search.on("result", (event: any) => {
+      this.stopDrawing();
       if (event.result && event.result.place_name && event.result.geometry) {
         this.recommender
           .searchByAddress(
             event.result.text,
             event.result.place_name,
-            event.result.geometry.coordinates[1],
-            event.result.geometry.coordinates[0]
+            event.result.geometry.coordinates[0],
+            event.result.geometry.coordinates[1]
           )
           .then(places => {
+            places.forEach(placeID => {
+              if (
+                this.props.map.places[placeID].name.includes(event.result.text)
+              ) {
+                this.setState({
+                  popup: {
+                    coordinates: event.result.geometry.coordinates,
+                    place: this.props.map.places[placeID]
+                  }
+                });
+              }
+            });
             this.setState({ places });
           })
           .catch(err => {
