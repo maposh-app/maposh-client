@@ -1,4 +1,4 @@
-import * as React from "react";
+import { Popup } from "react-mapbox-gl";
 import config from "../../config";
 import styled from "../../service/theme/styled-components";
 
@@ -49,34 +49,6 @@ export const clusterMarkerStyle = {
   cursor: "pointer"
 };
 
-export const PlacePopup = styled.div`
-  background: white;
-  font-weight: bold;
-  font-size: 1.5em;
-  border-radius: ${config.theme.elementBorderRadius};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-export const PlaceInfo = styled.div`
-  margin: 15px;
-`;
-
-export const PlaceMarker = styled.div`
-  margin: 10px;
-  margin-right: 5px;
-  border-width: 1.5px;
-  width: ${config.map.foursquare.photo_side}px;
-  height: ${config.map.foursquare.photo_side}px;
-  border-color: ${config.theme.colorTender} !important;
-  border-style: solid !important;
-  border-radius: 100% !important;
-  background-size: cover;
-  background-position: center;
-  background: ${(props: { image?: string }) => `url(${props.image})`};
-`;
-
 export const SearchBox = styled.div`
   position: relative;
   top: 1em;
@@ -88,6 +60,32 @@ export const SearchBox = styled.div`
     border-radius: ${config.theme.elementBorderRadius};
   }
 `;
+
+export const StyledPopup = styled.div`
+  position: absolute;
+  display: flex;
+  padding: 0.5em;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 95%;
+
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  outline: none;
+  background-color: #fff;
+  border-color: transparent;
+  border-radius: ${config.theme.elementBorderRadius};
+  box-shadow: 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+`;
+
+export const trackingStyle = {
+  "line-color": config.theme.colorTender,
+  "line-width": 2,
+  "line-dasharray": [1, 2]
+};
 
 export const drawStyle = [
   {

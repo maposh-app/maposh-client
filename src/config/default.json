@@ -38,6 +38,7 @@
     },
     "foursquare": {
       "recommendations_url": "https://api.foursquare.com/v2/search/recommendations",
+      "search_url": "https://api.foursquare.com/v2/venues/search",
       "limit": 50,
       "photo_side": 60,
       "places": {

@@ -7,7 +7,13 @@ import { Point } from "geojson";
 import { GeolocateControl, LngLat } from "mapbox-gl";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
-import ReactMapboxGl, { Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl } from "react-mapbox-gl";
+import ReactMapboxGl, {
+  Feature,
+  Layer,
+  RotationControl,
+  ScaleControl,
+  ZoomControl
+} from "react-mapbox-gl";
 import { connect } from "react-redux";
 import Close from "../../components/close";
 import { IPlace } from "../../model/place";
@@ -18,8 +24,16 @@ import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
-import Rater from "../rater";
-import { drawStyle, MapBox, PlaceInfo, PlaceMarker, PlacePopup, placesLayerStyle, SearchBox, ShowPlacesButton } from "./map.css";
+import PlaceProfile from "../place";
+import {
+  drawStyle,
+  MapBox,
+  placesLayerStyle,
+  SearchBox,
+  ShowPlacesButton,
+  StyledPopup,
+  trackingStyle
+} from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
 const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.env.REACT_APP_MAPBOX_STYLE || "";
@@ -41,6 +55,7 @@ interface IMapProps {
 
 interface IPopup {
   coordinates: GeoJSON.Position;
+  source?: mapboxgl.Point;
   place: IPlace;
 }
 
@@ -48,6 +63,7 @@ interface IMapData {
   places: string[];
   popup?: IPopup;
   isDrawing: boolean;
+  isTracking: boolean;
 }
 
 class BaseMap extends React.Component<IMapProps, IMapData> {
@@ -60,7 +76,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   public constructor(props: IMapProps) {
     super(props);
     this.locate();
-    this.recommender = new RecommendationsLoader();
+    this.recommender = new RecommendationsLoader(this.props.system.language);
     this.geolocate = new GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
@@ -111,7 +127,8 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
     this.setLanguage = this.setLanguage.bind(this);
     this.state = {
       places: [],
-      isDrawing: false
+      isDrawing: false,
+      isTracking: false
     };
     this.handleKeydown = this.handleKeydown.bind(this);
     this.handlePlaces = this.handlePlaces.bind(this);
@@ -132,21 +149,15 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           } else {
             this.setLanguage();
             this.setupSearch();
+            this.recommender.language = this.props.system.language;
           }
         };
         waiting();
       }
-      if (this.props.map.location.city !== prevProps.map.location.city) {
-        this.locate();
+      if (this.props.map.location !== prevProps.map.location) {
         this.setupSearch();
         this.stopDrawing();
-        this.map.flyTo({
-          center: [
-            this.props.map.viewport.longitude,
-            this.props.map.viewport.latitude
-          ],
-          zoom: this.props.map.viewport.zoom
-        });
+        this.locate();
       }
     }
   }
@@ -162,22 +173,22 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       maxLongitude,
       maxLatitude
     ] = this.props.map.location.boundingBox;
-    const { places, isDrawing, popup } = this.state;
+    const { places, isDrawing, isTracking, popup } = this.state;
 
     return (
       <MapBox>
         <Map
+          onMoveStart={() => {
+            this.setState({ isTracking: false });
+          }}
+          onMoveEnd={() => {
+            this.setState({ isTracking: true });
+          }}
           onStyleLoad={map => {
             this.map = map;
             this.setLanguage();
-            this.setupSearch();
             this.locate();
-            this.map.flyTo({
-              center: [
-                this.props.map.viewport.longitude,
-                this.props.map.viewport.latitude
-              ]
-            });
+            this.setupSearch();
             map.addControl(this.geolocate);
             map.addControl(this.draw, "top-left");
             map.on("draw.create", this.startDrawing);
@@ -194,8 +205,13 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
 
                 if (info.properties) {
                   this.setState({
+                    isTracking: true,
                     popup: {
-                      coordinates: [evt.lngLat.lng, evt.lngLat.lat],
+                      coordinates: [
+                        info.properties.longitude,
+                        info.properties.latitude
+                      ],
+                      source: evt.point,
                       place: info.properties as IPlace
                     }
                   });
@@ -215,21 +231,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           <RotationControl style={{ top: 105 }} />
           <SearchBox id="search" />
           {popup && (
-            <Popup offset={[0, -15]} coordinates={popup.coordinates}>
-              <PlacePopup>
-                <Rater
-                  key={`${popup.place.name}-rater`}
-                  placeID={popup.place.placeID}
-                />
-                <PlaceMarker image={popup.place.photo} />
-                <PlaceInfo>{popup.place.name}</PlaceInfo>
-                <Close
-                  onClick={() => {
-                    this.setState({ popup: undefined });
-                  }}
-                />
-              </PlacePopup>
-            </Popup>
+            <StyledPopup>
+              <PlaceProfile place={popup.place} />
+              <Close
+                onClick={() => {
+                  this.setState({ isTracking: false, popup: undefined });
+                }}
+              />
+            </StyledPopup>
           )}
           <Layer type="circle" id="places" paint={placesLayerStyle}>
             {places.length > 0 &&
@@ -245,6 +254,17 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                   />
                 );
               })}
+          </Layer>
+          <Layer type="line" id="tracker" paint={trackingStyle}>
+            {popup &&
+              isTracking &&
+              this.map &&
+              (() => {
+                const { lng, lat } = this.map.getCenter();
+                return (
+                  <Feature coordinates={[popup.coordinates, [lng, lat]]} />
+                );
+              })()}
           </Layer>
           <ShowPlacesButton
             style={{
@@ -264,7 +284,12 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   }
 
   private stopDrawing() {
-    this.setState({ isDrawing: false, places: [], popup: undefined });
+    this.setState({
+      isDrawing: false,
+      places: [],
+      isTracking: false,
+      popup: undefined
+    });
   }
 
   private startDrawing() {
@@ -293,7 +318,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   private handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
       this.draw.deleteAll();
-      this.setState({ places: [], popup: undefined });
+      this.setState({ places: [], isTracking: false, popup: undefined });
     }
   }
 
@@ -322,6 +347,19 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       bbox: [minLongitude, minLatitude, maxLongitude, maxLatitude],
       trackProximity: true
     });
+    if (this.map && this.map.getZoom() > 9) {
+      const { lng, lat } = this.map.getCenter().wrap();
+      this.props.updatePan({
+        viewport: {
+          ...this.props.map.viewport,
+          longitude: lng,
+          latitude: lat
+        }
+      });
+      this.search.setProximity({ longitude: lng, latitude: lat });
+    } else {
+      this.search.setProximity(null);
+    }
     const searchBox = document.getElementById("search");
     if (searchBox) {
       while (searchBox.firstChild) {
@@ -333,6 +371,45 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         searchInput.placeholder = this.props.t("search.placeholder");
       }
     }
+    this.search.on("result", (event: any) => {
+      if (
+        event.result &&
+        event.result.place_name &&
+        event.result.geometry &&
+        event.result.place_type &&
+        event.result.place_type.includes("poi")
+      ) {
+        this.stopDrawing();
+        console.log(event);
+        this.recommender
+          .searchByAddress(
+            event.result.text,
+            event.result.place_name,
+            event.result.geometry.coordinates[0],
+            event.result.geometry.coordinates[1]
+          )
+          .then(places => {
+            places.forEach(placeID => {
+              if (
+                this.props.map.places[placeID].name.includes(event.result.text)
+              ) {
+                this.setState({
+                  isTracking: true,
+                  popup: {
+                    coordinates: event.result.geometry.coordinates,
+                    place: this.props.map.places[placeID]
+                  }
+                });
+              }
+            });
+            this.setState({ places });
+          })
+          .catch(err => {
+            alert(this.props.t("search.errors.404"));
+            console.log(err);
+          });
+      }
+    });
   }
   private locate() {
     if (navigator.geolocation) {
@@ -351,15 +428,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
               latitude: position.coords.latitude
             }
           });
+          if (this.map) {
+            this.map.flyTo({
+              center: [position.coords.longitude, position.coords.latitude]
+            });
+          }
         }
       });
-    } else if (
-      !withinBoundingBox(
-        this.props.map.viewport.longitude,
-        this.props.map.viewport.latitude,
-        this.props.map.location
-      )
-    ) {
+    } else {
       const [
         ,
         ,
@@ -374,6 +450,14 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           longitude: cityCenterLongitude,
           latitude: cityCenterLatitude
         }
+      });
+    }
+    if (this.map) {
+      this.map.flyTo({
+        center: [
+          this.props.map.viewport.longitude,
+          this.props.map.viewport.latitude
+        ]
       });
     }
   }
