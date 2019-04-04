@@ -61,12 +61,31 @@ export const SearchBox = styled.div`
   }
 `;
 
-export const StyledPopup = styled(Popup)`
-  .mapboxgl-popup-content {
-    display: flex;
-    flex-direction: row;
-  }
+export const StyledPopup = styled.div`
+  position: absolute;
+  display: flex;
+  padding: 0.5em;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 95%;
+
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  outline: none;
+  background-color: #fff;
+  border-color: transparent;
+  border-radius: ${config.theme.elementBorderRadius};
+  box-shadow: 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
 `;
+
+export const trackingStyle = {
+  "line-color": config.theme.colorTender,
+  "line-width": 2,
+  "line-dasharray": [1, 2]
+};
 
 export const drawStyle = [
   {

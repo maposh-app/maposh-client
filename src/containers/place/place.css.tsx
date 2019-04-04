@@ -1,6 +1,12 @@
 import config from "../../config";
 import styled from "../../service/theme/styled-components";
 
+export const PlaceLink = styled.a`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
 export const PlaceBox = styled.div`
   background: white;
   font-weight: bold;
@@ -19,8 +25,9 @@ export const PlaceMarker = styled.div`
   margin: 10px;
   margin-right: 5px;
   border-width: 1.5px;
-  width: ${config.map.foursquare.photo_side}px;
-  height: ${config.map.foursquare.photo_side}px;
+  flex-shrink: 0;
+  width: ${config.map.foursquare.photo_side}px !important;
+  height: ${config.map.foursquare.photo_side}px !important;
   border-color: ${config.theme.colorTender} !important;
   border-style: solid !important;
   border-radius: 100% !important;

@@ -31,7 +31,8 @@ import {
   placesLayerStyle,
   SearchBox,
   ShowPlacesButton,
-  StyledPopup
+  StyledPopup,
+  trackingStyle
 } from "./map.css";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
@@ -54,6 +55,7 @@ interface IMapProps {
 
 interface IPopup {
   coordinates: GeoJSON.Position;
+  source?: mapboxgl.Point;
   place: IPlace;
 }
 
@@ -61,6 +63,7 @@ interface IMapData {
   places: string[];
   popup?: IPopup;
   isDrawing: boolean;
+  isTracking: boolean;
 }
 
 class BaseMap extends React.Component<IMapProps, IMapData> {
@@ -73,7 +76,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   public constructor(props: IMapProps) {
     super(props);
     this.locate();
-    this.recommender = new RecommendationsLoader();
+    this.recommender = new RecommendationsLoader(this.props.system.language);
     this.geolocate = new GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
@@ -124,7 +127,8 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
     this.setLanguage = this.setLanguage.bind(this);
     this.state = {
       places: [],
-      isDrawing: false
+      isDrawing: false,
+      isTracking: false
     };
     this.handleKeydown = this.handleKeydown.bind(this);
     this.handlePlaces = this.handlePlaces.bind(this);
@@ -145,6 +149,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           } else {
             this.setLanguage();
             this.setupSearch();
+            this.recommender.language = this.props.system.language;
           }
         };
         waiting();
@@ -168,11 +173,17 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       maxLongitude,
       maxLatitude
     ] = this.props.map.location.boundingBox;
-    const { places, isDrawing, popup } = this.state;
+    const { places, isDrawing, isTracking, popup } = this.state;
 
     return (
       <MapBox>
         <Map
+          onMoveStart={() => {
+            this.setState({ isTracking: false });
+          }}
+          onMoveEnd={() => {
+            this.setState({ isTracking: true });
+          }}
           onStyleLoad={map => {
             this.map = map;
             this.setLanguage();
@@ -194,8 +205,13 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
 
                 if (info.properties) {
                   this.setState({
+                    isTracking: true,
                     popup: {
-                      coordinates: [evt.lngLat.lng, evt.lngLat.lat],
+                      coordinates: [
+                        info.properties.longitude,
+                        info.properties.latitude
+                      ],
+                      source: evt.point,
                       place: info.properties as IPlace
                     }
                   });
@@ -215,11 +231,11 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           <RotationControl style={{ top: 105 }} />
           <SearchBox id="search" />
           {popup && (
-            <StyledPopup offset={[0, -15]} coordinates={popup.coordinates}>
+            <StyledPopup>
               <PlaceProfile place={popup.place} />
               <Close
                 onClick={() => {
-                  this.setState({ popup: undefined });
+                  this.setState({ isTracking: false, popup: undefined });
                 }}
               />
             </StyledPopup>
@@ -239,6 +255,17 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                 );
               })}
           </Layer>
+          <Layer type="line" id="tracker" paint={trackingStyle}>
+            {popup &&
+              isTracking &&
+              this.map &&
+              (() => {
+                const { lng, lat } = this.map.getCenter();
+                return (
+                  <Feature coordinates={[popup.coordinates, [lng, lat]]} />
+                );
+              })()}
+          </Layer>
           <ShowPlacesButton
             style={{
               display: isDrawing || places.length > 0 ? "inline-block" : "none"
@@ -257,7 +284,12 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   }
 
   private stopDrawing() {
-    this.setState({ isDrawing: false, places: [], popup: undefined });
+    this.setState({
+      isDrawing: false,
+      places: [],
+      isTracking: false,
+      popup: undefined
+    });
   }
 
   private startDrawing() {
@@ -286,7 +318,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   private handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
       this.draw.deleteAll();
-      this.setState({ places: [], popup: undefined });
+      this.setState({ places: [], isTracking: false, popup: undefined });
     }
   }
 
@@ -340,8 +372,15 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       }
     }
     this.search.on("result", (event: any) => {
-      this.stopDrawing();
-      if (event.result && event.result.place_name && event.result.geometry) {
+      if (
+        event.result &&
+        event.result.place_name &&
+        event.result.geometry &&
+        event.result.place_type &&
+        event.result.place_type.includes("poi")
+      ) {
+        this.stopDrawing();
+        console.log(event);
         this.recommender
           .searchByAddress(
             event.result.text,
@@ -355,6 +394,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                 this.props.map.places[placeID].name.includes(event.result.text)
               ) {
                 this.setState({
+                  isTracking: true,
                   popup: {
                     coordinates: event.result.geometry.coordinates,
                     place: this.props.map.places[placeID]

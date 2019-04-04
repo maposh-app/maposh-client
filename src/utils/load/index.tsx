@@ -11,18 +11,20 @@ import { updatePreferences } from "../../service/store/system/actions";
 import { percentage2color } from "../transform";
 
 export class RecommendationsLoader {
+  public language: string;
   private searchURL: string;
   private recommenderURL: string;
   private credentials: string;
   private limit: string;
 
-  constructor() {
+  constructor(language: string) {
     this.recommenderURL = config.map.foursquare.recommendations_url;
     this.searchURL = config.map.foursquare.search_url;
     const clientSecret = process.env.REACT_APP_FOURSQUARE_CLIENT_SECRET || "";
     const clientID = process.env.REACT_APP_FOURSQUARE_CLIENT_ID || "";
     this.limit = `limit=${config.map.foursquare.limit}`;
     this.credentials = `client_secret=${clientSecret}&client_id=${clientID}`;
+    this.language = language;
   }
 
   public searchByAddress(
@@ -50,7 +52,11 @@ export class RecommendationsLoader {
     ].join("&");
     const request = `${this.recommenderURL}?${query}`;
     return axios
-      .get(request)
+      .get(request, {
+        headers: {
+          "Accept-Language": this.language
+        }
+      })
       .then(res => this.parse(res))
       .then((places: IPlace[]) => this.checkMaposh(places))
       .catch(err => {
@@ -90,7 +96,11 @@ export class RecommendationsLoader {
     ].join("&");
     const request = `${this.recommenderURL}?${query}`;
     return axios
-      .get(request)
+      .get(request, {
+        headers: {
+          "Accept-Language": this.language
+        }
+      })
       .then(res => this.parse(res))
       .then((places: IPlace[]) => this.checkMaposh(places))
       .catch(err => {
@@ -101,6 +111,7 @@ export class RecommendationsLoader {
 
   private parse(res: AxiosResponse<any>) {
     const venues = res.data.response.group.results;
+    console.log(venues);
     return venues.map((info: any, idx: number) => {
       const photo =
         (info.photo &&
