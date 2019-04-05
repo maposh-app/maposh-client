@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 import { NamedModal } from "../../../components/modal";
 import { AboutContent } from "./about.css";
 
-const BaseAbout: React.FC = () => {
+export const BaseAbout: React.FC = props => {
   return (
     <AboutContent>
       <Trans i18nKey="about">
