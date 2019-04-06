@@ -7,6 +7,7 @@ export const PlaceLink = styled.a`
   justify-content: space-between;
   align-items: center;
 `;
+
 export const PlaceBox = styled.div`
   background: white;
   font-weight: bold;

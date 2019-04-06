@@ -13,7 +13,7 @@ export const FormSubmitButton = styled.button`
   }
   outline: none;
   margin-top: 1em;
-  margin-bottom: 1em;
+  border: 1px solid ${config.theme.colorTender};
 `;
 
 export const FormContainer = styled.div`

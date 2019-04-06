@@ -102,7 +102,7 @@ i18n
       ]
     },
     react: {
-      wait: true,
+      wait: true
     },
     detection: {
       order: [

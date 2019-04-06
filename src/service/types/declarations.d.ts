@@ -1,5 +1,9 @@
 declare module "aws-amplify-react";
 declare module "aws-amplify-react/src/Auth/common/constants";
+declare module "*.mp4" {
+  const content: any;
+  export default content;
+}
 declare module "@mapbox/mapbox-gl-language";
 declare module "@mapbox/mapbox-gl-geocoder";
 declare module "@mapbox/mapbox-gl-draw" {

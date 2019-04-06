@@ -11,7 +11,11 @@ import { MaposhState } from "../../service/store";
 import { updateLanguage } from "../../service/store/system/actions";
 import { ISystemState } from "../../service/store/system/types";
 import { selectify } from "../../utils/transform";
-import { FlagControl, FlagOption, FlagSingleValue } from "./language-selector.css";
+import {
+  FlagControl,
+  FlagOption,
+  FlagSingleValue
+} from "./language-selector.css";
 
 interface ISelectorProps {
   system: ISystemState;
@@ -66,7 +70,9 @@ const mapStateToProps = (state: MaposhState) => ({
   system: state.system
 });
 
-export default connect(
+const MaposhLanguageSelector = connect(
   mapStateToProps,
   { updateLanguage }
 )(LanguageSelector);
+
+export default MaposhLanguageSelector;
