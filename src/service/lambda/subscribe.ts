@@ -15,7 +15,7 @@ export const handler: Handler = (
 ) => {
   const formData = JSON.parse(event.body);
   const params = event.queryStringParameters;
-  const email = formData.email;
+  const email = formData.email_address;
   let errorMessage = null;
 
   if (!formData) {
@@ -38,7 +38,7 @@ export const handler: Handler = (
 
   const data = {
     email_address: email,
-    status: "subscribed"
+    status: "pending"
   };
 
   const config = {
@@ -59,10 +59,7 @@ export const handler: Handler = (
     .then((res: AxiosResponse) => {
       console.log("Mailchimp body: " + JSON.stringify(res.data));
       console.log("Status Code: " + res.status);
-      if (
-        res.status < 300 ||
-        (res.data.status === 400 && res.data.title === "Member Exists")
-      ) {
+      if (res.status < 300) {
         console.log("Subscribed to the mailing list");
         callback(null, {
           statusCode: 201,
@@ -78,8 +75,25 @@ export const handler: Handler = (
         });
       } else {
         console.log("Error from mailchimp", res.data.detail);
-        callback(res.data.detail, null);
+        callback(res.data.detail);
       }
     })
-    .catch((err: AxiosError) => callback(err, null));
+    .catch((err: AxiosError) => {
+      if (
+        err.response.data.status === 400 &&
+        err.response.data.title === "Member Exists"
+      ) {
+        callback(null, {
+          statusCode: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": "true"
+          },
+          body: "subscribe.errors.userExists"
+        });
+      } else {
+        callback(err);
+      }
+    });
 };

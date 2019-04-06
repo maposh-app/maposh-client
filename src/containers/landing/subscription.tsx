@@ -41,10 +41,7 @@ const Subscribe: React.FC = props => {
     actions: FormikActions<ISubscribeFormValues>
   ) => {
     const data = {
-      body: {
-        email_address: values.email,
-        status: "subscribed"
-      }
+      email_address: values.email
     };
     const mailchimpURL = "/.netlify/functions/subscribe";
     axios
@@ -53,7 +50,7 @@ const Subscribe: React.FC = props => {
         window.setTimeout(() => actions.resetForm(), 1000);
       })
       .catch(err => {
-        actions.setErrors({ email: JSON.stringify(err.response.data) });
+        actions.setErrors({ email: t(err.response.data) });
         actions.setSubmitting(false);
       });
   };
