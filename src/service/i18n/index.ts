@@ -77,7 +77,7 @@ i18n
       default: [config.locale.default]
     },
     load: "languageOnly",
-    debug: true,
+    debug: false,
     ns: ["common"],
     keySeparator: ".",
     defaultNS: "common",

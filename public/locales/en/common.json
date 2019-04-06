@@ -2,7 +2,7 @@
   "title": "Maposh",
   "about_link": "About",
   "map_link": "Map",
-  "about": "Maposh helps professionals, from novices to experts, connect and share ideas in community-picked <1>third places</1>.",
+  "about": "Maposh helps find, rank and connect in hand-picked third places: cafés, anti-cafés, social clubs and community centres.",
   "user": {
     "form": [
       { "name": "firstName", "placeholder": "First Name" },
@@ -77,6 +77,20 @@
     ],
     "errors": {
       "confirmation_code": "Please enter the code sent to the e-mail address you have provided."
+    }
+  },
+  "subscribe": {
+    "prompt": "Join the private beta to get into the groove early (we never spam, promise):",
+    "status": {
+      "submit": "Count me in",
+      "submitting": "Thank You!"
+    },
+    "form": [
+      { "name": "email", "placeholder": "Email Address", "type": "email" }
+    ],
+    "errors": {
+      "email": "Please provide your email.",
+      "emailIsValid": "Please provide a valid email."
     }
   },
   "signup": {

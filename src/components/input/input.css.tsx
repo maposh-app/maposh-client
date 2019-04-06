@@ -7,7 +7,6 @@ export const InputBox = styled.label`
   justify-content: space-between;
   flex-wrap: wrap;
   position: relative;
-  min-height: 5em;
   flex: 1;
 `;
 
@@ -16,12 +15,11 @@ export const Input = styled.input`
   outline: none;
   border-bottom: 1px solid black;
   line-height: 1.42857143;
-  margin: 0.5em;
+  background-color: transparent;
   padding: 0.4em;
 `;
 
 export const InputTitle = styled.div`
-  margin: 0.5em;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -1,4 +1,3 @@
-import Logo from "../../components/logo";
 import config from "../../config";
 import styled from "../../service/theme/styled-components";
 
@@ -9,22 +8,27 @@ export const LandingBox = styled.div`
 `;
 
 export const LandingBackground = styled.video`
+  position: absolute;
+  height: 100%;
+  width: 100%;
   flex: 1;
-  position: relative;
-  height: 1em;
   object-fit: cover;
-  z-index: -1;
-`;
-
-export const LandingLogo = styled(Logo)`
-  width: 4em;
-  height: 4em;
-  flex-shrink: 0 !important;
-  margin: 1em;
 `;
 
 export const LandingPrompt = styled.span`
-  margin: 1em;
+  position: relative;
+  font-weight: bold;
+  font-size: 16px;
+  padding-bottom: 1em;
+  a {
+    text-decoration: underline;
+    :link {
+      color: ${config.theme.colorLink};
+    }
+    :visited {
+      color: ${config.theme.colorVisitedLink};
+    }
+  }
 `;
 
 export const LandingFooter = styled.div`
@@ -38,14 +42,24 @@ export const LandingFooter = styled.div`
   margin-top: auto;
 `;
 
-export const LandingMenuList = styled.ul`
+export const LandingHeader = styled.div`
+  background-color: ${config.theme.colorPrimary};
+  width: 100% !important;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+  z-index: 97;
+  margin-bottom: auto;
+`;
+
+export const MenuList = styled.ul`
   margin: 0;
   align-items: center;
   display: flex;
   list-style-type: none;
 `;
 
-export const LandingMenuItem = styled.li`
+export const MenuItem = styled.li`
   margin: 0;
   display: inline-block;
   padding-left: 0.7em;
@@ -55,17 +69,19 @@ export const LandingMenuItem = styled.li`
 `;
 
 export const LandingContent = styled.div`
-  position: absolute;
+  position: relative;
+  flex-basis: min-content;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-self: center;
   align-items: center;
   justify-content: center;
+  padding: 1em;
+  margin: 1em;
 
-  left: 50%;
-  top: 50%;
-  padding: 2em;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.97);
+  flex-grow: 0;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.9);
   border: 1px solid ${config.theme.colorTender};
   border-radius: ${config.theme.elementBorderRadius};
   z-index: 0;
