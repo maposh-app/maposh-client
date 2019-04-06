@@ -8,6 +8,7 @@ export const InputBox = styled.label`
   flex-wrap: wrap;
   position: relative;
   flex: 1;
+  max-width: 300px;
 `;
 
 export const Input = styled.input`

@@ -25,6 +25,9 @@ const Landing: React.FC = () => {
           <MenuItem>
             <Logo />
           </MenuItem>
+          <MenuItem>
+            <MaposhLanguageSelector />
+          </MenuItem>
         </MenuList>
       </LandingHeader>
       <LandingContent>
@@ -32,11 +35,7 @@ const Landing: React.FC = () => {
         <Subscribe />
       </LandingContent>
       <LandingFooter>
-        <MenuList>
-          <MenuItem>
-            <MaposhLanguageSelector />
-          </MenuItem>
-        </MenuList>
+        <MenuList />
       </LandingFooter>
     </>
   );

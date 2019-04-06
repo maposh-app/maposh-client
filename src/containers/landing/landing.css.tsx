@@ -2,16 +2,16 @@ import config from "../../config";
 import styled from "../../service/theme/styled-components";
 
 export const LandingBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  display: relative;
 `;
 
 export const LandingBackground = styled.video`
-  position: absolute;
+  position: fixed;
+  min-width: 100%;
   height: 100%;
-  width: 100%;
-  flex: 1;
+  top: 0;
+  right: 0;
+  overflow: hidden;
   object-fit: cover;
 `;
 
@@ -19,7 +19,7 @@ export const LandingPrompt = styled.span`
   position: relative;
   font-weight: bold;
   font-size: 16px;
-  max-width: 200px;
+  max-width: 300px;
   padding-bottom: 1em;
   a {
     text-decoration: underline;
@@ -56,6 +56,7 @@ export const MenuList = styled.ul`
   align-items: center;
   display: flex;
   list-style-type: none;
+  justify-content: space-between;
 `;
 
 export const MenuItem = styled.li`
@@ -75,6 +76,7 @@ export const LandingContent = styled.div`
   align-self: center;
   align-items: center;
   justify-content: center;
+  margin: 1em;
   padding: 1em;
 
   flex-grow: 0;

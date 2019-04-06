@@ -119,23 +119,7 @@ export const handler: Handler = (
           }
         })
         .catch((err: AxiosError) => {
-          if (
-            err.response.data.status === 400 &&
-            err.response.data.title === "Member Exists"
-          ) {
-            console.log(err);
-            callback(null, {
-              statusCode: 400,
-              headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": "true"
-              },
-              body: "subscribe.errors.userExists"
-            });
-          } else {
-            callback(err);
-          }
+          callback(err.response.data.detail);
         });
     });
 };

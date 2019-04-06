@@ -2,7 +2,7 @@
   "title": "Maposh",
   "about_link": "About",
   "map_link": "Map",
-  "about": "Maposh helps find, rank and connect in hand-picked third places: cafés, anti-cafés, social clubs and community centres.",
+  "about": "Maposh helps find, rank and connect in hand-picked third places: cafés, anti-cafés, social clubs, libraries and community centres.",
   "user": {
     "form": [
       { "name": "firstName", "placeholder": "First Name" },
