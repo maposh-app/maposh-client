@@ -19,6 +19,7 @@ export const LandingPrompt = styled.span`
   position: relative;
   font-weight: bold;
   font-size: 16px;
+  max-width: 200px;
   padding-bottom: 1em;
   a {
     text-decoration: underline;
@@ -34,12 +35,11 @@ export const LandingPrompt = styled.span`
 export const LandingFooter = styled.div`
   background-color: ${config.theme.colorPrimary};
   flex: 0 1 auto;
-  align-self: flex-start;
+  align-self: flex-end;
   width: 100% !important;
   font-size: 0.8em;
   box-shadow: 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
   z-index: 96;
-  margin-top: auto;
 `;
 
 export const LandingHeader = styled.div`
@@ -48,8 +48,7 @@ export const LandingHeader = styled.div`
   flex: 0 1 auto;
   flex-wrap: wrap;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  z-index: 97;
-  margin-bottom: auto;
+  z-index: 1;
 `;
 
 export const MenuList = styled.ul`
@@ -70,14 +69,13 @@ export const MenuItem = styled.li`
 
 export const LandingContent = styled.div`
   position: relative;
-  flex-basis: min-content;
+  flex-basis: auto;
   display: flex;
   flex-direction: column;
   align-self: center;
   align-items: center;
   justify-content: center;
   padding: 1em;
-  margin: 1em;
 
   flex-grow: 0;
   flex-shrink: 0;
