@@ -22,6 +22,7 @@
     "i18next-xhr-backend": "^2.0.1",
     "lodash": "^4.17.11",
     "mapbox-gl": "0.53.1",
+    "md5": "^2.2.1",
     "normalize.css": "^8.0.1",
     "patch-package": "^6.0.7",
     "postinstall-postinstall": "^2.0.0",
