@@ -17,6 +17,7 @@ export const Input = styled.input`
   line-height: 1.42857143;
   background-color: transparent;
   padding: 0.4em;
+  width: 100%;
 `;
 
 export const InputTitle = styled.div`

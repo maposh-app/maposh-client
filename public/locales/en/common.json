@@ -90,7 +90,8 @@
     ],
     "errors": {
       "email": "Please provide your email.",
-      "emailIsValid": "Please provide a valid email."
+      "emailIsValid": "Please provide a valid email.",
+      "userExists": "You are a beta tester, kudos!"
     }
   },
   "signup": {

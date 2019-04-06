@@ -1,5 +1,6 @@
 [build]
-  command = "yarn build"
+  command = "yarn build && yarn build:lambda"
+  functions= "service/lambda"
   publish = "build"
 
 [context.production.environment]
