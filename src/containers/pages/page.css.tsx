@@ -5,6 +5,7 @@ export const PageContent = styled.div`
   width: 100%;
   background-color: #fff;
   padding: 1em;
+  max-width: 40em;
   a {
     text-decoration: underline;
     :link {
