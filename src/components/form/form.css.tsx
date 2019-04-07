@@ -30,24 +30,26 @@ export const FormContent = styled.form`
 
 export const FormPrompt = styled.aside`
   margin-top: auto;
-  font-size: 1em;
+  font-size: 14px;
   color: ${config.theme.colorTender};
   display: flex;
   width: 100%;
+  align-items: center;
   justify-content: space-between;
 `;
 
 export const FormPromptBox = styled.div`
-  flex: 0 1 auto;
-  text-align: center;
+  padding: 5px !important;
+  margin: 10px !important;
+  flex-basis: min-content;
 `;
 
 export const FormNav = styled.button`
   background: none !important;
   color: ${config.theme.colorTender};
   border: none;
-  padding: 5px !important;
-  margin: 10px !important;
+  text-decoration: underline;
+  padding: 0;
   font: inherit;
   cursor: pointer;
 `;
