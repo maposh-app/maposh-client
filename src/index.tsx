@@ -1,15 +1,19 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import MaposhLanding from "./containers/landing";
+import Maposh from "./containers/maposh";
 import "./index.css";
-import { unregister } from "./registerServiceWorker";
+import registerServiceWorker from "./registerServiceWorker";
 import "./service/i18n";
+import bootstrapAmplify from "./service/middleware";
+import bootstrapBridges from "./service/store/bridges";
 import bootstrapTheme from "./service/theme";
 
 const root = document.getElementById("root") as HTMLElement;
 
+bootstrapAmplify();
+bootstrapBridges();
 bootstrapTheme(root);
 
-ReactDOM.render(<MaposhLanding />, root);
+ReactDOM.render(<Maposh />, root);
 
-unregister();
+registerServiceWorker();
