@@ -6,7 +6,7 @@ export interface IPlace {
   longitude: number;
   latitude: number;
   color: string;
-  rating?: number;
-  maposhRating?: number;
+  foursquareRating?: number;
+  upvoteCount?: number;
   photo?: string;
 }

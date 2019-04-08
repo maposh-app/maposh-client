@@ -21,10 +21,13 @@ const BaseHeader: React.FC<IHeaderProps> = props => {
   return (
     <Menu>
       <MenuList>
-        <MenuItem style={{ marginRight: "auto" }}>
+        <MenuItem>
           <MenuLink to="/">
             <Logo />
           </MenuLink>
+        </MenuItem>
+        <MenuItem style={{ marginRight: "auto" }}>
+          <MenuLink to="/places">{t("places_link")}</MenuLink>
         </MenuItem>
         <MenuItem style={{ flex: 0.2, minWidth: "160px" }}>
           <CitySelector />

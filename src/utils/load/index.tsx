@@ -9,6 +9,7 @@ import { updatePlaces } from "../../service/store/map/actions";
 import { IPlacesState } from "../../service/store/map/types";
 import { updatePreferences } from "../../service/store/system/actions";
 import { percentage2color } from "../transform";
+import queries from "../extract/queries";
 
 export class RecommendationsLoader {
   public language: string;
@@ -111,7 +112,6 @@ export class RecommendationsLoader {
 
   private parse(res: AxiosResponse<any>) {
     const venues = res.data.response.group.results;
-    console.log(venues);
     return venues.map((info: any, idx: number) => {
       const photo =
         (info.photo &&
@@ -129,7 +129,7 @@ export class RecommendationsLoader {
         longitude: info.venue.location.lng || "",
         latitude: info.venue.location.lat || "",
         color: percentage2color(((venues.length - idx) / venues.length) * 100),
-        rating: info.venue.rating,
+        foursquareRating: info.venue.rating,
         photo
       };
       return place;
@@ -137,25 +137,21 @@ export class RecommendationsLoader {
   }
 
   private async checkMaposh(places: IPlace[]) {
-    const queries: string =
+    const maposhQueries: string =
       places
         .map((place: IPlace) => {
           return `id${_.camelCase(place.placeID)}: getPlaceInfo(placeID: "${
             place.placeID
           }") { upvoteCount }`;
         })
-        .join("\n") +
-      `\n meInfo {
-          favourites {
-            placeID
-          }
-          dislikes {
-            placeID
-          }
-        }`;
-    const result = (await API.graphql(graphqlOperation(`{${queries}}`))) as any;
+        .join("\n") + queries.meInfoFragment;
+
+    const result = (await API.graphql(
+      graphqlOperation(`{${maposhQueries}}`)
+    )) as any;
     if (result.data) {
-      const maposhPlaces = MaposhStore.getState().map.places;
+      const maposhMapData = MaposhStore.getState().map;
+      const maposhPlacesCache = maposhMapData.placesCache;
       if (result.data.meInfo) {
         MaposhStore.dispatch(
           updatePreferences({
@@ -173,11 +169,11 @@ export class RecommendationsLoader {
         );
       }
       const placesDict = places.reduce(
-        (dict: IPlacesState["places"], place: IPlace) => {
+        (dict: IPlacesState["placesCache"], place: IPlace) => {
           const maposhPlaceData =
             result.data[`id${_.camelCase(place.placeID)}`];
           if (maposhPlaceData) {
-            place.maposhRating = maposhPlaceData.upvoteCount;
+            place.upvoteCount = maposhPlaceData.upvoteCount;
           }
           dict[place.placeID] = place;
           return dict;
@@ -185,7 +181,10 @@ export class RecommendationsLoader {
         {}
       );
       MaposhStore.dispatch(
-        updatePlaces({ places: { ...maposhPlaces, ...placesDict } })
+        updatePlaces({
+          ...maposhMapData,
+          placesCache: { ...maposhPlacesCache, ...placesDict }
+        })
       );
     }
 

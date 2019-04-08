@@ -1,35 +1,27 @@
-const getMaposhScore = (placeID: string) => `
-  query {
-    getPlaceInfo(placeID: "${placeID}") {
-      upvoteCount
-    }
+const upvotePlace = (placeID: string, name: string, city: string) => `
+  mutation {
+    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: 1)
+    like(placeID: "${placeID}", name: "${name}", city: "${city}")
   }
 `;
 
-const upvotePlace = (placeID: string, city: string) => `
+const forgetUpvote = (placeID: string, name: string, city: string) => `
   mutation {
-    ratePlace(placeID: "${placeID}", city: "${city}", score: 1)
-    like(placeID: "${placeID}", city: "${city}")
-  }
-`;
-
-const forgetUpvote = (placeID: string, city: string) => `
-  mutation {
-    ratePlace(placeID: "${placeID}", city: "${city}", score: -1)
+    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: -1)
     forget(placeID: "${placeID}")
   }
 `;
 
-const forgetDownvote = (placeID: string, city: string) => `
+const forgetDownvote = (placeID: string, name: string, city: string) => `
   mutation {
-    ratePlace(placeID: "${placeID}", city: "${city}", score: 1)
+    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: 1)
     forget(placeID: "${placeID}")
   }
 `;
 
-const downvotePlace = (placeID: string, city: string) => `
+const downvotePlace = (placeID: string, name: string, city: string) => `
   mutation {
-    ratePlace(placeID: "${placeID}", city: "${city}", score: -1)
+    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: -1)
     dislike(placeID: "${placeID}")
   }
 `;
@@ -37,7 +29,6 @@ const downvotePlace = (placeID: string, city: string) => `
 export default {
   upvotePlace,
   downvotePlace,
-  getMaposhScore,
   forgetUpvote,
   forgetDownvote
 };

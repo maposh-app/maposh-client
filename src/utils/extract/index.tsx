@@ -1,6 +1,6 @@
 import * as _ from "lodash";
-import { getLocations } from "../config";
-import { ICity, ILocation } from "../model/location";
+import { getLocations } from "../../config";
+import { ICity, ILocation } from "../../model/location";
 
 export const getWindowHeight: () => number = () => {
   if (window.innerHeight && document.documentElement.clientHeight) {

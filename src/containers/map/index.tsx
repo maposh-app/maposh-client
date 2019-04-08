@@ -247,10 +247,10 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                   <Feature
                     key={`${place}-${index}`}
                     coordinates={[
-                      this.props.map.places[place].longitude,
-                      this.props.map.places[place].latitude
+                      this.props.map.placesCache[place].longitude,
+                      this.props.map.placesCache[place].latitude
                     ]}
-                    properties={this.props.map.places[place]}
+                    properties={this.props.map.placesCache[place]}
                   />
                 );
               })}
@@ -380,7 +380,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         event.result.place_type.includes("poi")
       ) {
         this.stopDrawing();
-        console.log(event);
         this.recommender
           .searchByAddress(
             event.result.text,
@@ -391,13 +390,13 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           .then(places => {
             places.forEach(placeID => {
               if (
-                this.props.map.places[placeID].name.includes(event.result.text)
+                this.props.map.placesCache[placeID].name.includes(event.result.text)
               ) {
                 this.setState({
                   isTracking: true,
                   popup: {
                     coordinates: event.result.geometry.coordinates,
-                    place: this.props.map.places[placeID]
+                    place: this.props.map.placesCache[placeID]
                   }
                 });
               }
