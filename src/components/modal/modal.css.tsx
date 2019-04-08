@@ -10,6 +10,7 @@ export const ModalContent = styled.div`
   padding: 1em;
   border-radius: ${config.theme.elementBorderRadius};
   background-color: #fff;
+  overflow: auto;
 `;
 
 export const StyledModal = (Modal: React.FC<IModal>) => styled(Modal)`

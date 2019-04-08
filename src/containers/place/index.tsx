@@ -10,13 +10,15 @@ interface IPlaceProfileProps {
 const PlaceProfile: React.FC<IPlaceProfileProps> = ({ place }) => {
   return (
     <PlaceBox>
-      <Rater key={`${place.name}-rater`} placeID={place.placeID} />
+      <Rater key={`${place.name}-rater`} place={place} />
       <PlaceLink
         href={`https://foursquare.com/v/${place.placeID}`}
         target="_blank"
       >
-        <PlaceMarker image={place.photo} />
         <PlaceInfo>{place.name}</PlaceInfo>
+        {place.photo && (
+          <PlaceMarker style={{ marginLeft: "auto" }} image={place.photo} />
+        )}
       </PlaceLink>
     </PlaceBox>
   );

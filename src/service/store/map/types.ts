@@ -11,7 +11,8 @@ export interface ILocationState {
 }
 
 export interface IPlacesState {
-  places: { [id: string]: IPlace };
+  placesCache: { [id: string]: IPlace };
+  maposhPlaces: Set<string>;
 }
 
 export const UPDATE_MAP = "UPDATE_MAP";

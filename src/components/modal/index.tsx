@@ -2,6 +2,7 @@ import * as React from "react";
 import ReactModal from "react-modal";
 import { RouteComponentProps } from "react-router";
 import { ModalContent, StyledModal } from "./modal.css";
+import Close from "../close";
 
 export interface IModal {
   className: string;
@@ -48,13 +49,16 @@ export const NamedModal: (
 ) => React.FC<RouteComponentProps> = (name, content) => props => {
   const re = new RegExp(`${name}`);
   const shouldModalOpen = (locationPath: string) => re.test(locationPath);
+  const onRequestClose = () => props.history.push("/");
   return (
-    <Modal
-      className={name}
-      isOpen={shouldModalOpen(props.location.pathname)}
-      onRequestClose={() => props.history.push("/")}
-      content={content}
-      shouldCloseOnOverlayClick={true}
-    />
+    <>
+      <Modal
+        className={name}
+        isOpen={shouldModalOpen(props.location.pathname)}
+        onRequestClose={onRequestClose}
+        content={content}
+        shouldCloseOnOverlayClick={true}
+      />
+    </>
   );
 };
