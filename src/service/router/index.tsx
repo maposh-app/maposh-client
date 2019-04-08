@@ -12,6 +12,7 @@ import About from "../../containers/pages/about";
 import { getQuerystring } from "../../utils/extract";
 import { MaposhState } from "../store";
 import { ISystemState } from "../store/system/types";
+import Places from "../../containers/pages/places";
 
 interface ISystemRouteProps {
   system: ISystemState;
@@ -71,6 +72,7 @@ export const UnauthenticatedRoute = connect(mapStateToProps)(
 const MaposhRoutes: React.FC = () => (
   <Switch>
     <Route path="/about" component={About} />
+    <Route path="/places" component={Places} />
     <UnauthenticatedRoute path="/login" component={LoginModal} />
   </Switch>
 );

@@ -42,4 +42,12 @@ export const hexToRGBA = (hex: string, alpha: number) => {
   return [r, g, b, alpha * 255];
 };
 
+export function union<T>(...iterables: Array<Set<T>>): Set<T> {
+  const set = new Set<T>();
+  iterables.forEach(iterable => {
+    iterable.forEach(item => set.add(item));
+  });
+  return set;
+}
+
 export { default as mutations } from "./mutations";

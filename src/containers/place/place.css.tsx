@@ -6,16 +6,17 @@ export const PlaceLink = styled.a`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  text-decoration: none !important;
+  width: 100%;
 `;
 
 export const PlaceBox = styled.div`
   background: white;
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 1em;
   border-radius: ${config.theme.elementBorderRadius};
   display: flex;
   align-items: center;
-  justify-content: space-between;
 `;
 
 export const PlaceInfo = styled.div`
