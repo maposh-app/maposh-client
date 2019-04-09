@@ -9,7 +9,12 @@ import { IMapState } from "../../../service/store/map/types";
 import { updatePreferences } from "../../../service/store/system/actions";
 import { ISystemState } from "../../../service/store/system/types";
 import Rater from "../../rater";
-import { PlacesList, PlacesListItem, PlacesRanking } from "./places.css";
+import {
+  PlacesList,
+  PlacesListItem,
+  PlacesRanking,
+  PlacesPrompt
+} from "./places.css";
 import PlaceProfile from "../../place";
 import { IPlace } from "../../../model/place";
 
@@ -25,7 +30,7 @@ const BasePlaces: React.FC<IPlaceProps> = props => {
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    console.log("Updating...")
+    console.log("Updating...");
     props.updateRank();
   }, []);
   const { maposhPlaces, placesCache } = props.map;
@@ -42,6 +47,9 @@ const BasePlaces: React.FC<IPlaceProps> = props => {
 
   return (
     <PlacesRanking>
+      <PlacesPrompt>
+        <h1>{t("places_link")}</h1>
+      </PlacesPrompt>
       <PlacesList>
         {places.map((place: IPlace) => {
           if (place) {

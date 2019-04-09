@@ -43,10 +43,14 @@ const BaseRater: React.FC<IRaterProps & RouteComponentProps> = props => {
   const [score, setScore] = React.useState(getScore());
 
   const shouldVote = (direction: number) => {
-    const hasAlreadyVoted = direction === vote;
-    setVote(hasAlreadyVoted ? 0 : direction);
-    setScore(hasAlreadyVoted ? score - direction : direction + score);
-    return !hasAlreadyVoted;
+    const hasAlreadyVotedTheSame = direction === vote;
+
+    const extra = !hasAlreadyVotedTheSame && vote !== 0 ? direction : 0;
+    const change = extra + (hasAlreadyVotedTheSame ? -direction : direction);
+
+    setVote(hasAlreadyVotedTheSame ? 0 : direction);
+    setScore(score + change);
+    return !hasAlreadyVotedTheSame;
   };
 
   const upvote = () => {

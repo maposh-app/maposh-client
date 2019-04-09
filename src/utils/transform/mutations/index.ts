@@ -1,6 +1,8 @@
-const like = (placeID: string, name: string, city: string) => `
+const like = (placeID: string, name: string, city: string, extra?: number) => `
   mutation {
-    like(placeID: "${placeID}", name: "${name}", city: "${city}")
+    like(placeID: "${placeID}", name: "${name}", city: "${city}", extra: ${
+  extra ? extra : 0
+})
   }
 `;
 
@@ -10,9 +12,16 @@ const forgetLike = (placeID: string) => `
   }
 `;
 
-const dislike = (placeID: string, name: string, city: string) => `
+const dislike = (
+  placeID: string,
+  name: string,
+  city: string,
+  extra?: number
+) => `
   mutation {
-    dislike(placeID: "${placeID}", name: "${name}", city: "${city}")
+    dislike(placeID: "${placeID}", name: "${name}", city: "${city}", extra: ${
+  extra ? extra : 0
+})
   }
 `;
 

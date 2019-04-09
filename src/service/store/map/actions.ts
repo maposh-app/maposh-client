@@ -139,9 +139,10 @@ export function like(
   Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
 > {
   return (dispatch, getState) => {
-    const { map } = getState();
+    const { map, system } = getState();
+    const extra = system.dislikes.has(placeID) ? 1 : 0;
     return (API.graphql(
-      graphqlOperation(mutations.like(placeID, name, map.location.city))
+      graphqlOperation(mutations.like(placeID, name, map.location.city, extra))
     ) as Promise<GraphQLResult>)
       .then(() => {
         return queryMaposhData(map, dispatch);
@@ -162,9 +163,12 @@ export function dislike(
   Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
 > {
   return (dispatch, getState) => {
-    const { map } = getState();
+    const { map, system } = getState();
+    const extra = system.likes.has(placeID) ? -1 : 0;
     return (API.graphql(
-      graphqlOperation(mutations.dislike(placeID, name, map.location.city))
+      graphqlOperation(
+        mutations.dislike(placeID, name, map.location.city, extra)
+      )
     ) as Promise<GraphQLResult>)
       .then(() => {
         return queryMaposhData(map, dispatch);
