@@ -10,7 +10,7 @@ const getMaposhScore = (placeID: string) => `
 
 const meInfoFragment = `
 meInfo {
-  favourites {
+  likes {
     placeID
   }
   dislikes {

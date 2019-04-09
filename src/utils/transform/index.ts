@@ -50,4 +50,11 @@ export function union<T>(...iterables: Array<Set<T>>): Set<T> {
   return set;
 }
 
+export function difference<T>(minuend: Set<T>, subtrahend: Set<T>) {
+  const set = new Set<T>(
+    Array.from(minuend).filter(item => !subtrahend.has(item))
+  );
+  return set;
+}
+
 export { default as mutations } from "./mutations";

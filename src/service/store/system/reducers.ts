@@ -8,7 +8,7 @@ import {
 const initialSystemState: ISystemState = {
   language: config.locale.default,
   isAuthenticated: false,
-  favourites: new Set<string>(),
+  likes: new Set<string>(),
   dislikes: new Set<string>()
 };
 

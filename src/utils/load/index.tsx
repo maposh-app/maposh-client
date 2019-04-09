@@ -155,8 +155,8 @@ export class RecommendationsLoader {
       if (result.data.meInfo) {
         MaposhStore.dispatch(
           updatePreferences({
-            favourites: new Set<string>(
-              result.data.meInfo.favourites.map(
+            likes: new Set<string>(
+              result.data.meInfo.likes.map(
                 (place: { placeID: string }) => place.placeID
               )
             ),

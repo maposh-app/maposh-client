@@ -68,7 +68,7 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
             props.checkContact(user);
           } else {
             const queries: string = `meInfo {
-               favourites { placeID }
+               likes { placeID }
                dislikes { placeID } }`;
             const result = (await API.graphql(
               graphqlOperation(`{${queries}}`)
@@ -76,8 +76,8 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
             if (result.data) {
               if (result.data.meInfo) {
                 props.updatePreferences({
-                  favourites: new Set<string>(
-                    result.data.meInfo.favourites.map(
+                  likes: new Set<string>(
+                    result.data.meInfo.likes.map(
                       (place: { placeID: string }) => place.placeID
                     )
                   ),

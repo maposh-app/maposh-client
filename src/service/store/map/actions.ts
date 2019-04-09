@@ -1,20 +1,25 @@
 import { GraphQLResult } from "@aws-amplify/api/lib/types";
 import { API, graphqlOperation } from "aws-amplify";
 import { Action } from "redux";
-import { ThunkAction } from "redux-thunk";
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { getBoundary } from "../../../config";
 import { ICity } from "../../../model/location";
 import { IPlace } from "../../../model/place";
 import { MaposhState } from "../../../service/store";
 import {
   ILocationState,
+  IMapState,
   IPlacesState,
   IViewportState,
   UPDATE_MAP
 } from "../../../service/store/map/types";
 import queries from "../../../utils/extract/queries";
-import { union } from "../../../utils/transform";
-import { IPreferencesState, UPDATE_SESSION } from "../system/types";
+import { mutations } from "../../../utils/transform";
+import {
+  IPreferencesState,
+  ISystemState,
+  UPDATE_SESSION
+} from "../system/types";
 
 export function updatePan(newPan: IViewportState) {
   return {
@@ -54,6 +59,64 @@ export function updateCity(
   };
 }
 
+function queryMaposhData(
+  map: IMapState,
+  dispatch: ThunkDispatch<
+    {
+      system: ISystemState;
+      map: IMapState;
+    },
+    null,
+    Action<"UPDATE_MAP" | "UPDATE_SESSION">
+  >
+) {
+  return (API.graphql(
+    graphqlOperation(queries.getMaposhPlaces(map.location.city))
+  ) as Promise<GraphQLResult>)
+    .then((result: any) => {
+      if (result.data.meInfo) {
+        dispatch({
+          type: UPDATE_SESSION,
+          payload: {
+            likes: new Set<string>(
+              result.data.meInfo.likes.map(
+                (place: { placeID: string }) => place.placeID
+              )
+            ),
+            dislikes: new Set<string>(
+              result.data.meInfo.dislikes.map(
+                (place: { placeID: string }) => place.placeID
+              )
+            )
+          } as IPreferencesState
+        });
+      }
+      if (result.data.getPlaces) {
+        const newPlaces = new Set<string>(
+          result.data.getPlaces.map((place: IPlace) => place.placeID)
+        );
+        const newPlacesDict = map.placesCache;
+        result.data.getPlaces.forEach((place: IPlace) => {
+          newPlacesDict[place.placeID] = {
+            ...newPlacesDict[place.placeID],
+            ...place
+          };
+        });
+
+        return dispatch({
+          type: UPDATE_MAP,
+          payload: {
+            placesCache: newPlacesDict,
+            maposhPlaces: newPlaces
+          } as IPlacesState
+        });
+      }
+    })
+    .catch((err: any) => {
+      console.log(err);
+    });
+}
+
 export function updateRank(): ThunkAction<
   void,
   MaposhState,
@@ -62,50 +125,95 @@ export function updateRank(): ThunkAction<
 > {
   return (dispatch, getState) => {
     const { map } = getState();
-    return (API.graphql(
-      graphqlOperation(queries.getMaposhPlaces(map.location.city))
-    ) as Promise<GraphQLResult>)
-      .then((result: any) => {
-        if (result.data.meInfo) {
-          dispatch({
-            type: UPDATE_SESSION,
-            payload: {
-              favourites: new Set<string>(
-                result.data.meInfo.favourites.map(
-                  (place: { placeID: string }) => place.placeID
-                )
-              ),
-              dislikes: new Set<string>(
-                result.data.meInfo.dislikes.map(
-                  (place: { placeID: string }) => place.placeID
-                )
-              )
-            } as IPreferencesState
-          });
-        }
-        if (result.data.getPlaces) {
-          const newPlaces = new Set<string>(
-            result.data.getPlaces.map((place: IPlace) => place.placeID)
-          );
-          const newPlacesDict = map.placesCache;
-          result.data.getPlaces.forEach((place: IPlace) => {
-            newPlacesDict[place.placeID] = {
-              ...place,
-              ...newPlacesDict[place.placeID],
-              upvoteCount: place.upvoteCount
-            };
-          });
+    return queryMaposhData(map, dispatch);
+  };
+}
 
-          return dispatch({
-            type: UPDATE_MAP,
-            payload: {
-              placesCache: newPlacesDict,
-              maposhPlaces: union<string>(map.maposhPlaces, newPlaces)
-            } as IPlacesState
-          });
-        }
+export function like(
+  placeID: string,
+  name: string
+): ThunkAction<
+  void,
+  MaposhState,
+  null,
+  Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
+> {
+  return (dispatch, getState) => {
+    const { map } = getState();
+    return (API.graphql(
+      graphqlOperation(mutations.like(placeID, name, map.location.city))
+    ) as Promise<GraphQLResult>)
+      .then(() => {
+        return queryMaposhData(map, dispatch);
       })
-      .catch((err: any) => {
+      .catch(err => {
+        console.log(err);
+      });
+  };
+}
+
+export function dislike(
+  placeID: string,
+  name: string
+): ThunkAction<
+  void,
+  MaposhState,
+  null,
+  Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
+> {
+  return (dispatch, getState) => {
+    const { map } = getState();
+    return (API.graphql(
+      graphqlOperation(mutations.dislike(placeID, name, map.location.city))
+    ) as Promise<GraphQLResult>)
+      .then(() => {
+        return queryMaposhData(map, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+}
+
+export function forgetLike(
+  placeID: string
+): ThunkAction<
+  void,
+  MaposhState,
+  null,
+  Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
+> {
+  return (dispatch, getState) => {
+    const { map } = getState();
+    return (API.graphql(
+      graphqlOperation(mutations.forgetLike(placeID))
+    ) as Promise<GraphQLResult>)
+      .then(() => {
+        return queryMaposhData(map, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+}
+
+export function forgetDislike(
+  placeID: string
+): ThunkAction<
+  void,
+  MaposhState,
+  null,
+  Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
+> {
+  return (dispatch, getState) => {
+    const { map } = getState();
+    return (API.graphql(
+      graphqlOperation(mutations.forgetDislike(placeID))
+    ) as Promise<GraphQLResult>)
+      .then(() => {
+        return queryMaposhData(map, dispatch);
+      })
+      .catch(err => {
         console.log(err);
       });
   };

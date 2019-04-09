@@ -13,7 +13,7 @@ export const PlaceLink = styled.a`
 export const PlaceBox = styled.div`
   background: white;
   font-weight: bold;
-  font-size: 1em;
+  font-size: 1.3em;
   border-radius: ${config.theme.elementBorderRadius};
   display: flex;
   align-items: center;

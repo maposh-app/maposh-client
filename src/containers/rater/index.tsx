@@ -1,16 +1,19 @@
-import { GraphQLResult } from "@aws-amplify/api/lib/types";
-import { API, graphqlOperation } from "aws-amplify";
 import * as React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { withRouter } from "react-router-dom";
 import { IPlace } from "../../model/place";
 import { MaposhState } from "../../service/store";
-import { updatePlaces } from "../../service/store/map/actions";
+import {
+  dislike,
+  forgetLike,
+  forgetDislike,
+  like,
+  updatePlaces
+} from "../../service/store/map/actions";
 import { IMapState } from "../../service/store/map/types";
 import { updatePreferences } from "../../service/store/system/actions";
 import { ISystemState } from "../../service/store/system/types";
-import { mutations } from "../../utils/transform";
 import { DownArrow, RatingContainer, RatingCount, UpArrow } from "./rater.css";
 
 interface IRaterProps {
@@ -18,138 +21,40 @@ interface IRaterProps {
   map: IMapState;
   updatePreferences: typeof updatePreferences;
   updatePlaces: typeof updatePlaces;
+  like: (placeID: string, name: string) => void;
+  dislike: (placeID: string, name: string) => void;
+  forgetLike: (placeID: string) => void;
+  forgetDislike: (placeID: string) => void;
   place: IPlace;
 }
 
 const BaseRater: React.FC<IRaterProps & RouteComponentProps> = props => {
-  const [vote, setVote] = React.useState(
-    props.system.favourites.has(props.place.placeID)
+  const getVote = () =>
+    props.system.likes.has(props.place.placeID)
       ? 1
       : props.system.dislikes.has(props.place.placeID)
       ? -1
-      : 0
-  );
+      : 0;
 
-  const draw = (direction: number) => {
-    const isCastedAlready = direction === vote;
-    setVote(isCastedAlready ? 0 : direction);
-    return !isCastedAlready;
-  };
+  const getScore = () =>
+    props.map.placesCache[props.place.placeID].upvoteCount || 0;
 
-  const like = () => {
-    (API.graphql(
-      graphqlOperation(
-        mutations.upvotePlace(
-          props.place.placeID,
-          props.place.name,
-          props.map.location.city
-        )
-      )
-    ) as Promise<GraphQLResult>).catch(err => {
-      console.log(err);
-    });
-    const maposhPlaces = props.map;
-    const newPlaces = maposhPlaces.placesCache;
-    const rating = newPlaces[props.place.placeID].upvoteCount;
-    newPlaces[props.place.placeID].upvoteCount = rating ? rating + 1 : 1;
-    props.updatePlaces({ ...maposhPlaces, placesCache: newPlaces });
+  const [vote, setVote] = React.useState(getVote());
+  const [score, setScore] = React.useState(getScore());
 
-    const favourites = props.system.favourites;
-    const dislikes = props.system.dislikes;
-    dislikes.delete(props.place.placeID);
-    props.updatePreferences({
-      favourites: favourites.add(props.place.placeID),
-      dislikes
-    });
-  };
-
-  const forgetLike = () => {
-    (API.graphql(
-      graphqlOperation(
-        mutations.forgetUpvote(
-          props.place.placeID,
-          props.place.name,
-          props.map.location.city
-        )
-      )
-    ) as Promise<GraphQLResult>).catch(err => {
-      console.log(err);
-    });
-    const maposhPlaces = props.map;
-    const newPlaces = maposhPlaces.placesCache;
-    const rating = newPlaces[props.place.placeID].upvoteCount;
-    newPlaces[props.place.placeID].upvoteCount = rating ? rating - 1 : -1;
-    props.updatePlaces({ ...maposhPlaces, placesCache: newPlaces });
-
-    const favourites = props.system.favourites;
-    const dislikes = props.system.dislikes;
-    favourites.delete(props.place.placeID);
-    props.updatePreferences({
-      favourites,
-      dislikes
-    });
-  };
-
-  const dislike = () => {
-    (API.graphql(
-      graphqlOperation(
-        mutations.downvotePlace(
-          props.place.placeID,
-          props.place.name,
-          props.map.location.city
-        )
-      )
-    ) as Promise<GraphQLResult>).catch(err => {
-      console.log(err);
-    });
-    const maposhPlaces = props.map;
-    const newPlaces = maposhPlaces.placesCache;
-    const rating = newPlaces[props.place.placeID].upvoteCount;
-    newPlaces[props.place.placeID].upvoteCount = rating ? rating - 1 : -1;
-    props.updatePlaces({ ...maposhPlaces, placesCache: newPlaces });
-
-    const favourites = props.system.favourites;
-    const dislikes = props.system.dislikes;
-    favourites.delete(props.place.placeID);
-    props.updatePreferences({
-      favourites,
-      dislikes: dislikes.add(props.place.placeID)
-    });
-  };
-
-  const forgetDislike = () => {
-    (API.graphql(
-      graphqlOperation(
-        mutations.forgetDownvote(
-          props.place.placeID,
-          props.place.name,
-          props.map.location.city
-        )
-      )
-    ) as Promise<GraphQLResult>).catch(err => {
-      console.log(err);
-    });
-    const maposhPlaces = props.map;
-    const newPlaces = maposhPlaces.placesCache;
-    const rating = newPlaces[props.place.placeID].upvoteCount;
-    newPlaces[props.place.placeID].upvoteCount = rating ? rating + 1 : 1;
-    props.updatePlaces({ ...maposhPlaces, placesCache: newPlaces });
-
-    const favourites = props.system.favourites;
-    const dislikes = props.system.dislikes;
-    dislikes.delete(props.place.placeID);
-    props.updatePreferences({
-      favourites,
-      dislikes
-    });
+  const shouldVote = (direction: number) => {
+    const hasAlreadyVoted = direction === vote;
+    setVote(hasAlreadyVoted ? 0 : direction);
+    setScore(hasAlreadyVoted ? score - direction : direction + score);
+    return !hasAlreadyVoted;
   };
 
   const upvote = () => {
     if (props.system.isAuthenticated) {
-      if (draw(1)) {
-        like();
+      if (shouldVote(1)) {
+        props.like(props.place.placeID, props.place.name);
       } else {
-        forgetLike();
+        props.forgetLike(props.place.placeID);
       }
     } else {
       props.history.push("/login");
@@ -158,28 +63,21 @@ const BaseRater: React.FC<IRaterProps & RouteComponentProps> = props => {
 
   const downvote = () => {
     if (props.system.isAuthenticated) {
-      if (draw(-1)) {
-        dislike();
+      if (shouldVote(-1)) {
+        props.dislike(props.place.placeID, props.place.name);
       } else {
-        forgetDislike();
+        props.forgetDislike(props.place.placeID);
       }
     } else {
       props.history.push("/login");
     }
   };
 
-  const score = props.map.placesCache[props.place.placeID].upvoteCount || 0;
   return (
     <RatingContainer>
-      <UpArrow
-        active={props.system.favourites.has(props.place.placeID)}
-        onClick={upvote}
-      />
+      <UpArrow active={vote === 1} onClick={upvote} />
       <RatingCount>{score}</RatingCount>
-      <DownArrow
-        active={props.system.dislikes.has(props.place.placeID)}
-        onClick={downvote}
-      />
+      <DownArrow active={vote === -1} onClick={downvote} />
     </RatingContainer>
   );
 };
@@ -191,7 +89,7 @@ const mapStateToProps = (state: MaposhState) => ({
 
 const Rater = connect(
   mapStateToProps,
-  { updatePreferences, updatePlaces }
+  { updatePreferences, updatePlaces, like, dislike, forgetLike, forgetDislike }
 )(withRouter(BaseRater));
 
 export default Rater;

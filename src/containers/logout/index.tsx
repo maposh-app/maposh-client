@@ -21,7 +21,7 @@ const BaseLogout: React.FC<ILogoutProps> = props => {
   const { t } = useTranslation();
   const signOut = () => {
     props.updatePreferences({
-      favourites: new Set<string>(),
+      likes: new Set<string>(),
       dislikes: new Set<string>()
     });
     let payload: { [prop: string]: string } = {};

@@ -1,34 +1,30 @@
-const upvotePlace = (placeID: string, name: string, city: string) => `
+const like = (placeID: string, name: string, city: string) => `
   mutation {
-    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: 1)
     like(placeID: "${placeID}", name: "${name}", city: "${city}")
   }
 `;
 
-const forgetUpvote = (placeID: string, name: string, city: string) => `
+const forgetLike = (placeID: string) => `
   mutation {
-    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: -1)
-    forget(placeID: "${placeID}")
+    forget(placeID: "${placeID}", score: -1)
   }
 `;
 
-const forgetDownvote = (placeID: string, name: string, city: string) => `
+const dislike = (placeID: string, name: string, city: string) => `
   mutation {
-    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: 1)
-    forget(placeID: "${placeID}")
+    dislike(placeID: "${placeID}", name: "${name}", city: "${city}")
   }
 `;
 
-const downvotePlace = (placeID: string, name: string, city: string) => `
+const forgetDislike = (placeID: string) => `
   mutation {
-    ratePlace(placeID: "${placeID}", name: "${name}", city: "${city}", score: -1)
-    dislike(placeID: "${placeID}")
+    forget(placeID: "${placeID}", score: 1)
   }
 `;
 
 export default {
-  upvotePlace,
-  downvotePlace,
-  forgetUpvote,
-  forgetDownvote
+  like,
+  dislike,
+  forgetLike,
+  forgetDislike
 };

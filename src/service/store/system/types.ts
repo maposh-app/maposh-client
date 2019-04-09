@@ -9,7 +9,7 @@ export interface IAuthState {
 }
 
 export interface IPreferencesState {
-  favourites: Set<string>;
+  likes: Set<string>;
   dislikes: Set<string>;
 }
 
