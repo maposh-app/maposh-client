@@ -17,12 +17,12 @@ export function selectify(block: IParams): IOptions {
   return options;
 }
 
-// adapted from https://gist.github.com/mlocati/7210513
 export function percentage2color(percentage: number) {
   const colors = config.map.foursquare.colors;
   return colors[Math.round((percentage * (colors.length - 1)) / 100)];
 }
 
+// adapted from https://gist.github.com/mlocati/7210513
 export const hexToRGBA = (hex: string, alpha: number) => {
   hex = hex.charAt(0) === "#" ? hex.substring(1, 7) : hex;
 

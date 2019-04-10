@@ -164,3 +164,8 @@ export const placesLayerStyle = {
   "circle-stroke-width": 1,
   "circle-opacity": 0.7
 };
+
+export const favouritePlacesMapLayout = {
+  "icon-image": "favourite-place",
+  "icon-size": 0.1
+};

@@ -4,6 +4,8 @@ const getMaposhScore = (placeID: string) => `
   query {
     getPlaceInfo(placeID: "${placeID}") {
       upvoteCount
+      longitude
+      latitude
     }
   }
 `;
@@ -26,6 +28,8 @@ const getMaposhPlaces = (city: string) => `
       name
       city
       upvoteCount
+      longitude
+      latitude
     }
   }
 `;

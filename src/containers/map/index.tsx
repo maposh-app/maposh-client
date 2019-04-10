@@ -19,14 +19,20 @@ import Close from "../../components/close";
 import { IPlace } from "../../model/place";
 import i18n from "../../service/i18n";
 import { MaposhState } from "../../service/store";
-import { updateCity, updatePan } from "../../service/store/map/actions";
+import {
+  updateCity,
+  updatePan,
+  updateRank
+} from "../../service/store/map/actions";
 import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
 import PlaceProfile from "../place";
+import favouritePlaceImage from "./favourite-place.png";
 import {
   drawStyle,
+  favouritePlacesMapLayout,
   MapBox,
   placesLayerStyle,
   SearchBox,
@@ -51,6 +57,7 @@ interface IMapProps {
   system: ISystemState;
   updatePan: typeof updatePan;
   updateCity: (newCity: string) => void;
+  updateRank: () => void;
 }
 
 interface IPopup {
@@ -76,6 +83,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   public constructor(props: IMapProps) {
     super(props);
     this.locate();
+    props.updateRank();
     this.recommender = new RecommendationsLoader(this.props.system.language);
     this.geolocate = new GeolocateControl({
       positionOptions: {
@@ -189,12 +197,15 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
             this.setLanguage();
             this.locate();
             this.setupSearch();
+            map.loadImage(favouritePlaceImage, (error: any, image: any) => {
+              map.addImage("favourite-place", image);
+            });
             map.addControl(this.geolocate);
             map.addControl(this.draw, "top-left");
             map.on("draw.create", this.startDrawing);
             map.on("draw.delete", this.stopDrawing);
             map.addControl(this.mapLanguage);
-            map.on("click", "places", evt => {
+            const handleFeatureClick = (evt: any) => {
               if (evt.features) {
                 const info = evt.features[0];
                 const coordinates = (info.geometry as Point).coordinates.slice();
@@ -217,7 +228,9 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                   });
                 }
               }
-            });
+            };
+            map.on("click", "places", evt => handleFeatureClick(evt));
+            map.on("click", "favourites", evt => handleFeatureClick(evt));
           }}
           maxBounds={[[minLongitude, minLatitude], [maxLongitude, maxLatitude]]}
           style={MAPBOX_STYLE}
@@ -265,6 +278,25 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                   <Feature coordinates={[popup.coordinates, [lng, lat]]} />
                 );
               })()}
+          </Layer>
+          <Layer
+            type="symbol"
+            id="favourites"
+            layout={favouritePlacesMapLayout}
+          >
+            {this.props.map.maposhPlaces.size > 0 &&
+              Array.from(this.props.map.maposhPlaces).map((placeID: string) => {
+                return (
+                  <Feature
+                    key={`favourite-${placeID}`}
+                    coordinates={[
+                      this.props.map.placesCache[placeID].longitude,
+                      this.props.map.placesCache[placeID].latitude
+                    ]}
+                    properties={this.props.map.placesCache[placeID]}
+                  />
+                );
+              })}
           </Layer>
           <ShowPlacesButton
             style={{
@@ -390,7 +422,9 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           .then(places => {
             places.forEach(placeID => {
               if (
-                this.props.map.placesCache[placeID].name.includes(event.result.text)
+                this.props.map.placesCache[placeID].name.includes(
+                  event.result.text
+                )
               ) {
                 this.setState({
                   isTracking: true,
@@ -470,7 +504,7 @@ const mapStateToProps = (state: MaposhState) => ({
 const MaposhMap = withTranslation()(
   connect(
     mapStateToProps,
-    { updatePan, updateCity }
+    { updatePan, updateCity, updateRank }
   )(BaseMap)
 );
 

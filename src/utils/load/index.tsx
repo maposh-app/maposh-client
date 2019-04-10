@@ -142,7 +142,9 @@ export class RecommendationsLoader {
         .map((place: IPlace) => {
           return `id${_.camelCase(place.placeID)}: getPlaceInfo(placeID: "${
             place.placeID
-          }") { upvoteCount }`;
+          }") {
+            upvoteCount
+           }`;
         })
         .join("\n") + queries.meInfoFragment;
 
@@ -174,6 +176,8 @@ export class RecommendationsLoader {
             result.data[`id${_.camelCase(place.placeID)}`];
           if (maposhPlaceData) {
             place.upvoteCount = maposhPlaceData.upvoteCount;
+            place.longitude = maposhPlaceData.longitude;
+            place.latitude = maposhPlaceData.latitude;
           }
           dict[place.placeID] = place;
           return dict;

@@ -131,7 +131,9 @@ export function updateRank(): ThunkAction<
 
 export function like(
   placeID: string,
-  name: string
+  name: string,
+  longitude?: number,
+  latitude?: number
 ): ThunkAction<
   void,
   MaposhState,
@@ -142,7 +144,16 @@ export function like(
     const { map, system } = getState();
     const extra = system.dislikes.has(placeID) ? 1 : 0;
     return (API.graphql(
-      graphqlOperation(mutations.like(placeID, name, map.location.city, extra))
+      graphqlOperation(
+        mutations.like(
+          placeID,
+          name,
+          map.location.city,
+          longitude,
+          latitude,
+          extra
+        )
+      )
     ) as Promise<GraphQLResult>)
       .then(() => {
         return queryMaposhData(map, dispatch);
@@ -155,7 +166,9 @@ export function like(
 
 export function dislike(
   placeID: string,
-  name: string
+  name: string,
+  longitude?: number,
+  latitude?: number
 ): ThunkAction<
   void,
   MaposhState,
@@ -167,7 +180,14 @@ export function dislike(
     const extra = system.likes.has(placeID) ? -1 : 0;
     return (API.graphql(
       graphqlOperation(
-        mutations.dislike(placeID, name, map.location.city, extra)
+        mutations.dislike(
+          placeID,
+          name,
+          map.location.city,
+          longitude,
+          latitude,
+          extra
+        )
       )
     ) as Promise<GraphQLResult>)
       .then(() => {

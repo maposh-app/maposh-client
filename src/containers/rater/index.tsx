@@ -21,8 +21,18 @@ interface IRaterProps {
   map: IMapState;
   updatePreferences: typeof updatePreferences;
   updatePlaces: typeof updatePlaces;
-  like: (placeID: string, name: string) => void;
-  dislike: (placeID: string, name: string) => void;
+  like: (
+    placeID: string,
+    name: string,
+    longitude?: number,
+    latitude?: number
+  ) => void;
+  dislike: (
+    placeID: string,
+    name: string,
+    longitude?: number,
+    latitude?: number
+  ) => void;
   forgetLike: (placeID: string) => void;
   forgetDislike: (placeID: string) => void;
   place: IPlace;
@@ -50,13 +60,21 @@ const BaseRater: React.FC<IRaterProps & RouteComponentProps> = props => {
 
     setVote(hasAlreadyVotedTheSame ? 0 : direction);
     setScore(score + change);
+    window.setTimeout(() => {
+      setScore(getScore());
+    }, 3000);
     return !hasAlreadyVotedTheSame;
   };
 
   const upvote = () => {
     if (props.system.isAuthenticated) {
       if (shouldVote(1)) {
-        props.like(props.place.placeID, props.place.name);
+        props.like(
+          props.place.placeID,
+          props.place.name,
+          props.place.longitude,
+          props.place.latitude
+        );
       } else {
         props.forgetLike(props.place.placeID);
       }
@@ -68,7 +86,12 @@ const BaseRater: React.FC<IRaterProps & RouteComponentProps> = props => {
   const downvote = () => {
     if (props.system.isAuthenticated) {
       if (shouldVote(-1)) {
-        props.dislike(props.place.placeID, props.place.name);
+        props.dislike(
+          props.place.placeID,
+          props.place.name,
+          props.place.longitude,
+          props.place.latitude
+        );
       } else {
         props.forgetDislike(props.place.placeID);
       }

@@ -1,8 +1,20 @@
-const like = (placeID: string, name: string, city: string, extra?: number) => `
+const like = (
+  placeID: string,
+  name: string,
+  city: string,
+  longitude?: number,
+  latitude?: number,
+  extra?: number
+) => `
   mutation {
-    like(placeID: "${placeID}", name: "${name}", city: "${city}", extra: ${
-  extra ? extra : 0
-})
+    like(placeID: "${placeID}",
+         name: "${name}",
+         city: "${city}",
+         longitude: ${longitude},
+         latitude: ${latitude},
+         extra: ${extra ? extra : 0}
+         )
+
   }
 `;
 
@@ -16,12 +28,18 @@ const dislike = (
   placeID: string,
   name: string,
   city: string,
+  longitude?: number,
+  latitude?: number,
   extra?: number
 ) => `
   mutation {
-    dislike(placeID: "${placeID}", name: "${name}", city: "${city}", extra: ${
-  extra ? extra : 0
-})
+    dislike(placeID: "${placeID}",
+         name: "${name}",
+         city: "${city}",
+         longitude: ${longitude},
+         latitude: ${latitude},
+         extra: ${extra ? extra : 0}
+         )
   }
 `;
 

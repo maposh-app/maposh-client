@@ -30,7 +30,6 @@ const BasePlaces: React.FC<IPlaceProps> = props => {
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    console.log("Updating...");
     props.updateRank();
   }, []);
   const { maposhPlaces, placesCache } = props.map;
@@ -55,7 +54,7 @@ const BasePlaces: React.FC<IPlaceProps> = props => {
           if (place) {
             return (
               <PlacesListItem key={`place-${place.placeID}`}>
-                <PlaceProfile place={place} />
+                <PlaceProfile key={`place-info-${place.placeID}`} place={place} />
               </PlacesListItem>
             );
           }
