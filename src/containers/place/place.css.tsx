@@ -20,7 +20,7 @@ export const PlaceBox = styled.div`
 `;
 
 export const PlaceInfo = styled.div`
-  margin: 15px;
+  margin: 15px !important;
 `;
 
 export const PlaceMarker = styled.div`

@@ -3,8 +3,7 @@ const like = (
   name: string,
   city: string,
   longitude?: number,
-  latitude?: number,
-  extra?: number
+  latitude?: number
 ) => `
   mutation {
     like(placeID: "${placeID}",
@@ -12,15 +11,8 @@ const like = (
          city: "${city}",
          longitude: ${longitude},
          latitude: ${latitude},
-         extra: ${extra ? extra : 0}
          )
 
-  }
-`;
-
-const forgetLike = (placeID: string) => `
-  mutation {
-    forget(placeID: "${placeID}", score: -1)
   }
 `;
 
@@ -29,8 +21,7 @@ const dislike = (
   name: string,
   city: string,
   longitude?: number,
-  latitude?: number,
-  extra?: number
+  latitude?: number
 ) => `
   mutation {
     dislike(placeID: "${placeID}",
@@ -38,20 +29,11 @@ const dislike = (
          city: "${city}",
          longitude: ${longitude},
          latitude: ${latitude},
-         extra: ${extra ? extra : 0}
          )
-  }
-`;
-
-const forgetDislike = (placeID: string) => `
-  mutation {
-    forget(placeID: "${placeID}", score: 1)
   }
 `;
 
 export default {
   like,
-  dislike,
-  forgetLike,
-  forgetDislike
+  dislike
 };

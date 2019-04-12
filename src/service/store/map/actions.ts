@@ -141,18 +141,10 @@ export function like(
   Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
 > {
   return (dispatch, getState) => {
-    const { map, system } = getState();
-    const extra = system.dislikes.has(placeID) ? 1 : 0;
+    const { map } = getState();
     return (API.graphql(
       graphqlOperation(
-        mutations.like(
-          placeID,
-          name,
-          map.location.city,
-          longitude,
-          latitude,
-          extra
-        )
+        mutations.like(placeID, name, map.location.city, longitude, latitude)
       )
     ) as Promise<GraphQLResult>)
       .then(() => {
@@ -177,62 +169,10 @@ export function dislike(
 > {
   return (dispatch, getState) => {
     const { map, system } = getState();
-    const extra = system.likes.has(placeID) ? -1 : 0;
     return (API.graphql(
       graphqlOperation(
-        mutations.dislike(
-          placeID,
-          name,
-          map.location.city,
-          longitude,
-          latitude,
-          extra
-        )
+        mutations.dislike(placeID, name, map.location.city, longitude, latitude)
       )
-    ) as Promise<GraphQLResult>)
-      .then(() => {
-        return queryMaposhData(map, dispatch);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-}
-
-export function forgetLike(
-  placeID: string
-): ThunkAction<
-  void,
-  MaposhState,
-  null,
-  Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
-> {
-  return (dispatch, getState) => {
-    const { map } = getState();
-    return (API.graphql(
-      graphqlOperation(mutations.forgetLike(placeID))
-    ) as Promise<GraphQLResult>)
-      .then(() => {
-        return queryMaposhData(map, dispatch);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-}
-
-export function forgetDislike(
-  placeID: string
-): ThunkAction<
-  void,
-  MaposhState,
-  null,
-  Action<typeof UPDATE_SESSION | typeof UPDATE_MAP>
-> {
-  return (dispatch, getState) => {
-    const { map } = getState();
-    return (API.graphql(
-      graphqlOperation(mutations.forgetDislike(placeID))
     ) as Promise<GraphQLResult>)
       .then(() => {
         return queryMaposhData(map, dispatch);

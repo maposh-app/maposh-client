@@ -29,3 +29,27 @@ export const MenuItem = styled.li`
 export const MenuLink = styled(Link)`
   font-weight: bold;
 `;
+
+export const PlacesListMenuLink = styled(MenuLink)`
+  @media (max-width: 768px) {
+    width: 1em;
+    .placesText {
+      display: none;
+      visibility: hidden;
+    }
+    height: 0.5em;
+    background: linear-gradient(
+      to bottom,
+      black,
+      black 20%,
+      white 20%,
+      white 40%,
+      black 40%,
+      black 60%,
+      white 60%,
+      white 80%,
+      black 80%,
+      black 100%
+    );
+  }
+`;

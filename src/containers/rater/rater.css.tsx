@@ -38,6 +38,8 @@ export const RatingContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width:2em;
+  min-height:3em;
 `;
 
 export const RatingCount = styled.span`

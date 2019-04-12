@@ -6,7 +6,13 @@ import { MaposhState } from "../../service/store";
 import { ISystemState } from "../../service/store/system/types";
 import CitySelector from "../city-selector";
 import { UserMenuID } from "../user";
-import { Menu, MenuItem, MenuLink, MenuList } from "./header.css";
+import {
+  Menu,
+  MenuItem,
+  MenuLink,
+  MenuList,
+  PlacesListMenuLink
+} from "./header.css";
 
 const mapStateToProps = (state: MaposhState) => ({
   system: state.system
@@ -21,13 +27,15 @@ const BaseHeader: React.FC<IHeaderProps> = props => {
   return (
     <Menu>
       <MenuList>
-        <MenuItem>
+        <MenuItem style={{ flexShrink: 0 }}>
           <MenuLink to="/">
             <Logo />
           </MenuLink>
         </MenuItem>
         <MenuItem style={{ marginRight: "auto" }}>
-          <MenuLink to="/places">{t("places_link")}</MenuLink>
+          <PlacesListMenuLink to="/places">
+            <span className="placesText">{t("places_link")}</span>
+          </PlacesListMenuLink>
         </MenuItem>
         <MenuItem style={{ flex: 0.2, minWidth: "160px" }}>
           <CitySelector />

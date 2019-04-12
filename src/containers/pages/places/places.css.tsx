@@ -10,4 +10,6 @@ export const PlacesList = styled.ul`
   margin: 0;
   padding: 0;
 `;
-export const PlacesListItem = styled.li``;
+export const PlacesListItem = styled.li`
+  margin: 0;
+`;
