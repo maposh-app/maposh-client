@@ -37,17 +37,19 @@ export const PlacesListMenuLink = styled(MenuLink)`
       display: none;
       visibility: hidden;
     }
-    height: 0.5em;
+    display: block;
+    width: 1em;
+    height: 1em;
     background: linear-gradient(
       to bottom,
       black,
       black 20%,
-      white 20%,
-      white 40%,
+      transparent 20%,
+      transparent 40%,
       black 40%,
       black 60%,
-      white 60%,
-      white 80%,
+      transparent 60%,
+      transparent 80%,
       black 80%,
       black 100%
     );
