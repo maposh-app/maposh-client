@@ -176,10 +176,8 @@ export class RecommendationsLoader {
             result.data[`id${_.camelCase(place.placeID)}`];
           if (maposhPlaceData) {
             place.upvoteCount = maposhPlaceData.upvoteCount;
-            place.longitude = maposhPlaceData.longitude;
-            place.latitude = maposhPlaceData.latitude;
           }
-          dict[place.placeID] = place;
+          dict[place.placeID] = { ...dict[place.placeID], ...place };
           return dict;
         },
         {}

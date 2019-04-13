@@ -12,7 +12,9 @@ import ReactMapboxGl, {
   Layer,
   RotationControl,
   ScaleControl,
-  ZoomControl
+  ZoomControl,
+  Image as MapboxImage,
+  Marker
 } from "react-mapbox-gl";
 import { connect } from "react-redux";
 import Close from "../../components/close";
@@ -38,11 +40,18 @@ import {
   SearchBox,
   ShowPlacesButton,
   StyledPopup,
-  trackingStyle
+  trackingStyle,
+  Favourite
 } from "./map.css";
+import {
+  percentage2color,
+  Solver,
+  Color,
+  hexToRGBA
+} from "../../utils/transform";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
-const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10"; // process.env.REACT_APP_MAPBOX_STYLE || "";
+const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10";
 
 const Map = ReactMapboxGl({
   accessToken: MAPBOX_TOKEN,
@@ -182,6 +191,11 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       maxLatitude
     ] = this.props.map.location.boundingBox;
     const { places, isDrawing, isTracking, popup } = this.state;
+    const ratings = Array.from(this.props.map.maposhPlaces).map(
+      (placeID: string) => this.props.map.placesCache[placeID].upvoteCount || 0
+    );
+    const maxRating = Math.max(...ratings);
+    const minRating = Math.min(...ratings);
 
     return (
       <MapBox>
@@ -197,9 +211,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
             this.setLanguage();
             this.locate();
             this.setupSearch();
-            map.loadImage(favouritePlaceImage, (error: any, image: any) => {
-              map.addImage("favourite-place", image);
-            });
             map.addControl(this.geolocate);
             map.addControl(this.draw, "top-left");
             map.on("draw.create", this.startDrawing);
@@ -253,6 +264,65 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
               />
             </StyledPopup>
           )}
+          <div>
+            {this.props.map.maposhPlaces.size > 0 &&
+              Array.from(this.props.map.maposhPlaces).map((placeID: string) => {
+                const place = this.props.map.placesCache[placeID];
+                if (!(place.longitude && place.latitude)) {
+                  return;
+                }
+                const iconID = `favourite-place-icon-${placeID}`;
+                const rating = place.upvoteCount || 0;
+                const likeability =
+                  rating - minRating
+                    ? maxRating - minRating
+                      ? (rating - minRating) / (maxRating - minRating)
+                      : 0
+                    : 0;
+                const color = percentage2color(likeability * 100);
+                return (
+                  <Marker
+                    style={{
+                      pointerEvents: "none",
+                      zIndex: 1
+                    }}
+                    anchor="center"
+                    key={iconID}
+                    coordinates={[place.longitude, place.latitude]}
+                    onClick={() => {
+                      this.setState({
+                        isTracking: true,
+                        popup: {
+                          coordinates: [place.longitude, place.latitude],
+                          place: this.props.map.placesCache[placeID]
+                        }
+                      });
+                    }}
+                  >
+                    <Favourite fill={color} />
+                  </Marker>
+                );
+              })}
+          </div>
+          <Layer
+            type="symbol"
+            id="favourites"
+            layout={favouritePlacesMapLayout}
+          >
+            {this.props.map.maposhPlaces.size > 0 &&
+              Array.from(this.props.map.maposhPlaces).map((placeID: string) => {
+                return (
+                  <Feature
+                    key={`favourite-${placeID}`}
+                    coordinates={[
+                      this.props.map.placesCache[placeID].longitude,
+                      this.props.map.placesCache[placeID].latitude
+                    ]}
+                    properties={this.props.map.placesCache[placeID]}
+                  />
+                );
+              })}
+          </Layer>
           <Layer type="circle" id="places" paint={placesLayerStyle}>
             {places.length > 0 &&
               places.map((place, index) => {
@@ -279,25 +349,6 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                 );
               })()}
           </Layer>
-          <Layer
-            type="symbol"
-            id="favourites"
-            layout={favouritePlacesMapLayout}
-          >
-            {this.props.map.maposhPlaces.size > 0 &&
-              Array.from(this.props.map.maposhPlaces).map((placeID: string) => {
-                return (
-                  <Feature
-                    key={`favourite-${placeID}`}
-                    coordinates={[
-                      this.props.map.placesCache[placeID].longitude,
-                      this.props.map.placesCache[placeID].latitude
-                    ]}
-                    properties={this.props.map.placesCache[placeID]}
-                  />
-                );
-              })}
-          </Layer>
           <ShowPlacesButton
             style={{
               display: isDrawing || places.length > 0 ? "inline-block" : "none"
@@ -322,6 +373,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       isTracking: false,
       popup: undefined
     });
+    this.props.updateRank();
   }
 
   private startDrawing() {
@@ -349,8 +401,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
 
   private handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
-      this.draw.deleteAll();
-      this.setState({ places: [], isTracking: false, popup: undefined });
+      this.stopDrawing();
     }
   }
 

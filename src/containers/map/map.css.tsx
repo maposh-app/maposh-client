@@ -1,6 +1,15 @@
-import { Popup } from "react-mapbox-gl";
 import config from "../../config";
 import styled from "../../service/theme/styled-components";
+import { ReactComponent as FavouritePlaceIcon } from "./favourite-place.svg";
+
+export const Favourite = styled(FavouritePlaceIcon)`
+  pointer-events: fill;
+  transform: scale(0.1);
+  path {
+    fill: ${(props: { color?: string }) =>
+      props.color && `${props.color} !important`};
+  }
+`;
 
 export const MapBox = styled.div`
   position: relative;
@@ -32,6 +41,7 @@ export const ShowPlacesButton = styled.button`
   }
   padding: 1em;
   outline: none;
+  border-color: transparent;
   background-color: #fff;
   border-radius: ${config.theme.elementBorderRadius};
 `;
@@ -65,6 +75,7 @@ export const StyledPopup = styled.div`
   position: absolute;
   display: flex;
   padding: 0.5em;
+  z-index: 80;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -166,6 +177,6 @@ export const placesLayerStyle = {
 };
 
 export const favouritePlacesMapLayout = {
-  "icon-image": "favourite-place",
+  "icon-image": ["get", "placeID"],
   "icon-size": 0.1
 };
