@@ -20,15 +20,13 @@ export const FacebookLogin: React.FC = () => {
   const [timer, setTimer] = React.useState(0);
   React.useEffect(() => {
     initFacebook();
-    return () => {
-      clearTimeout(timer);
-    };
   }, []);
   const checkFacebook = React.useCallback(() => {
     return new Promise((res, rej) => {
       const hasFbLoaded = () => {
         if ((window as AuthWindow).FB) {
           res();
+          clearTimeout(timer);
         } else {
           setTimer(setTimeout(hasFbLoaded, 300));
         }
@@ -84,7 +82,7 @@ export const FacebookLogin: React.FC = () => {
     });
   }, []);
   return (
-    <FacebookButton disabled={!isLoading} onClick={handleClick}>
+    <FacebookButton disabled={isLoading} onClick={handleClick}>
       {t("login.facebook")}
     </FacebookButton>
   );

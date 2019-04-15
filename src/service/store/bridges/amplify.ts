@@ -23,7 +23,6 @@ export default class AmplifyBridge {
       var js,
         fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) {
-        console.log("already exist");
         return;
       }
       js = d.createElement(s);
@@ -31,7 +30,6 @@ export default class AmplifyBridge {
       (js as HTMLScriptElement).src = config.auth.facebook.sdk_url;
       if (fjs.parentNode) {
         fjs.parentNode.insertBefore(js, fjs);
-        console.log("attaching");
       }
     })(document, "script", "facebook-jssdk");
   }
@@ -39,11 +37,11 @@ export default class AmplifyBridge {
   constructor() {
     this.onHubCapsule = this.onHubCapsule.bind(this);
     Hub.listen("auth", this.onHubCapsule);
+    this.loadFacebookSDK();
     this.checkUser();
   }
 
   public onHubCapsule() {
-    console.log("sending");
     this.loadFacebookSDK();
     this.checkUser();
   }
