@@ -129,6 +129,7 @@
   "login": {
     "prompt": "Already have an account? Sign in <1>here</1>.",
     "title": "Login",
+    "facebook": "Login With Facebook",
     "status": {
       "submit": "Login",
       "submitting": "Logging In..."

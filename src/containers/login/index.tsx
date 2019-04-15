@@ -25,6 +25,7 @@ import {
   updatePreferences
 } from "../../service/store/system/actions";
 import { ISystemState } from "../../service/store/system/types";
+import { FacebookLogin } from "./facebook/ index";
 
 interface ILoginFormValues {
   email: string;
@@ -138,36 +139,39 @@ const BaseLogin: React.FC<ILoginProps & RouteComponentProps> = props => {
     <div>
       {props.authState === "signIn" && (
         <FormContainer>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={signinSchema}
-            onSubmit={submitForm}
-            validateOnBlur={true}
-            validateOnChange={true}
-            render={formikProps => (
-              <FormContent onSubmit={formikProps.handleSubmit}>
-                {generateFormContent<ILoginFormValues>(
-                  formFields,
-                  formStatus,
-                  formikProps
-                )}
-                {props.onStateChange && (
-                  <FormPrompt>
-                    <FormPromptBox>
-                      <FormNav onClick={goSignUp(formikProps.values)}>
-                        {t("signup.title")}
-                      </FormNav>
-                    </FormPromptBox>
-                    <FormPromptBox>
-                      <FormNav onClick={goResetPassword}>
-                        {t("user.troubleshooting.forgotten_password")}
-                      </FormNav>
-                    </FormPromptBox>
-                  </FormPrompt>
-                )}
-              </FormContent>
-            )}
-          />
+          <>
+            <FacebookLogin />
+            <Formik
+              initialValues={initialValues}
+              validationSchema={signinSchema}
+              onSubmit={submitForm}
+              validateOnBlur={true}
+              validateOnChange={true}
+              render={formikProps => (
+                <FormContent onSubmit={formikProps.handleSubmit}>
+                  {generateFormContent<ILoginFormValues>(
+                    formFields,
+                    formStatus,
+                    formikProps
+                  )}
+                  {props.onStateChange && (
+                    <FormPrompt>
+                      <FormPromptBox>
+                        <FormNav onClick={goSignUp(formikProps.values)}>
+                          {t("signup.title")}
+                        </FormNav>
+                      </FormPromptBox>
+                      <FormPromptBox>
+                        <FormNav onClick={goResetPassword}>
+                          {t("user.troubleshooting.forgotten_password")}
+                        </FormNav>
+                      </FormPromptBox>
+                    </FormPrompt>
+                  )}
+                </FormContent>
+              )}
+            />
+          </>
         </FormContainer>
       )}
     </div>
