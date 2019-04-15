@@ -18,6 +18,11 @@
       "ru": "Русский"
     }
   },
+  "auth": {
+    "facebook": {
+      "sdk_url": "https://connect.facebook.net/en_US/sdk.js"
+    }
+  },
   "map": {
     "latitude": 55.7558,
     "longitude": 37.6173,
