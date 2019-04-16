@@ -23,13 +23,13 @@ interface ISelectorProps {
 }
 
 const LanguageSelector: React.SFC<ISelectorProps> = props => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     props.updateLanguage({
       language: i18n.languages ? i18n.languages[0] : props.system.language
     });
-  });
+  }, []);
 
   const onSelect = (label: ValueType<ILanguageLabel>) => {
     if (label && (label as ILanguageLabel).value) {

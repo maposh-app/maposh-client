@@ -7,17 +7,14 @@ import Spinner from "react-spinkit";
 import config from "../../config";
 import { IPlace } from "../../model/place";
 import { MaposhState } from "../../service/store";
-import { dislike, like, updatePlaces } from "../../service/store/map/actions";
+import { dislike, like } from "../../service/store/map/actions";
 import { IMapState } from "../../service/store/map/types";
-import { updatePreferences } from "../../service/store/system/actions";
 import { ISystemState } from "../../service/store/system/types";
 import { DownArrow, RatingContainer, RatingCount, UpArrow } from "./rater.css";
 
 interface IRaterProps {
   system: ISystemState;
   map: IMapState;
-  updatePreferences: typeof updatePreferences;
-  updatePlaces: typeof updatePlaces;
   like: (
     placeID: string,
     name: string,
@@ -88,7 +85,6 @@ const BaseRater: React.FC<IRaterProps & RouteComponentProps> = props => {
       like();
     } else {
       props.history.push("/login");
-      dislike();
     }
   };
 
@@ -133,7 +129,7 @@ const mapStateToProps = (state: MaposhState) => ({
 
 const Rater = connect(
   mapStateToProps,
-  { updatePreferences, updatePlaces, like, dislike }
+  { like, dislike }
 )(withRouter(BaseRater));
 
 export default Rater;

@@ -3,20 +3,19 @@ import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { NamedModal } from "../../../components/modal";
+import { IPlace } from "../../../model/place";
 import { MaposhState } from "../../../service/store";
 import { updatePlaces, updateRank } from "../../../service/store/map/actions";
 import { IMapState } from "../../../service/store/map/types";
 import { updatePreferences } from "../../../service/store/system/actions";
 import { ISystemState } from "../../../service/store/system/types";
-import Rater from "../../rater";
+import PlaceProfile from "../../place";
 import {
   PlacesList,
   PlacesListItem,
-  PlacesRanking,
-  PlacesPrompt
+  PlacesPrompt,
+  PlacesRanking
 } from "./places.css";
-import PlaceProfile from "../../place";
-import { IPlace } from "../../../model/place";
 
 interface IPlaceProps {
   system: ISystemState;
@@ -54,7 +53,10 @@ const BasePlaces: React.FC<IPlaceProps> = props => {
           if (place) {
             return (
               <PlacesListItem key={`place-${place.placeID}`}>
-                <PlaceProfile key={`place-info-${place.placeID}`} place={place} />
+                <PlaceProfile
+                  key={`place-info-${place.placeID}`}
+                  place={place}
+                />
               </PlacesListItem>
             );
           }

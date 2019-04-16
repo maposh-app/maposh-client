@@ -37,12 +37,12 @@ export default class AmplifyBridge {
   constructor() {
     this.onHubCapsule = this.onHubCapsule.bind(this);
     Hub.listen("auth", this.onHubCapsule);
-    this.loadFacebookSDK();
+    // this.loadFacebookSDK();
     this.checkUser();
   }
 
   public onHubCapsule() {
-    this.loadFacebookSDK();
+    // this.loadFacebookSDK();
     this.checkUser();
   }
 

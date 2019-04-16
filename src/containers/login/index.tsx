@@ -41,6 +41,7 @@ interface ILoginProps {
   system: ISystemState;
   updateAuthStatus: typeof updateAuthStatus;
   updatePreferences: typeof updatePreferences;
+  federated?: { [key: string]: string };
   override?: string;
   authState?: string;
   onStateChange?: (where: string, state?: object) => void;
