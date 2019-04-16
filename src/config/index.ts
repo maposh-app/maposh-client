@@ -41,14 +41,17 @@ export function getBoundary(city: string): IBoundingBox {
 export function getDefaultCity(): ICity {
   return config.map.locations.default;
 }
+export function fetchParam(name: string): string {
+  const stage = (process.env.REACT_APP_STAGE as string).toUpperCase();
+  return process.env[`REACT_APP_${stage}_${name}`] || "";
+}
 
 export function configureApiGateway(): {
   graphql_endpoint: string;
   graphql_endpoint_iam_region: string;
 } {
-  const stage = (process.env.REACT_APP_STAGE as string).toUpperCase();
-  const url = process.env[`REACT_APP_${stage}_API_GATEWAY_URL`] || "";
-  const region = process.env[`REACT_APP_${stage}_API_GATEWAY_REGION`] || "";
+  const url = fetchParam("API_GATEWAY_URL");
+  const region = fetchParam("API_GATEWAY_REGION");
   return {
     graphql_endpoint: url,
     graphql_endpoint_iam_region: region
@@ -62,14 +65,10 @@ export function configureAuth(): {
   userPoolWebClientId: string;
   oauth: any;
 } {
-  const stage = (process.env.REACT_APP_STAGE as string).toUpperCase();
-  const region = process.env[`REACT_APP_${stage}_COGNITO_REGION`] || "";
-  const userPoolId =
-    process.env[`REACT_APP_${stage}_COGNITO_USER_POOL_ID`] || "";
-  const identityPoolId =
-    process.env[`REACT_APP_${stage}_COGNITO_IDENTITY_POOL_ID`] || "";
-  const userPoolWebClientId =
-    process.env[`REACT_APP_${stage}_COGNITO_APP_CLIENT_ID`] || "";
+  const region = fetchParam("COGNITO_REGION");
+  const userPoolId = fetchParam("COGNITO_USER_POOL_ID");
+  const identityPoolId = fetchParam("COGNITO_IDENTITY_POOL_ID");
+  const userPoolWebClientId = fetchParam("COGNITO_APP_CLIENT_ID");
 
   return {
     region,
@@ -85,8 +84,8 @@ export function configureAuth(): {
         "aws.cognito.signin.user.admin",
         "openid"
       ],
-      redirectSignIn: "http://localhost:3000/",
-      redirectSignOut: "http://localhost:3000/",
+      redirectSignIn: fetchParam("DOMAIN"),
+      redirectSignOut: fetchParam("DOMAIN"),
       responseType: "code"
     }
   };
