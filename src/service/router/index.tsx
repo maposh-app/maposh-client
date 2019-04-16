@@ -48,11 +48,12 @@ const AuthenticatedRedirectComponent: React.FC<RouteComponentProps> = () => {
 export const BaseUnauthenticatedRoute: React.FC<
   RouteProps & ISystemRouteProps
 > = ({ component, system, location, ...rest }) => {
-  const { isAuthenticated } = system;
   return (
     <Route
       {...rest}
-      component={!isAuthenticated ? component : AuthenticatedRedirectComponent}
+      component={
+        !system.isAuthenticated ? component : AuthenticatedRedirectComponent
+      }
     />
   );
 };

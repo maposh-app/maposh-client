@@ -60,6 +60,7 @@ export function configureAuth(): {
   userPoolId: string;
   identityPoolId: string;
   userPoolWebClientId: string;
+  oauth: any;
 } {
   const stage = (process.env.REACT_APP_STAGE as string).toUpperCase();
   const region = process.env[`REACT_APP_${stage}_COGNITO_REGION`] || "";
@@ -74,7 +75,20 @@ export function configureAuth(): {
     region,
     userPoolId,
     identityPoolId,
-    userPoolWebClientId
+    userPoolWebClientId,
+    oauth: {
+      domain: process.env.REACT_APP_STAGING_USER_POOL_DOMAIN || "",
+      scope: [
+        "phone",
+        "email",
+        "profile",
+        "aws.cognito.signin.user.admin",
+        "openid"
+      ],
+      redirectSignIn: "http://localhost:3000/",
+      redirectSignOut: "http://localhost:3000/",
+      responseType: "code"
+    }
   };
 }
 

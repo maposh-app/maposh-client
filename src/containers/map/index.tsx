@@ -1,10 +1,11 @@
+import * as _ from "lodash";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import MapboxLanguage from "@mapbox/mapbox-gl-language";
 import { Point } from "geojson";
-import { GeolocateControl, LngLat } from "mapbox-gl";
+import mapboxgl, { GeolocateControl, LngLat } from "mapbox-gl";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
 import ReactMapboxGl, {
@@ -240,8 +241,10 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                 }
               }
             };
-            map.on("click", "places", evt => handleFeatureClick(evt));
-            map.on("click", "favourites", evt => handleFeatureClick(evt));
+            map.on("click", "places", (evt: any) => handleFeatureClick(evt));
+            map.on("click", "favourites", (evt: any) =>
+              handleFeatureClick(evt)
+            );
           }}
           maxBounds={[[minLongitude, minLatitude], [maxLongitude, maxLatitude]]}
           style={MAPBOX_STYLE}
@@ -294,7 +297,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                         isTracking: true,
                         popup: {
                           coordinates: [place.longitude, place.latitude],
-                          place: this.props.map.placesCache[placeID]
+                          place
                         }
                       });
                     }}
@@ -428,7 +431,8 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       language: this.props.system.language,
       limit: 10,
       bbox: [minLongitude, minLatitude, maxLongitude, maxLatitude],
-      trackProximity: true
+      trackProximity: true,
+      mapboxgl: mapboxgl
     });
     if (this.map && this.map.getZoom() > 9) {
       const { lng, lat } = this.map.getCenter().wrap();
