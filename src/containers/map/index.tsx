@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
@@ -9,13 +8,14 @@ import mapboxgl, { GeolocateControl, LngLat } from "mapbox-gl";
 import * as React from "react";
 import { withTranslation } from "react-i18next";
 import ReactMapboxGl, {
+  Cluster,
   Feature,
   Layer,
+  Marker,
+  Popup,
   RotationControl,
   ScaleControl,
-  ZoomControl,
-  Image as MapboxImage,
-  Marker
+  ZoomControl
 } from "react-mapbox-gl";
 import { connect } from "react-redux";
 import Close from "../../components/close";
@@ -31,25 +31,25 @@ import { IMapState } from "../../service/store/map/types";
 import { ISystemState } from "../../service/store/system/types";
 import { getCityIfExists, withinBoundingBox } from "../../utils/extract";
 import { RecommendationsLoader } from "../../utils/load";
+import { percentage2color, hexToRGBA } from "../../utils/transform";
 import PlaceProfile from "../place";
-import favouritePlaceImage from "./favourite-place.png";
 import {
+  Dislike,
   drawStyle,
   favouritePlacesMapLayout,
+  Like,
   MapBox,
+  PlaceCount,
+  PlaceCountText,
+  PlacePopupPlaceInfo,
   placesLayerStyle,
+  PlacesPopup,
   SearchBox,
   ShowPlacesButton,
   StyledPopup,
-  trackingStyle,
-  Favourite
+  trackingStyle
 } from "./map.css";
-import {
-  percentage2color,
-  Solver,
-  Color,
-  hexToRGBA
-} from "../../utils/transform";
+import config from "../../config";
 
 const MAPBOX_TOKEN: string = process.env.REACT_APP_MAPBOX_API_KEY || "";
 const MAPBOX_STYLE: string = "mapbox://styles/mapbox/streets-v10";
@@ -73,7 +73,9 @@ interface IMapProps {
 interface IPopup {
   coordinates: GeoJSON.Position;
   source?: mapboxgl.Point;
-  place: IPlace;
+  place?: IPlace;
+  total?: number;
+  leaves?: Array<React.ReactElement<any>>;
 }
 
 interface IMapData {
@@ -90,6 +92,15 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
   private search: typeof MapboxGeocoder;
   private mapLanguage: typeof MapboxLanguage;
   private recommender: RecommendationsLoader;
+  private clusterClick(coordinates: GeoJSON.Position) {
+    if (this.map) {
+      this.map.flyTo({
+        center: [coordinates[0], coordinates[1]],
+        zoom: 16
+      });
+      this.setState({ popup: undefined });
+    }
+  }
   public constructor(props: IMapProps) {
     super(props);
     this.locate();
@@ -202,13 +213,30 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       <MapBox>
         <Map
           onMoveStart={() => {
-            this.setState({ isTracking: false });
+            this.setState(state => ({
+              ...state,
+              popup: state.popup && state.popup.place ? state.popup : undefined,
+              isTracking: false
+            }));
           }}
           onMoveEnd={() => {
-            this.setState({ isTracking: true });
+            this.setState(state => {
+              return {
+                ...state,
+                isTracking: state.popup && state.popup.place ? true : false
+              };
+            });
           }}
           onStyleLoad={map => {
             this.map = map;
+            const { lng, lat } = this.map.getCenter().wrap();
+            this.props.updatePan({
+              viewport: {
+                zoom: Math.floor(this.props.map.viewport.zoom),
+                longitude: lng,
+                latitude: lat
+              }
+            });
             this.setLanguage();
             this.locate();
             this.setupSearch();
@@ -257,7 +285,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
           <ZoomControl style={{ top: 45 }} />
           <RotationControl style={{ top: 105 }} />
           <SearchBox id="search" />
-          {popup && (
+          {popup && popup.place && (
             <StyledPopup>
               <PlaceProfile place={popup.place} />
               <Close
@@ -267,7 +295,76 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
               />
             </StyledPopup>
           )}
-          <div>
+          {popup && popup.leaves && (
+            <Popup
+              offset={[0, -30]}
+              anchor={"bottom"}
+              coordinates={popup.coordinates}
+            >
+              <PlacesPopup>
+                {popup.leaves.map(
+                  (leaf: React.ReactElement<any>, index: number) => (
+                    <PlacePopupPlaceInfo key={index}>
+                      <a
+                        href={`https://foursquare.com/v/${
+                          leaf.props["data-feature"].placeID
+                        }`}
+                        target="_blank"
+                      >
+                        {leaf.props["data-feature"].name}
+                      </a>
+                    </PlacePopupPlaceInfo>
+                  )
+                )}
+              </PlacesPopup>
+            </Popup>
+          )}
+          <Cluster
+            ClusterMarkerFactory={(
+              coordinates: GeoJSON.Position,
+              pointCount: number,
+              getLeaves: (
+                limit?: number,
+                offset?: number
+              ) => Array<React.ReactElement<any>>
+            ) => {
+              const leaves = getLeaves();
+              const color: string | number[] = leaves
+                ? leaves.reduce(
+                    (color, leaf) => {
+                      const nextColor = hexToRGBA(
+                        leaf.props["data-feature"].color,
+                        1
+                      ) || [0, 0, 0, 0];
+                      return color.map(
+                        (component, idx) =>
+                          component + nextColor[idx] / leaves.length
+                      );
+                    },
+                    [0, 0, 0, 0]
+                  )
+                : config.theme.colorPrimary;
+              const css = Array.isArray(color) ? `rgba(${color})` : color;
+              return (
+                <Marker
+                  key={coordinates.toString()}
+                  coordinates={coordinates}
+                  onClick={this.clusterClick.bind(
+                    this,
+                    coordinates,
+                    pointCount,
+                    getLeaves
+                  )}
+                  style={{ zIndex: 1 }}
+                  anchor="center"
+                >
+                  <PlaceCount color={css}>
+                    <PlaceCountText color={css}>{pointCount}</PlaceCountText>
+                  </PlaceCount>
+                </Marker>
+              );
+            }}
+          >
             {this.props.map.maposhPlaces.size > 0 &&
               Array.from(this.props.map.maposhPlaces).map((placeID: string) => {
                 const place = this.props.map.placesCache[placeID];
@@ -282,7 +379,11 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                       ? (rating - minRating) / (maxRating - minRating)
                       : 0
                     : 0;
-                const color = percentage2color(likeability * 100);
+                const color = percentage2color(
+                  rating >= 0
+                    ? (likeability * 100 + 100) / 2
+                    : (likeability / 2) * 100
+                );
                 return (
                   <Marker
                     style={{
@@ -301,12 +402,17 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
                         }
                       });
                     }}
+                    data-feature={{ ...place, color }}
                   >
-                    <Favourite fill={color} />
+                    {rating < 0 ? (
+                      <Dislike fill={color} />
+                    ) : (
+                      <Like fill={color} />
+                    )}
                   </Marker>
                 );
               })}
-          </div>
+          </Cluster>
           <Layer
             type="symbol"
             id="favourites"
@@ -438,7 +544,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       const { lng, lat } = this.map.getCenter().wrap();
       this.props.updatePan({
         viewport: {
-          ...this.props.map.viewport,
+          zoom: Math.floor(this.props.map.viewport.zoom),
           longitude: lng,
           latitude: lat
         }
@@ -511,14 +617,15 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         ) {
           this.props.updatePan({
             viewport: {
-              ...this.props.map.viewport,
+              zoom: Math.floor(this.props.map.viewport.zoom),
               longitude: position.coords.longitude,
               latitude: position.coords.latitude
             }
           });
           if (this.map) {
             this.map.flyTo({
-              center: [position.coords.longitude, position.coords.latitude]
+              center: [position.coords.longitude, position.coords.latitude],
+              zoom: Math.floor(this.props.map.viewport.zoom)
             });
           }
         }
@@ -534,7 +641,7 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
       ] = this.props.map.location.boundingBox;
       this.props.updatePan({
         viewport: {
-          ...this.props.map.viewport,
+          zoom: Math.floor(this.props.map.viewport.zoom),
           longitude: cityCenterLongitude,
           latitude: cityCenterLatitude
         }
@@ -545,7 +652,8 @@ class BaseMap extends React.Component<IMapProps, IMapData> {
         center: [
           this.props.map.viewport.longitude,
           this.props.map.viewport.latitude
-        ]
+        ],
+        zoom: Math.floor(this.props.map.viewport.zoom)
       });
     }
   }

@@ -1,6 +1,61 @@
 import config from "../../config";
 import styled from "../../service/theme/styled-components";
+import { ReactComponent as DislikeIcon } from "./dislike.svg";
 import { ReactComponent as FavouritePlaceIcon } from "./favourite-place.svg";
+import { ReactComponent as LikeIcon } from "./like.svg";
+
+export const Like = styled(LikeIcon)`
+  pointer-events: fill;
+  transform: scale(0.05);
+  z-index: 2;
+  path {
+    fill: ${(props: { color?: string }) =>
+      props.color && `${props.color} !important`};
+  }
+`;
+
+export const Dislike = styled(DislikeIcon)`
+  pointer-events: fill;
+  z-index: 2;
+  transform: scale(0.05);
+  path {
+    fill: ${(props: { color?: string }) =>
+      props.color && `${props.color} !important`};
+  }
+`;
+
+export const PlaceCountText = styled.span`
+  position: absolute;
+  color: ${(props: { color?: string }) =>
+    props.color && `${props.color} !important`};
+  filter: invert(1) contrast(9);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+`;
+
+export const PlaceCount = styled.div`
+  position: relative;
+  display: flex;
+  border: 2px solid ${config.theme.colorTender};
+  width: 50%;
+  mix-blend-mode: difference;
+  overflow: hidden;
+  border-radius: 100%;
+  padding: 2em;
+  background-color: ${(props: { color?: string }) =>
+    props.color && `${props.color} !important`};
+  ::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
+`;
 
 export const Favourite = styled(FavouritePlaceIcon)`
   pointer-events: fill;
@@ -64,11 +119,32 @@ export const SearchBox = styled.div`
   top: 1em;
   pointer-events: none;
   touch-action: none;
-  z-index: 20;
+  z-index: 81;
+  margin-left: auto;
+  margin-right: auto;
+  width: 75%;
   .mapboxgl-ctrl-geocoder {
     margin: auto;
     border-radius: ${config.theme.elementBorderRadius};
   }
+`;
+
+export const PlacesPopup = styled.div`
+  display: flex;
+  padding: 0.5em;
+  z-index: 80;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 95%;
+  font-weight: bold;
+
+  outline: none;
+  background-color: #fff;
+`;
+
+export const PlacePopupPlaceInfo = styled.div`
+  white-space: nowrap;
 `;
 
 export const StyledPopup = styled.div`
